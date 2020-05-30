@@ -261,7 +261,6 @@ function makeGUI() {
   let showTestData = d3.select("#show-test-data").on("change", function() {
     state.showTestData = this.checked;
     state.serialize();
-    userHasInteracted();
     heatMap.updateTestPoints(state.showTestData ? testData : []);
   });
   // Check/uncheck the checkbox according to the current state.
@@ -270,7 +269,6 @@ function makeGUI() {
   let discretize = d3.select("#discretize").on("change", function() {
     state.discretize = this.checked;
     state.serialize();
-    userHasInteracted();
     updateUI();
   });
   // Check/uncheck the checbox according to the current state.
@@ -326,7 +324,6 @@ function makeGUI() {
   let learningRate = d3.select("#learningRate").on("change", function() {
     state.learningRate = +this.value;
     state.serialize();
-    userHasInteracted();
     parametersChanged = true;
   });
   learningRate.property("value", state.learningRate);
@@ -935,9 +932,6 @@ export function getOutputWeights(network: nn.Node[][]): number[] {
 function reset(onStartup=false) {
   lineChart.reset();
   state.serialize();
-  if (!onStartup) {
-    userHasInteracted();
-  }
   player.pause();
 
   let suffix = state.numHiddenLayers !== 1 ? "s" : "";
@@ -1047,7 +1041,6 @@ function hideControls() {
     input.on("change", function() {
       state.setHideProperty(id, !this.checked);
       state.serialize();
-      userHasInteracted();
       d3.select(".hide-controls-link")
         .attr("href", window.location.href);
     });
@@ -1064,7 +1057,6 @@ function generateData(firstTime = false) {
     // Change the seed.
     state.seed = Math.random().toFixed(5);
     state.serialize();
-    userHasInteracted();
   }
   Math.seedrandom(state.seed);
   let numSamples = (state.problem === Problem.REGRESSION) ?
