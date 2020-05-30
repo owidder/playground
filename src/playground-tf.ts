@@ -105,9 +105,6 @@ class Player {
       this.pause();
     } else {
       this.isPlaying = true;
-      if (iter === 0) {
-        simulationStarted();
-      }
       this.play();
     }
   }
@@ -181,13 +178,11 @@ let lineChart = new AppendingLineChart(d3.select("#linechart"),
 function makeGUI() {
   d3.select("#reset-button").on("click", () => {
     reset();
-    userHasInteracted();
     d3.select("#play-pause-button");
   });
 
   d3.select("#play-pause-button").on("click", function () {
     // Change the button's content.
-    userHasInteracted();
     player.playOrPause();
   });
 
@@ -197,10 +192,6 @@ function makeGUI() {
 
   d3.select("#next-step-button").on("click", () => {
     player.pause();
-    userHasInteracted();
-    if (iter === 0) {
-      simulationStarted();
-    }
     oneStep();
   });
 
@@ -1093,29 +1084,6 @@ function generateData(firstTime = false) {
 
 let firstInteraction = true;
 let parametersChanged = false;
-
-function userHasInteracted() {
-  if (!firstInteraction) {
-    return;
-  }
-  firstInteraction = false;
-  let page = 'index';
-  if (state.tutorial != null && state.tutorial !== '') {
-    page = `/v/tutorials/${state.tutorial}`;
-  }
-  ga('set', 'page', page);
-  ga('send', 'pageview', {'sessionControl': 'start'});
-}
-
-function simulationStarted() {
-  ga('send', {
-    hitType: 'event',
-    eventCategory: 'Starting Simulation',
-    eventAction: parametersChanged ? 'changed' : 'unchanged',
-    eventLabel: state.tutorial == null ? '' : state.tutorial
-  });
-  parametersChanged = false;
-}
 
 console.log("start playground-tf")
 drawDatasetThumbnails();
