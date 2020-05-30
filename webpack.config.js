@@ -12,6 +12,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, "dist")
     },
+    devtool: 'source-map',
     module: {
         strictExportPresence: true,
         rules: [

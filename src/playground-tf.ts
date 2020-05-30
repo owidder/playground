@@ -1117,6 +1117,7 @@ function simulationStarted() {
   parametersChanged = false;
 }
 
+console.log("start playground-tf")
 drawDatasetThumbnails();
 initTutorial();
 makeGUI();
