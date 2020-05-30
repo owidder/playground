@@ -19,7 +19,7 @@
     "serve": "npx serve dist/",
     "serve-watch": "concurrently \"npx serve dist/\" \"npm run watch\"",
     "build-wp": "npm run clean && cross-env NODE_ENV=development webpack && npm run prep-wp",
-    "start": "webpack-dev-server --open"
+    "start-wp": "webpack-dev-server --open"
   },
   "devDependencies": {
     "@types/d3": "^3.5.34",
