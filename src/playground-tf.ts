@@ -551,7 +551,7 @@ function drawNetwork(network: nn.Node[][]): void {
   let numLayers = network.length;
   let featureWidth = 118;
   let layerScale = d3.scale.ordinal<number, number>()
-      .domain(d3.range(1, numLayers))
+      .domain(d3.range(0, numLayers))
       .rangePoints([featureWidth, width - RECT_SIZE], 0.7);
   let nodeIndexScale = (nodeIndex: number) => nodeIndex * (RECT_SIZE + 25);
 
@@ -565,14 +565,16 @@ function drawNetwork(network: nn.Node[][]): void {
   let cx = RECT_SIZE / 2 + 50;
   let nodeIds = Object.keys(INPUTS);
   let maxY = nodeIndexScale(nodeIds.length);
-  nodeIds.forEach((nodeId, i) => {
-    let cy = nodeIndexScale(i) + RECT_SIZE / 2;
-    node2coord[nodeId] = {cx, cy};
-    drawNode(cx, cy, nodeId, true, container);
-  });
+  /*
+    nodeIds.forEach((nodeId, i) => {
+      let cy = nodeIndexScale(i) + RECT_SIZE / 2;
+      node2coord[nodeId] = {cx, cy};
+      drawNode(cx, cy, nodeId, true, container);
+    });
+  */
 
   // Draw the intermediate layers.
-  for (let layerIdx = 1; layerIdx < numLayers; layerIdx++) {
+  for (let layerIdx = 0; layerIdx < numLayers; layerIdx++) {
     let numNodes = network[layerIdx].length;
     let cx = layerScale(layerIdx) + RECT_SIZE / 2;
     maxY = Math.max(maxY, nodeIndexScale(numNodes));
@@ -626,6 +628,7 @@ function drawNetwork(network: nn.Node[][]): void {
   }
 
   // Draw the output node separately.
+/*
   cx = width + RECT_SIZE / 2;
   let node = network[numLayers - 1][0];
   let cy = nodeIndexScale(0) + RECT_SIZE / 2;
@@ -646,6 +649,7 @@ function drawNetwork(network: nn.Node[][]): void {
     getRelativeHeight(d3.select("#network"))
   );
   d3.select(".column.features").style("height", height + "px");
+*/
 }
 
 function getRelativeHeight(selection) {
@@ -952,7 +956,7 @@ function reset(onStartup=false) {
   lossTest = getLoss(network, testData);
   drawNetwork(network);
   updateUI(true);
-};
+}
 
 function initTutorial() {
   if (state.tutorial == null || state.tutorial === '' || state.hideText) {
