@@ -551,7 +551,7 @@ function drawNetwork(network: nn.Node[][]): void {
   let numLayers = network.length;
   let featureWidth = 118;
   let layerScale = d3.scale.ordinal<number, number>()
-      .domain(d3.range(1, numLayers - 1))
+      .domain(d3.range(1, numLayers))
       .rangePoints([featureWidth, width - RECT_SIZE], 0.7);
   let nodeIndexScale = (nodeIndex: number) => nodeIndex * (RECT_SIZE + 25);
 
@@ -572,7 +572,7 @@ function drawNetwork(network: nn.Node[][]): void {
   });
 
   // Draw the intermediate layers.
-  for (let layerIdx = 1; layerIdx < numLayers - 1; layerIdx++) {
+  for (let layerIdx = 1; layerIdx < numLayers; layerIdx++) {
     let numNodes = network[layerIdx].length;
     let cx = layerScale(layerIdx) + RECT_SIZE / 2;
     maxY = Math.max(maxY, nodeIndexScale(numNodes));
@@ -584,6 +584,7 @@ function drawNetwork(network: nn.Node[][]): void {
       drawNode(cx, cy, node.id, false, container, node);
 
       // Show callout to thumbnails.
+/*
       let numNodes = network[layerIdx].length;
       let nextNumNodes = network[layerIdx + 1].length;
       if (idWithCallout == null &&
@@ -596,6 +597,7 @@ function drawNetwork(network: nn.Node[][]): void {
         });
         idWithCallout = node.id;
       }
+*/
 
       // Draw links.
       for (let j = 0; j < node.inputLinks.length; j++) {
