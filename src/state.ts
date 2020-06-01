@@ -149,8 +149,9 @@ export class State {
   hideText = false;
   collectStats = false;
   numHiddenLayers = 1;
+  numLayers = 4;
   hiddenLayerControls: any[] = [];
-  networkShape: number[] = [4, 2];
+  networkShape: number[] = [2, 4, 2, 1];
   x = true;
   y = true;
   xTimesY = false;
@@ -230,7 +231,7 @@ export class State {
     getHideProps(map).forEach(prop => {
       state[prop] = (map[prop] === "true") ? true : false;
     });
-    state.numHiddenLayers = state.networkShape.length;
+    state.numHiddenLayers = state.networkShape.length - 2;
     if (state.seed == null) {
       state.seed = Math.random().toFixed(5);
     }

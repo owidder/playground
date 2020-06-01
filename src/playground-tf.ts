@@ -239,21 +239,21 @@ function makeGUI() {
     .classed("selected", true);
 
   d3.select("#add-layers").on("click", () => {
-    if (state.numHiddenLayers >= 6) {
+    if (state.numLayers >= 10) {
       return;
     }
-    state.networkShape[state.numHiddenLayers] = 2;
-    state.numHiddenLayers++;
+    state.networkShape.splice(state.networkShape.length - 2, 0, 2);
+    state.numLayers++;
     parametersChanged = true;
     reset();
   });
 
   d3.select("#remove-layers").on("click", () => {
-    if (state.numHiddenLayers <= 0) {
+    if (state.numLayers <= 0) {
       return;
     }
-    state.numHiddenLayers--;
-    state.networkShape.splice(state.numHiddenLayers);
+    state.numLayers--;
+    state.networkShape.splice(state.networkShape.length - 2);
     parametersChanged = true;
     reset();
   });
@@ -662,16 +662,15 @@ function addPlusMinusControl(x: number, layerIdx: number) {
     .classed("plus-minus-neurons", true)
     .style("left", `${x - 10}px`);
 
-  let i = layerIdx - 1;
   let firstRow = div.append("div").attr("class", `ui-numNodes${layerIdx}`);
   firstRow.append("button")
       .attr("class", "mdl-button mdl-js-button mdl-button--icon")
       .on("click", () => {
-        let numNeurons = state.networkShape[i];
+        let numNeurons = state.networkShape[layerIdx];
         if (numNeurons >= 8) {
           return;
         }
-        state.networkShape[i]++;
+        state.networkShape[layerIdx]++;
         parametersChanged = true;
         reset();
       })
@@ -682,11 +681,11 @@ function addPlusMinusControl(x: number, layerIdx: number) {
   firstRow.append("button")
       .attr("class", "mdl-button mdl-js-button mdl-button--icon")
       .on("click", () => {
-        let numNeurons = state.networkShape[i];
+        let numNeurons = state.networkShape[layerIdx];
         if (numNeurons <= 1) {
           return;
         }
-        state.networkShape[i]--;
+        state.networkShape[layerIdx]--;
         parametersChanged = true;
         reset();
       })
@@ -694,9 +693,9 @@ function addPlusMinusControl(x: number, layerIdx: number) {
       .attr("class", "material-icons")
       .text("remove");
 
-  let suffix = state.networkShape[i] > 1 ? "s" : "";
+  let suffix = state.networkShape[layerIdx] > 1 ? "s" : "";
   div.append("div").text(
-    state.networkShape[i] + " neuron" + suffix
+    state.networkShape[layerIdx] + " neuron" + suffix
   );
 }
 
@@ -940,17 +939,15 @@ function reset(onStartup=false) {
   state.serialize();
   player.pause();
 
-  let suffix = state.numHiddenLayers !== 1 ? "s" : "";
+  let suffix = state.numLayers !== 1 ? "s" : "";
   d3.select("#layers-label").text("Hidden layer" + suffix);
-  d3.select("#num-layers").text(state.numHiddenLayers);
+  d3.select("#num-layers").text(state.numLayers);
 
   // Make a simple network.
   iter = 0;
-  let numInputs = constructInput(0 , 0).length;
-  let shape = [numInputs].concat(state.networkShape).concat([1]);
   let outputActivation = (state.problem === Problem.REGRESSION) ?
       nn.Activations.LINEAR : nn.Activations.TANH;
-  network = nn.buildNetwork(shape, state.activation, outputActivation,
+  network = nn.buildNetwork(state.networkShape, state.activation, outputActivation,
       state.regularization, constructInputIds(), state.initZero);
   lossTrain = getLoss(network, trainData);
   lossTest = getLoss(network, testData);
