@@ -13,6 +13,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
+import "material-design-lite/material.css";
+import "./css/styles.css";
+
 import * as nn from "./nn";
 import {HeatMap, reduceMatrix} from "./heatmap";
 import {
@@ -24,7 +27,7 @@ import {
   regularizations,
   getKeyFromValue,
   Problem
-} from "./state";
+} from "./stateTf";
 import {Example2D, shuffle} from "./dataset";
 import {AppendingLineChart} from "./linechart";
 import * as d3 from 'd3';
@@ -102,9 +105,6 @@ class Player {
       this.pause();
     } else {
       this.isPlaying = true;
-      if (iter === 0) {
-        simulationStarted();
-      }
       this.play();
     }
   }
@@ -178,13 +178,11 @@ let lineChart = new AppendingLineChart(d3.select("#linechart"),
 function makeGUI() {
   d3.select("#reset-button").on("click", () => {
     reset();
-    userHasInteracted();
     d3.select("#play-pause-button");
   });
 
   d3.select("#play-pause-button").on("click", function () {
     // Change the button's content.
-    userHasInteracted();
     player.playOrPause();
   });
 
@@ -194,10 +192,6 @@ function makeGUI() {
 
   d3.select("#next-step-button").on("click", () => {
     player.pause();
-    userHasInteracted();
-    if (iter === 0) {
-      simulationStarted();
-    }
     oneStep();
   });
 
@@ -245,21 +239,21 @@ function makeGUI() {
     .classed("selected", true);
 
   d3.select("#add-layers").on("click", () => {
-    if (state.numHiddenLayers >= 6) {
+    if (state.numLayers >= 10) {
       return;
     }
-    state.networkShape[state.numHiddenLayers] = 2;
-    state.numHiddenLayers++;
+    state.networkShape.splice(state.networkShape.length - 2, 0, 2);
+    state.numLayers++;
     parametersChanged = true;
     reset();
   });
 
   d3.select("#remove-layers").on("click", () => {
-    if (state.numHiddenLayers <= 0) {
+    if (state.numLayers <= 0) {
       return;
     }
-    state.numHiddenLayers--;
-    state.networkShape.splice(state.numHiddenLayers);
+    state.numLayers--;
+    state.networkShape.splice(state.networkShape.length - 2);
     parametersChanged = true;
     reset();
   });
@@ -267,7 +261,6 @@ function makeGUI() {
   let showTestData = d3.select("#show-test-data").on("change", function() {
     state.showTestData = this.checked;
     state.serialize();
-    userHasInteracted();
     heatMap.updateTestPoints(state.showTestData ? testData : []);
   });
   // Check/uncheck the checkbox according to the current state.
@@ -276,7 +269,6 @@ function makeGUI() {
   let discretize = d3.select("#discretize").on("change", function() {
     state.discretize = this.checked;
     state.serialize();
-    userHasInteracted();
     updateUI();
   });
   // Check/uncheck the checbox according to the current state.
@@ -332,7 +324,6 @@ function makeGUI() {
   let learningRate = d3.select("#learningRate").on("change", function() {
     state.learningRate = +this.value;
     state.serialize();
-    userHasInteracted();
     parametersChanged = true;
   });
   learningRate.property("value", state.learningRate);
@@ -433,12 +424,11 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
     });
 
   // Draw the main rectangle.
-  nodeGroup.append("rect")
+  nodeGroup.append("circle")
     .attr({
-      x: 0,
-      y: 0,
-      width: RECT_SIZE,
-      height: RECT_SIZE,
+      cx: RECT_SIZE / 2,
+      cy: RECT_SIZE / 2,
+      r: RECT_SIZE / 2,
     });
   let activeOrNotClass = state[nodeId] ? "active" : "inactive";
   if (isInput) {
@@ -492,6 +482,7 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
   }
 
   // Draw the node's canvas.
+/*
   let div = d3.select("#network").insert("div", ":first-child")
     .attr({
       "id": `canvas-${nodeId}`,
@@ -531,6 +522,7 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
   let nodeHeatMap = new HeatMap(RECT_SIZE, DENSITY / 10, xDomain,
       xDomain, div, {noSvg: true});
   div.datum({heatmap: nodeHeatMap, id: nodeId});
+*/
 
 }
 
@@ -559,7 +551,7 @@ function drawNetwork(network: nn.Node[][]): void {
   let numLayers = network.length;
   let featureWidth = 118;
   let layerScale = d3.scale.ordinal<number, number>()
-      .domain(d3.range(1, numLayers - 1))
+      .domain(d3.range(0, numLayers))
       .rangePoints([featureWidth, width - RECT_SIZE], 0.7);
   let nodeIndexScale = (nodeIndex: number) => nodeIndex * (RECT_SIZE + 25);
 
@@ -573,14 +565,16 @@ function drawNetwork(network: nn.Node[][]): void {
   let cx = RECT_SIZE / 2 + 50;
   let nodeIds = Object.keys(INPUTS);
   let maxY = nodeIndexScale(nodeIds.length);
-  nodeIds.forEach((nodeId, i) => {
-    let cy = nodeIndexScale(i) + RECT_SIZE / 2;
-    node2coord[nodeId] = {cx, cy};
-    drawNode(cx, cy, nodeId, true, container);
-  });
+  /*
+    nodeIds.forEach((nodeId, i) => {
+      let cy = nodeIndexScale(i) + RECT_SIZE / 2;
+      node2coord[nodeId] = {cx, cy};
+      drawNode(cx, cy, nodeId, true, container);
+    });
+  */
 
   // Draw the intermediate layers.
-  for (let layerIdx = 1; layerIdx < numLayers - 1; layerIdx++) {
+  for (let layerIdx = 0; layerIdx < numLayers; layerIdx++) {
     let numNodes = network[layerIdx].length;
     let cx = layerScale(layerIdx) + RECT_SIZE / 2;
     maxY = Math.max(maxY, nodeIndexScale(numNodes));
@@ -592,6 +586,7 @@ function drawNetwork(network: nn.Node[][]): void {
       drawNode(cx, cy, node.id, false, container, node);
 
       // Show callout to thumbnails.
+/*
       let numNodes = network[layerIdx].length;
       let nextNumNodes = network[layerIdx + 1].length;
       if (idWithCallout == null &&
@@ -604,6 +599,7 @@ function drawNetwork(network: nn.Node[][]): void {
         });
         idWithCallout = node.id;
       }
+*/
 
       // Draw links.
       for (let j = 0; j < node.inputLinks.length; j++) {
@@ -632,6 +628,7 @@ function drawNetwork(network: nn.Node[][]): void {
   }
 
   // Draw the output node separately.
+/*
   cx = width + RECT_SIZE / 2;
   let node = network[numLayers - 1][0];
   let cy = nodeIndexScale(0) + RECT_SIZE / 2;
@@ -652,6 +649,7 @@ function drawNetwork(network: nn.Node[][]): void {
     getRelativeHeight(d3.select("#network"))
   );
   d3.select(".column.features").style("height", height + "px");
+*/
 }
 
 function getRelativeHeight(selection) {
@@ -664,16 +662,15 @@ function addPlusMinusControl(x: number, layerIdx: number) {
     .classed("plus-minus-neurons", true)
     .style("left", `${x - 10}px`);
 
-  let i = layerIdx - 1;
   let firstRow = div.append("div").attr("class", `ui-numNodes${layerIdx}`);
   firstRow.append("button")
       .attr("class", "mdl-button mdl-js-button mdl-button--icon")
       .on("click", () => {
-        let numNeurons = state.networkShape[i];
+        let numNeurons = state.networkShape[layerIdx];
         if (numNeurons >= 8) {
           return;
         }
-        state.networkShape[i]++;
+        state.networkShape[layerIdx]++;
         parametersChanged = true;
         reset();
       })
@@ -684,11 +681,11 @@ function addPlusMinusControl(x: number, layerIdx: number) {
   firstRow.append("button")
       .attr("class", "mdl-button mdl-js-button mdl-button--icon")
       .on("click", () => {
-        let numNeurons = state.networkShape[i];
+        let numNeurons = state.networkShape[layerIdx];
         if (numNeurons <= 1) {
           return;
         }
-        state.networkShape[i]--;
+        state.networkShape[layerIdx]--;
         parametersChanged = true;
         reset();
       })
@@ -696,9 +693,9 @@ function addPlusMinusControl(x: number, layerIdx: number) {
       .attr("class", "material-icons")
       .text("remove");
 
-  let suffix = state.networkShape[i] > 1 ? "s" : "";
+  let suffix = state.networkShape[layerIdx] > 1 ? "s" : "";
   div.append("div").text(
-    state.networkShape[i] + " neuron" + suffix
+    state.networkShape[layerIdx] + " neuron" + suffix
   );
 }
 
@@ -940,28 +937,23 @@ export function getOutputWeights(network: nn.Node[][]): number[] {
 function reset(onStartup=false) {
   lineChart.reset();
   state.serialize();
-  if (!onStartup) {
-    userHasInteracted();
-  }
   player.pause();
 
-  let suffix = state.numHiddenLayers !== 1 ? "s" : "";
+  let suffix = state.numLayers !== 1 ? "s" : "";
   d3.select("#layers-label").text("Hidden layer" + suffix);
-  d3.select("#num-layers").text(state.numHiddenLayers);
+  d3.select("#num-layers").text(state.numLayers);
 
   // Make a simple network.
   iter = 0;
-  let numInputs = constructInput(0 , 0).length;
-  let shape = [numInputs].concat(state.networkShape).concat([1]);
   let outputActivation = (state.problem === Problem.REGRESSION) ?
       nn.Activations.LINEAR : nn.Activations.TANH;
-  network = nn.buildNetwork(shape, state.activation, outputActivation,
+  network = nn.buildNetwork(state.networkShape, state.activation, outputActivation,
       state.regularization, constructInputIds(), state.initZero);
   lossTrain = getLoss(network, trainData);
   lossTest = getLoss(network, testData);
   drawNetwork(network);
   updateUI(true);
-};
+}
 
 function initTutorial() {
   if (state.tutorial == null || state.tutorial === '' || state.hideText) {
@@ -1052,7 +1044,6 @@ function hideControls() {
     input.on("change", function() {
       state.setHideProperty(id, !this.checked);
       state.serialize();
-      userHasInteracted();
       d3.select(".hide-controls-link")
         .attr("href", window.location.href);
     });
@@ -1069,7 +1060,6 @@ function generateData(firstTime = false) {
     // Change the seed.
     state.seed = Math.random().toFixed(5);
     state.serialize();
-    userHasInteracted();
   }
   Math.seedrandom(state.seed);
   let numSamples = (state.problem === Problem.REGRESSION) ?
@@ -1090,6 +1080,7 @@ function generateData(firstTime = false) {
 let firstInteraction = true;
 let parametersChanged = false;
 
+/*
 function userHasInteracted() {
   if (!firstInteraction) {
     return;
@@ -1112,6 +1103,7 @@ function simulationStarted() {
   });
   parametersChanged = false;
 }
+*/
 
 drawDatasetThumbnails();
 initTutorial();
