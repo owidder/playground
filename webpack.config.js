@@ -7,10 +7,10 @@ const absPath = relPath => path.resolve(__dirname, relPath);
 module.exports = {
     mode: process.env.NODE_ENV,
     entry: {
-        playground: "./src/playgroundTf.ts"
+        [process.env.BUNDLE_NAME]: `./src/${process.env.INDEX_TS}`
     },
     output: {
-        path: path.resolve(__dirname, "dist-tf")
+        path: path.resolve(__dirname, process.env.DIST_FOLDER)
     },
     devtool: 'source-map',
     module: {
@@ -27,7 +27,7 @@ module.exports = {
                     {
                         test: /\.ts$/,
                         include: absPath("src"),
-                        loader: require.resolve('ts-loader'),
+                        use: [{loader: 'ts-loader', options: {onlyCompileBundledFiles: true}}],
                     },
                     {
                         test: /\.css$/,
