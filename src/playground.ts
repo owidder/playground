@@ -28,6 +28,7 @@ import {
 import {Example2D, shuffle} from "./dataset";
 import {AppendingLineChart} from "./linechart";
 import * as d3 from 'd3';
+import "d3-selection-multi";
 
 let mainWidth;
 
@@ -157,11 +158,11 @@ let xDomain: [number, number] = [-6, 6];
 let heatMap =
     new HeatMap(300, DENSITY, xDomain, xDomain, d3.select("#heatmap"),
         {showAxes: true});
-let linkWidthScale = d3.scale.linear()
+let linkWidthScale = d3.scaleLinear()
   .domain([0, 5])
   .range([1, 10])
   .clamp(true);
-let colorScale = d3.scale.linear<string, number>()
+let colorScale = d3.scaleLinear<string, number>()
                      .domain([-1, 0, 1])
                      .range(["#f59322", "#e8eaeb", "#0877bd"])
                      .clamp(true);
@@ -208,6 +209,7 @@ function makeGUI() {
 
   let dataThumbnails = d3.selectAll("canvas[data-dataset]");
   dataThumbnails.on("click", function() {
+    // @ts-ignore
     let newDataset = datasets[this.dataset.dataset];
     if (newDataset === state.dataset) {
       return; // No-op.
@@ -227,6 +229,7 @@ function makeGUI() {
 
   let regDataThumbnails = d3.selectAll("canvas[data-regDataset]");
   regDataThumbnails.on("click", function() {
+    // @ts-ignore
     let newDataset = regDatasets[this.dataset.regdataset];
     if (newDataset === state.regDataset) {
       return; // No-op.
@@ -265,6 +268,7 @@ function makeGUI() {
   });
 
   let showTestData = d3.select("#show-test-data").on("change", function() {
+    // @ts-ignore
     state.showTestData = this.checked;
     state.serialize();
     userHasInteracted();
@@ -274,6 +278,7 @@ function makeGUI() {
   showTestData.property("checked", state.showTestData);
 
   let discretize = d3.select("#discretize").on("change", function() {
+    // @ts-ignore
     state.discretize = this.checked;
     state.serialize();
     userHasInteracted();
@@ -283,7 +288,9 @@ function makeGUI() {
   discretize.property("checked", state.discretize);
 
   let percTrain = d3.select("#percTrainData").on("input", function() {
+    // @ts-ignore
     state.percTrainData = this.value;
+    // @ts-ignore
     d3.select("label[for='percTrainData'] .value").text(this.value);
     generateData();
     parametersChanged = true;
@@ -293,7 +300,9 @@ function makeGUI() {
   d3.select("label[for='percTrainData'] .value").text(state.percTrainData);
 
   let noise = d3.select("#noise").on("input", function() {
+    // @ts-ignore
     state.noise = this.value;
+    // @ts-ignore
     d3.select("label[for='noise'] .value").text(this.value);
     generateData();
     parametersChanged = true;
@@ -313,7 +322,9 @@ function makeGUI() {
   d3.select("label[for='noise'] .value").text(state.noise);
 
   let batchSize = d3.select("#batchSize").on("input", function() {
+    // @ts-ignore
     state.batchSize = this.value;
+    // @ts-ignore
     d3.select("label[for='batchSize'] .value").text(this.value);
     parametersChanged = true;
     reset();
@@ -322,6 +333,7 @@ function makeGUI() {
   d3.select("label[for='batchSize'] .value").text(state.batchSize);
 
   let activationDropdown = d3.select("#activations").on("change", function() {
+    // @ts-ignore
     state.activation = activations[this.value];
     parametersChanged = true;
     reset();
@@ -330,6 +342,7 @@ function makeGUI() {
       getKeyFromValue(activations, state.activation));
 
   let learningRate = d3.select("#learningRate").on("change", function() {
+    // @ts-ignore
     state.learningRate = +this.value;
     state.serialize();
     userHasInteracted();
@@ -339,7 +352,8 @@ function makeGUI() {
 
   let regularDropdown = d3.select("#regularizations").on("change",
       function() {
-    state.regularization = regularizations[this.value];
+    // @ts-ignore
+        state.regularization = regularizations[this.value];
     parametersChanged = true;
     reset();
   });
@@ -347,6 +361,7 @@ function makeGUI() {
       getKeyFromValue(regularizations, state.regularization));
 
   let regularRate = d3.select("#regularRate").on("change", function() {
+    // @ts-ignore
     state.regularizationRate = +this.value;
     parametersChanged = true;
     reset();
@@ -354,6 +369,7 @@ function makeGUI() {
   regularRate.property("value", state.regularizationRate);
 
   let problem = d3.select("#problem").on("change", function() {
+    // @ts-ignore
     state.problem = problems[this.value];
     generateData();
     drawDatasetThumbnails();
@@ -363,10 +379,8 @@ function makeGUI() {
   problem.property("value", getKeyFromValue(problems, state.problem));
 
   // Add scale to the gradient color map.
-  let x = d3.scale.linear().domain([-1, 1]).range([0, 144]);
-  let xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom")
+  let x = d3.scaleLinear().domain([-1, 1]).range([0, 144]);
+  let xAxis = d3.axisBottom(x)
     .tickValues([-1, 0, 1])
     .tickFormat(d3.format("d"));
   d3.select("#colormap g.core").append("g")
@@ -409,7 +423,7 @@ function updateWeightsUI(network: nn.Node[][], container) {
       for (let j = 0; j < node.inputLinks.length; j++) {
         let link = node.inputLinks[j];
         container.select(`#link${link.source.id}-${link.dest.id}`)
-            .style({
+            .styles({
               "stroke-dashoffset": -iter / 3,
               "stroke-width": linkWidthScale(Math.abs(link.weight)),
               "stroke": colorScale(link.weight)
@@ -425,27 +439,24 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
   let x = cx - RECT_SIZE / 2;
   let y = cy - RECT_SIZE / 2;
 
-  let nodeGroup = container.append("g")
-    .attr({
-      "class": "node",
-      "id": `node${nodeId}`,
-      "transform": `translate(${x},${y})`
-    });
+  let nodeGroup = container.append("g");
+  nodeGroup
+      .attr("class", "node")
+      .attr("id", `node${nodeId}`)
+      .attr("transform", `translate(${x},${y})`);
 
   // Draw the main rectangle.
   nodeGroup.append("rect")
-    .attr({
-      x: 0,
-      y: 0,
-      width: RECT_SIZE,
-      height: RECT_SIZE,
-    });
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", RECT_SIZE)
+      .attr("height", RECT_SIZE);
   let activeOrNotClass = state[nodeId] ? "active" : "inactive";
   if (isInput) {
     let label = INPUTS[nodeId].label != null ?
         INPUTS[nodeId].label : nodeId;
     // Draw the input label.
-    let text = nodeGroup.append("text").attr({
+    let text = nodeGroup.append("text").attrs({
       class: "main-label",
       x: -10,
       y: RECT_SIZE / 2, "text-anchor": "end"
@@ -478,7 +489,7 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
   if (!isInput) {
     // Draw the node's bias.
     nodeGroup.append("rect")
-      .attr({
+      .attrs({
         id: `bias-${nodeId}`,
         x: -BIAS_SIZE - 2,
         y: RECT_SIZE - BIAS_SIZE + 3,
@@ -493,15 +504,11 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
 
   // Draw the node's canvas.
   let div = d3.select("#network").insert("div", ":first-child")
-    .attr({
-      "id": `canvas-${nodeId}`,
-      "class": "canvas"
-    })
-    .style({
-      position: "absolute",
-      left: `${x + 3}px`,
-      top: `${y + 3}px`
-    })
+      .attr("id", `canvas-${nodeId}`)
+      .attr("class", "canvas")
+      .style("position", "absolute")
+      .style("left", `${x + 3}px`)
+      .style("top", `${y + 3}px`)
     .on("mouseenter", function() {
       selectedNodeId = nodeId;
       div.classed("hovered", true);
@@ -558,9 +565,9 @@ function drawNetwork(network: nn.Node[][]): void {
   // Draw the network layer by layer.
   let numLayers = network.length;
   let featureWidth = 118;
-  let layerScale = d3.scale.ordinal<number, number>()
+  let layerScale = d3.scalePoint<number>()
       .domain(d3.range(1, numLayers - 1))
-      .rangePoints([featureWidth, width - RECT_SIZE], 0.7);
+      .range([featureWidth, width - RECT_SIZE]);
   let nodeIndexScale = (nodeIndex: number) => nodeIndex * (RECT_SIZE + 25);
 
 
@@ -597,11 +604,10 @@ function drawNetwork(network: nn.Node[][]): void {
       if (idWithCallout == null &&
           i === numNodes - 1 &&
           nextNumNodes <= numNodes) {
-        calloutThumb.style({
-          display: null,
-          top: `${20 + 3 + cy}px`,
-          left: `${cx}px`
-        });
+        calloutThumb
+            .style("display", null)
+            .style("top", `${20 + 3 + cy}px`)
+            .style("left", `${cx}px`)
         idWithCallout = node.id;
       }
 
@@ -620,11 +626,10 @@ function drawNetwork(network: nn.Node[][]): void {
             link.dest.id !== idWithCallout &&
             prevLayer.length >= numNodes) {
           let midPoint = path.getPointAtLength(path.getTotalLength() * 0.7);
-          calloutWeights.style({
-            display: null,
-            top: `${midPoint.y + 5}px`,
-            left: `${midPoint.x + 3}px`
-          });
+          calloutWeights
+              .style("display", null)
+              .style("top", `${midPoint.y + 5}px`)
+              .style("left", `${midPoint.x + 3}px`);
           targetIdWithCallout = link.dest.id;
         }
       }
@@ -715,10 +720,13 @@ function updateHoverCard(type: HoverType, nodeOrLink?: nn.Node | nn.Link,
     let input = hovercard.select("input");
     input.style("display", null);
     input.on("input", function() {
+      // @ts-ignore
       if (this.value != null && this.value !== "") {
         if (type === HoverType.WEIGHT) {
+          // @ts-ignore
           (nodeOrLink as nn.Link).weight = +this.value;
         } else {
+          // @ts-ignore
           (nodeOrLink as nn.Node).bias = +this.value;
         }
         updateUI();
@@ -735,11 +743,10 @@ function updateHoverCard(type: HoverType, nodeOrLink?: nn.Node | nn.Link,
     (nodeOrLink as nn.Link).weight :
     (nodeOrLink as nn.Node).bias;
   let name = (type === HoverType.WEIGHT) ? "Weight" : "Bias";
-  hovercard.style({
-    "left": `${coordinates[0] + 20}px`,
-    "top": `${coordinates[1]}px`,
-    "display": "block"
-  });
+  hovercard
+      .style("left", `${coordinates[0] + 20}px`)
+      .style("top", `${coordinates[1]}px`)
+      .style("display", "block");
   hovercard.select(".type").text(name);
   hovercard.select(".value")
     .style("display", null)
@@ -766,18 +773,21 @@ function drawLink(
       x: dest.cy + ((index - (length - 1) / 2) / length) * 12
     }
   };
-  let diagonal = d3.svg.diagonal().projection(d => [d.y, d.x]);
+  const diagonal = d => "M" + d.source.y + "," + d.source.x
+      + "C" + (d.source.y + d.target.y) / 2 + "," + d.source.x
+      + " " + (d.source.y + d.target.y) / 2 + "," + d.target.x
+      + " " + d.target.y + "," + d.target.x;
   line.attr({
     "marker-start": "url(#markerArrow)",
     class: "link",
     id: "link" + input.source.id + "-" + input.dest.id,
-    d: diagonal(datum, 0)
+    d: diagonal(datum)
   });
 
   // Add an invisible thick link that will be used for
   // showing the weight value on hover.
   container.append("path")
-    .attr("d", diagonal(datum, 0))
+    .attr("d", diagonal(datum))
     .attr("class", "link-hover")
     .on("mouseenter", function() {
       updateHoverCard(HoverType.WEIGHT, input, d3.mouse(this));
@@ -804,8 +814,8 @@ function updateDecisionBoundary(network: nn.Node[][], firstTime: boolean) {
       boundary[nodeId] = new Array(DENSITY);
     }
   }
-  let xScale = d3.scale.linear().domain([0, DENSITY - 1]).range(xDomain);
-  let yScale = d3.scale.linear().domain([DENSITY - 1, 0]).range(xDomain);
+  let xScale = d3.scaleLinear().domain([0, DENSITY - 1]).range(xDomain);
+  let yScale = d3.scaleLinear().domain([DENSITY - 1, 0]).range(xDomain);
 
   let i = 0, j = 0;
   for (i = 0; i < DENSITY; i++) {
@@ -972,19 +982,15 @@ function initTutorial() {
   let tutorial = d3.select("article").append("div")
     .attr("class", "l--body");
   // Insert tutorial text.
-  d3.html(`tutorials/${state.tutorial}.html`, (err, htmlFragment) => {
-    if (err) {
-      throw err;
-    }
+  d3.html(`tutorials/${state.tutorial}.html`).then((htmlFragment) => {
     tutorial.node().appendChild(htmlFragment);
     // If the tutorial has a <title> tag, set the page title to that.
     let title = tutorial.select("title");
     if (title.size()) {
-      d3.select("header h1").style({
-        "margin-top": "20px",
-        "margin-bottom": "20px",
-      })
-      .text(title.text());
+      d3.select("header h1")
+          .style("margin-top","20px")
+          .style("margin-bottom", "20px")
+          .text(title.text());
       document.title = title.text();
     }
   });
@@ -1042,10 +1048,8 @@ function hideControls() {
     let label = hideControls.append("label")
       .attr("class", "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect");
     let input = label.append("input")
-      .attr({
-        type: "checkbox",
-        class: "mdl-checkbox__input",
-      });
+        .attr("type", "checkbox")
+        .attr("class", "mdl-checkbox__input");
     if (hiddenProps.indexOf(id) === -1) {
       input.attr("checked", "true");
     }
