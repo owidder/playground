@@ -47,7 +47,7 @@ module.exports = {
             template: "index-template.html",
         }),
         new MiniCssExtractPlugin({
-            filename: "playground.css",}),
+            filename: `${process.env.BUNDLE_NAME}.css`,}),
     ],
     devServer: {
         contentBase: path.join(__dirname, 'dist'),

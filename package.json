@@ -16,10 +16,12 @@
     "build-js": "browserify src/playground.ts -p [tsify] | uglifyjs -c > dist/bundle.js",
     "watch-js": "watchify src/playground.ts -p [tsify] -v --debug -o dist/bundle.js",
     "build": "npm run prep && npm run build-js && npm run build-css && npm run build-html",
+    "build2": "npm run clean && npm run prep && npm run build-wp",
+    "build-wp": "cross-env NODE_ENV=development INDEX_TS=playground.ts DIST_FOLDER=dist BUNDLE_NAME=bundle webpack",
     "watch": "npm run prep && concurrently \"npm run watch-js\" \"npm run watch-css\" \"npm run watch-html\"",
     "serve": "npx serve dist/",
     "serve-watch": "concurrently \"npx serve dist/\" \"npm run watch\"",
-    "build-tf": "npm run clean && mkdirp ./dist && npm run prep && cross-env NODE_ENV=development webpack",
+    "build-tf": "npm run clean-tf && mkdirp ./dist-tf && npm run prep && cross-env NODE_ENV=development INDEX_TS=playgroundTf.ts DIST_FOLDER=dist-tf BUNDLE_NAME=playground webpack",
     "build-tf:watch": "npm run clean && mkdirp ./dist && npm run prep && cross-env NODE_ENV=development webpack --watch",
     "start-tf": "webpack-dev-server --open"
   },
