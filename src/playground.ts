@@ -30,7 +30,7 @@ import {
 } from "./state";
 import {Example2D, shuffle} from "./dataset";
 import {AppendingLineChart} from "./linechart";
-import * as d3 from 'd3';
+import * as d3 from 'd3-v3';
 
 let mainWidth;
 
