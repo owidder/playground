@@ -188,10 +188,10 @@ export class HeatMap {
     let selection = container.selectAll("circle").data(points);
 
     // Insert elements to match length of points array.
-    selection.enter().append("circle").attr("r", 3);
+    const enterSelection = selection.enter().append("circle").attr("r", 3);
 
     // Update points to be in the correct position.
-    selection
+    enterSelection
       .attrs({
         cx: (d: Example2D) => this.xScale(d.x),
         cy: (d: Example2D) => this.yScale(d.y),

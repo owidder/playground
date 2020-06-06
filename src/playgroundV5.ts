@@ -560,8 +560,9 @@ function drawNetwork(network: nn.Node[][]): void {
   // Draw the network layer by layer.
   let numLayers = network.length;
   let featureWidth = 118;
-  let layerScale = d3.scaleOrdinal<number, number>()
+  let layerScale = d3.scalePoint<number>()
       .domain(d3.range(1, numLayers - 1))
+      .padding(.7)
       .range([featureWidth, width - RECT_SIZE]);
   let nodeIndexScale = (nodeIndex: number) => nodeIndex * (RECT_SIZE + 25);
 
