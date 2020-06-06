@@ -82,7 +82,7 @@ export class HeatMap {
                      .range(colors);
 
     container = container.append("div")
-      .style({
+      .styles({
         width: `${width}px`,
         height: `${height}px`,
         position: "relative",
@@ -99,10 +99,10 @@ export class HeatMap {
       .style("left", `${padding}px`);
 
     if (!this.settings.noSvg) {
-      this.svg = container.append("svg").attr({
+      this.svg = container.append("svg").attrs({
           "width": width,
           "height": height
-      }).style({
+      }).styles({
         // Overlay the svg on top of the canvas.
         "position": "absolute",
         "left": "0",
@@ -192,7 +192,7 @@ export class HeatMap {
 
     // Update points to be in the correct position.
     selection
-      .attr({
+      .attrs({
         cx: (d: Example2D) => this.xScale(d.x),
         cy: (d: Example2D) => this.yScale(d.y),
       })

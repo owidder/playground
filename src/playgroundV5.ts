@@ -17,7 +17,7 @@ import "material-design-lite/material.css";
 import "./css/styles.css";
 
 import * as nn from "./nn";
-import {HeatMap, reduceMatrix} from "./heatmap";
+import {HeatMap, reduceMatrix} from "./heatmapV5";
 import {
   State,
   datasets,
@@ -411,7 +411,7 @@ function updateWeightsUI(network: nn.Node[][], container) {
       for (let j = 0; j < node.inputLinks.length; j++) {
         let link = node.inputLinks[j];
         container.select(`#link${link.source.id}-${link.dest.id}`)
-            .style({
+            .styles({
               "stroke-dashoffset": -iter / 3,
               "stroke-width": linkWidthScale(Math.abs(link.weight)),
               "stroke": colorScale(link.weight)
@@ -428,7 +428,7 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
   let y = cy - RECT_SIZE / 2;
 
   let nodeGroup = container.append("g")
-    .attr({
+    .attrs({
       "class": "node",
       "id": `node${nodeId}`,
       "transform": `translate(${x},${y})`
@@ -436,7 +436,7 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
 
   // Draw the main rectangle.
   nodeGroup.append("rect")
-    .attr({
+    .attrs({
       x: 0,
       y: 0,
       width: RECT_SIZE,
@@ -447,7 +447,7 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
     let label = INPUTS[nodeId].label != null ?
         INPUTS[nodeId].label : nodeId;
     // Draw the input label.
-    let text = nodeGroup.append("text").attr({
+    let text = nodeGroup.append("text").attrs({
       class: "main-label",
       x: -10,
       y: RECT_SIZE / 2, "text-anchor": "end"
@@ -480,7 +480,7 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
   if (!isInput) {
     // Draw the node's bias.
     nodeGroup.append("rect")
-      .attr({
+      .attrs({
         id: `bias-${nodeId}`,
         x: -BIAS_SIZE - 2,
         y: RECT_SIZE - BIAS_SIZE + 3,
@@ -773,7 +773,7 @@ function drawLink(
       + "C" + (d.source.y + d.target.y) / 2 + "," + d.source.x
       + " " + (d.source.y + d.target.y) / 2 + "," + d.target.x
       + " " + d.target.y + "," + d.target.x;
-  line.attr({
+  line.attrs({
     "marker-start": "url(#markerArrow)",
     class: "link",
     id: "link" + input.source.id + "-" + input.dest.id,

@@ -64,7 +64,7 @@ export class AppendingLineChart {
     for (let i = 0; i < this.numLines; i++) {
       this.paths[i] = this.svg.append("path")
         .attr("class", "line")
-        .style({
+        .styles({
           "fill": "none",
           "stroke": lineColors[i],
           "stroke-width": "1.5px"
