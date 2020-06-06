@@ -27,7 +27,13 @@ module.exports = {
                     {
                         test: /\.ts$/,
                         include: absPath("src"),
-                        use: [{loader: 'ts-loader', options: {onlyCompileBundledFiles: true}}],
+                        use: [{
+                            loader: 'ts-loader',
+                            options: {
+                                onlyCompileBundledFiles: true,
+                                configFile: 'tsconfigTf.json'
+                            }
+                        }],
                     },
                     {
                         test: /\.css$/,

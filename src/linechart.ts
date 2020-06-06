@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-import * as d3 from 'd3-v3';
+const d3 = require('d3-v3');
 
 type DataPoint = {
   x: number;

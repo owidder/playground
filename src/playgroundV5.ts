@@ -28,8 +28,8 @@ import {
   getKeyFromValue,
   Problem
 } from "./state";
-import {Example2D, shuffle} from "./dataset";
-import {AppendingLineChart} from "./linechart";
+import {Example2D, shuffle} from "./datasetV5";
+import {AppendingLineChart} from "./linechartV5";
 import * as d3 from 'd3';
 
 let mainWidth;
