@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-import {Example2D} from "./dataset";
+import {Example2D} from "./datasetV5";
 import * as d3 from 'd3';
 
 export interface HeatMapSettings {
@@ -57,16 +57,16 @@ export class HeatMap {
       }
     }
 
-    this.xScale = d3.scale.linear()
+    this.xScale = d3.scaleLinear()
       .domain(xDomain)
       .range([0, width - 2 * padding]);
 
-    this.yScale = d3.scale.linear()
+    this.yScale = d3.scaleLinear()
       .domain(yDomain)
       .range([height - 2 * padding, 0]);
 
     // Get a range of colors.
-    let tmpScale = d3.scale.linear<string, number>()
+    let tmpScale = d3.scaleLinear<string, number>()
         .domain([0, .5, 1])
         .range(["#f59322", "#e8eaeb", "#0877bd"])
         .clamp(true);
@@ -77,7 +77,7 @@ export class HeatMap {
     let colors = d3.range(0, 1 + 1E-9, 1 / NUM_SHADES).map(a => {
       return tmpScale(a);
     });
-    this.color = d3.scale.quantize()
+    this.color = d3.scaleQuantize()
                      .domain([-1, 1])
                      .range(colors);
 
@@ -115,13 +115,9 @@ export class HeatMap {
     }
 
     if (this.settings.showAxes) {
-      let xAxis = d3.svg.axis()
-        .scale(this.xScale)
-        .orient("bottom");
+      let xAxis = d3.axisBottom(this.xScale);
 
-      let yAxis = d3.svg.axis()
-        .scale(this.yScale)
-        .orient("right");
+      let yAxis = d3.axisRight(this.yScale);
 
       this.svg.append("g")
         .attr("class", "x axis")

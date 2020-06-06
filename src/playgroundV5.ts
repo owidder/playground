@@ -31,6 +31,7 @@ import {
 import {Example2D, shuffle} from "./datasetV5";
 import {AppendingLineChart} from "./linechartV5";
 import * as d3 from 'd3';
+import 'd3-selection-multi';
 
 let mainWidth;
 
@@ -211,7 +212,7 @@ function makeGUI() {
 
   let dataThumbnails = d3.selectAll("canvas[data-dataset]");
   dataThumbnails.on("click", function() {
-    let newDataset = datasets[this.dataset.dataset];
+    let newDataset = datasets[(this as any).dataset.dataset];
     if (newDataset === state.dataset) {
       return; // No-op.
     }
@@ -230,7 +231,7 @@ function makeGUI() {
 
   let regDataThumbnails = d3.selectAll("canvas[data-regDataset]");
   regDataThumbnails.on("click", function() {
-    let newDataset = regDatasets[this.dataset.regdataset];
+    let newDataset = regDatasets[(this as any).dataset.regdataset];
     if (newDataset === state.regDataset) {
       return; // No-op.
     }
@@ -268,7 +269,7 @@ function makeGUI() {
   });
 
   let showTestData = d3.select("#show-test-data").on("change", function() {
-    state.showTestData = this.checked;
+    state.showTestData = (this as any).checked;
     state.serialize();
     userHasInteracted();
     heatMap.updateTestPoints(state.showTestData ? testData : []);
@@ -277,7 +278,7 @@ function makeGUI() {
   showTestData.property("checked", state.showTestData);
 
   let discretize = d3.select("#discretize").on("change", function() {
-    state.discretize = this.checked;
+    state.discretize = (this as any).checked;
     state.serialize();
     userHasInteracted();
     updateUI();
@@ -286,8 +287,8 @@ function makeGUI() {
   discretize.property("checked", state.discretize);
 
   let percTrain = d3.select("#percTrainData").on("input", function() {
-    state.percTrainData = this.value;
-    d3.select("label[for='percTrainData'] .value").text(this.value);
+    state.percTrainData = (this as any).value;
+    d3.select("label[for='percTrainData'] .value").text((this as any).value);
     generateData();
     parametersChanged = true;
     reset();
@@ -296,8 +297,8 @@ function makeGUI() {
   d3.select("label[for='percTrainData'] .value").text(state.percTrainData);
 
   let noise = d3.select("#noise").on("input", function() {
-    state.noise = this.value;
-    d3.select("label[for='noise'] .value").text(this.value);
+    state.noise = (this as any).value;
+    d3.select("label[for='noise'] .value").text((this as any).value);
     generateData();
     parametersChanged = true;
     reset();
@@ -316,8 +317,8 @@ function makeGUI() {
   d3.select("label[for='noise'] .value").text(state.noise);
 
   let batchSize = d3.select("#batchSize").on("input", function() {
-    state.batchSize = this.value;
-    d3.select("label[for='batchSize'] .value").text(this.value);
+    state.batchSize = (this as any).value;
+    d3.select("label[for='batchSize'] .value").text((this as any).value);
     parametersChanged = true;
     reset();
   });
@@ -325,7 +326,7 @@ function makeGUI() {
   d3.select("label[for='batchSize'] .value").text(state.batchSize);
 
   let activationDropdown = d3.select("#activations").on("change", function() {
-    state.activation = activations[this.value];
+    state.activation = activations[(this as any).value];
     parametersChanged = true;
     reset();
   });
@@ -333,7 +334,7 @@ function makeGUI() {
       getKeyFromValue(activations, state.activation));
 
   let learningRate = d3.select("#learningRate").on("change", function() {
-    state.learningRate = +this.value;
+    state.learningRate = +(this as any).value;
     state.serialize();
     userHasInteracted();
     parametersChanged = true;
@@ -342,7 +343,7 @@ function makeGUI() {
 
   let regularDropdown = d3.select("#regularizations").on("change",
       function() {
-    state.regularization = regularizations[this.value];
+    state.regularization = regularizations[(this as any).value];
     parametersChanged = true;
     reset();
   });
@@ -350,14 +351,14 @@ function makeGUI() {
       getKeyFromValue(regularizations, state.regularization));
 
   let regularRate = d3.select("#regularRate").on("change", function() {
-    state.regularizationRate = +this.value;
+    state.regularizationRate = +(this as any).value;
     parametersChanged = true;
     reset();
   });
   regularRate.property("value", state.regularizationRate);
 
   let problem = d3.select("#problem").on("change", function() {
-    state.problem = problems[this.value];
+    state.problem = problems[(this as any).value];
     generateData();
     drawDatasetThumbnails();
     parametersChanged = true;
@@ -366,10 +367,8 @@ function makeGUI() {
   problem.property("value", getKeyFromValue(problems, state.problem));
 
   // Add scale to the gradient color map.
-  let x = d3.scale.linear().domain([-1, 1]).range([0, 144]);
-  let xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom")
+  let x = d3.scaleLinear().domain([-1, 1]).range([0, 144]);
+  let xAxis = d3.axisBottom(x)
     .tickValues([-1, 0, 1])
     .tickFormat(d3.format("d"));
   d3.select("#colormap g.core").append("g")
@@ -496,11 +495,11 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
 
   // Draw the node's canvas.
   let div = d3.select("#network").insert("div", ":first-child")
-    .attr({
+    .attrs({
       "id": `canvas-${nodeId}`,
       "class": "canvas"
     })
-    .style({
+    .styles({
       position: "absolute",
       left: `${x + 3}px`,
       top: `${y + 3}px`
@@ -561,9 +560,9 @@ function drawNetwork(network: nn.Node[][]): void {
   // Draw the network layer by layer.
   let numLayers = network.length;
   let featureWidth = 118;
-  let layerScale = d3.scale.ordinal<number, number>()
+  let layerScale = d3.scaleOrdinal<number, number>()
       .domain(d3.range(1, numLayers - 1))
-      .rangePoints([featureWidth, width - RECT_SIZE], 0.7);
+      .range([featureWidth, width - RECT_SIZE]);
   let nodeIndexScale = (nodeIndex: number) => nodeIndex * (RECT_SIZE + 25);
 
 
@@ -600,7 +599,7 @@ function drawNetwork(network: nn.Node[][]): void {
       if (idWithCallout == null &&
           i === numNodes - 1 &&
           nextNumNodes <= numNodes) {
-        calloutThumb.style({
+        calloutThumb.styles({
           display: null,
           top: `${20 + 3 + cy}px`,
           left: `${cx}px`
@@ -623,7 +622,7 @@ function drawNetwork(network: nn.Node[][]): void {
             link.dest.id !== idWithCallout &&
             prevLayer.length >= numNodes) {
           let midPoint = path.getPointAtLength(path.getTotalLength() * 0.7);
-          calloutWeights.style({
+          calloutWeights.styles({
             display: null,
             top: `${midPoint.y + 5}px`,
             left: `${midPoint.x + 3}px`
@@ -718,11 +717,11 @@ function updateHoverCard(type: HoverType, nodeOrLink?: nn.Node | nn.Link,
     let input = hovercard.select("input");
     input.style("display", null);
     input.on("input", function() {
-      if (this.value != null && this.value !== "") {
+      if ((this as any).value != null && (this as any).value !== "") {
         if (type === HoverType.WEIGHT) {
-          (nodeOrLink as nn.Link).weight = +this.value;
+          (nodeOrLink as nn.Link).weight = +(this as any).value;
         } else {
-          (nodeOrLink as nn.Node).bias = +this.value;
+          (nodeOrLink as nn.Node).bias = +(this as any).value;
         }
         updateUI();
       }
@@ -738,7 +737,7 @@ function updateHoverCard(type: HoverType, nodeOrLink?: nn.Node | nn.Link,
     (nodeOrLink as nn.Link).weight :
     (nodeOrLink as nn.Node).bias;
   let name = (type === HoverType.WEIGHT) ? "Weight" : "Bias";
-  hovercard.style({
+  hovercard.styles({
     "left": `${coordinates[0] + 20}px`,
     "top": `${coordinates[1]}px`,
     "display": "block"
@@ -769,18 +768,22 @@ function drawLink(
       x: dest.cy + ((index - (length - 1) / 2) / length) * 12
     }
   };
-  let diagonal = d3.svg.diagonal().projection(d => [d.y, d.x]);
+  // let diagonal = d3.svg.diagonal().projection(d => [d.y, d.x]);
+  const diagonal = d => "M" + d.source.y + "," + d.source.x
+      + "C" + (d.source.y + d.target.y) / 2 + "," + d.source.x
+      + " " + (d.source.y + d.target.y) / 2 + "," + d.target.x
+      + " " + d.target.y + "," + d.target.x;
   line.attr({
     "marker-start": "url(#markerArrow)",
     class: "link",
     id: "link" + input.source.id + "-" + input.dest.id,
-    d: diagonal(datum, 0)
+    d: diagonal(datum)
   });
 
   // Add an invisible thick link that will be used for
   // showing the weight value on hover.
   container.append("path")
-    .attr("d", diagonal(datum, 0))
+    .attr("d", diagonal(datum))
     .attr("class", "link-hover")
     .on("mouseenter", function() {
       updateHoverCard(HoverType.WEIGHT, input, d3.mouse(this));
@@ -807,8 +810,8 @@ function updateDecisionBoundary(network: nn.Node[][], firstTime: boolean) {
       boundary[nodeId] = new Array(DENSITY);
     }
   }
-  let xScale = d3.scale.linear().domain([0, DENSITY - 1]).range(xDomain);
-  let yScale = d3.scale.linear().domain([DENSITY - 1, 0]).range(xDomain);
+  let xScale = d3.scaleLinear().domain([0, DENSITY - 1]).range(xDomain);
+  let yScale = d3.scaleLinear().domain([DENSITY - 1, 0]).range(xDomain);
 
   let i = 0, j = 0;
   for (i = 0; i < DENSITY; i++) {
@@ -975,15 +978,12 @@ function initTutorial() {
   let tutorial = d3.select("article").append("div")
     .attr("class", "l--body");
   // Insert tutorial text.
-  d3.html(`tutorials/${state.tutorial}.html`, (err, htmlFragment) => {
-    if (err) {
-      throw err;
-    }
+  d3.html(`tutorials/${state.tutorial}.html`).then((htmlFragment) => {
     tutorial.node().appendChild(htmlFragment);
     // If the tutorial has a <title> tag, set the page title to that.
     let title = tutorial.select("title");
     if (title.size()) {
-      d3.select("header h1").style({
+      d3.select("header h1").styles({
         "margin-top": "20px",
         "margin-bottom": "20px",
       })
@@ -1045,7 +1045,7 @@ function hideControls() {
     let label = hideControls.append("label")
       .attr("class", "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect");
     let input = label.append("input")
-      .attr({
+      .attrs({
         type: "checkbox",
         class: "mdl-checkbox__input",
       });
