@@ -24,6 +24,11 @@ export type Example2D = {
   label: number
 };
 
+let labelName: string;
+export const setLabelName = (ln: string) => labelName = ln;
+export const getLabelName = () => labelName;
+export type DataPoint = {[key: string]: number | string};
+
 type Point = {
   x: number,
   y: number

@@ -9,6 +9,7 @@
     "clean-v5": "rimraf dist-v5",
     "start": "npm run serve-watch",
     "prep": "copyfiles analytics.js dist && concat node_modules/material-design-lite/material.min.js node_modules/seedrandom/seedrandom.min.js > dist/lib.js",
+    "prep-tf": "copyfiles analytics.js dist && concat node_modules/material-design-lite/material.min.js node_modules/seedrandom/seedrandom.min.js > dist-tf/lib.js",
     "prep-v5": "copyfiles analytics.js dist-v5 && concat node_modules/material-design-lite/material.min.js node_modules/seedrandom/seedrandom.min.js > dist-v5/lib.js",
     "prep-wp": "concat node_modules/material-design-lite/material.min.js node_modules/seedrandom/seedrandom.min.js > dist/lib.js",
     "build-css": "concat node_modules/material-design-lite/material.min.css styles.css > dist/bundle.css",
@@ -28,9 +29,9 @@
     "serve": "npx serve dist/",
     "serve-v5": "npx serve -l 5005 dist-v5/",
     "serve-watch": "concurrently \"npx serve dist/\" \"npm run watch\"",
-    "build-tf": "npm run clean-tf && mkdirp ./dist-tf && npm run prep && cross-env NODE_ENV=development INDEX_TS=playgroundTf.ts DIST_FOLDER=dist-tf BUNDLE_NAME=playground webpack",
-    "build-tf:watch": "npm run clean && mkdirp ./dist && npm run prep && cross-env NODE_ENV=development webpack --watch",
-    "start-tf": "webpack-dev-server --open"
+    "build-tf": "npm run clean-tf && mkdirp ./dist-tf && npm run prep-tf && cross-env NODE_ENV=development INDEX_TS=playgroundTf.ts DIST_FOLDER=dist-tf BUNDLE_NAME=playground webpack",
+    "build-tf:watch": "npm run clean && mkdirp ./dist && npm run prep && cross-env NODE_ENV=development INDEX_TS=playgroundTf.ts DIST_FOLDER=dist-tf BUNDLE_NAME=playground webpack --watch",
+    "start-tf": "cross-env NODE_ENV=development INDEX_TS=playgroundTf.ts DIST_FOLDER=dist-tf BUNDLE_NAME=playground webpack-dev-server --open"
   },
   "devDependencies": {
     "@types/d3": "^5.7.2",

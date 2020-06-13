@@ -201,7 +201,7 @@ export class Link {
  *     no regularization.
  * @param inputIds List of ids for the input nodes.
  */
-export function buildNetwork(
+export function  buildNetwork(
     networkShape: number[], activation: ActivationFunction,
     outputActivation: ActivationFunction,
     regularization: RegularizationFunction,
