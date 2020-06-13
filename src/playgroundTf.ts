@@ -170,7 +170,7 @@ let colorScale = d3.scaleLinear<string, number>()
                      .clamp(true);
 let iter = 0;
 let trainData: DataPoint[] = [];
-let testData: Example2D[] = [];
+let testData: DataPoint[] = [];
 let network: nn.Node[][] = null;
 let lossTrain = 0;
 let lossTest = 0;
