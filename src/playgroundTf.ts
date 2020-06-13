@@ -28,7 +28,7 @@ import {
   getKeyFromValue,
   Problem
 } from "./stateTf";
-import {Example2D, shuffle, DataPoint} from "./datasetV5";
+import {Example2D, shuffle, DataPoint, getLabelName, setLabelName} from "./datasetV5";
 import {AppendingLineChart} from "./linechartV5";
 import * as d3 from 'd3';
 import 'd3-selection-multi';
@@ -846,7 +846,8 @@ function getLoss(network: nn.Node[][], dataPoints: Example2D[]): number {
   let loss = 0;
   for (let i = 0; i < dataPoints.length; i++) {
     let dataPoint = dataPoints[i];
-    let input = constructInput(dataPoint.x, dataPoint.y);
+    // let input = constructInput(dataPoint.x, dataPoint.y);
+    let input = constructInputFromDataPoint(dataPoint);
     let output = nn.forwardProp(network, input);
     loss += nn.Errors.SQUARE.error(output, dataPoint.label);
   }
@@ -913,10 +914,15 @@ function constructInput(x: number, y: number): number[] {
   return input;
 }
 
+const constructInputFromDataPoint = (dataPoint: DataPoint): number[] => {
+  return Object.keys(dataPoint).filter(key => key != getLabelName()).map(key => (dataPoint[key] as number));
+}
+
 function oneStep(): void {
   iter++;
   trainData.forEach((point, i) => {
-    let input = constructInput(point.x, point.y);
+    // let input = constructInput(point.x, point.y);
+    let input = constructInputFromDataPoint(point);
     nn.forwardProp(network, input);
     nn.backProp(network, point.label, nn.Errors.SQUARE);
     if ((i + 1) % state.batchSize === 0) {
@@ -1118,5 +1124,6 @@ drawDatasetThumbnails();
 initTutorial();
 makeGUI();
 generateData(true);
+setLabelName("label");
 reset(true);
 hideControls();
