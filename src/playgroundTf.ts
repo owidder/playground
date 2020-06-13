@@ -169,7 +169,7 @@ let colorScale = d3.scaleLinear<string, number>()
                      .range(["#f59322", "#e8eaeb", "#0877bd"])
                      .clamp(true);
 let iter = 0;
-let trainData: Example2D[] = [];
+let trainData: DataPoint[] = [];
 let testData: Example2D[] = [];
 let network: nn.Node[][] = null;
 let lossTrain = 0;
@@ -842,14 +842,14 @@ function updateDecisionBoundary(network: nn.Node[][], firstTime: boolean) {
   }
 }
 
-function getLoss(network: nn.Node[][], dataPoints: Example2D[]): number {
+function getLoss(network: nn.Node[][], dataPoints: DataPoint[]): number {
   let loss = 0;
   for (let i = 0; i < dataPoints.length; i++) {
     let dataPoint = dataPoints[i];
     // let input = constructInput(dataPoint.x, dataPoint.y);
     let input = constructInputFromDataPoint(dataPoint);
     let output = nn.forwardProp(network, input);
-    loss += nn.Errors.SQUARE.error(output, dataPoint.label);
+    loss += nn.Errors.SQUARE.error(output, (dataPoint[getLabelName()] as number));
   }
   return loss / dataPoints.length;
 }
@@ -924,7 +924,7 @@ function oneStep(): void {
     // let input = constructInput(point.x, point.y);
     let input = constructInputFromDataPoint(point);
     nn.forwardProp(network, input);
-    nn.backProp(network, point.label, nn.Errors.SQUARE);
+    nn.backProp(network, (point[getLabelName()] as number), nn.Errors.SQUARE);
     if ((i + 1) % state.batchSize === 0) {
       nn.updateWeights(network, state.learningRate, state.regularizationRate);
     }
