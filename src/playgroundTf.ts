@@ -958,7 +958,7 @@ function reset(onStartup=false) {
   player.pause();
 
   let suffix = state.numLayers !== 1 ? "s" : "";
-  d3.select("#layers-label").text("Hidden layer" + suffix);
+  d3.select("#layers-label").text("Layer" + suffix);
   d3.select("#num-layers").text(state.numLayers);
 
   // Make a simple network.
