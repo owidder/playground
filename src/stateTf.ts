@@ -106,7 +106,7 @@ export class State {
 
   constructor(dataPoints?: DataPoint[]) {
     if(dataPoints) {
-      this.networkShape = this.getNetworkShape(dataPoints)
+      this.initNetworkShapeWithDataPoints(dataPoints)
     } else {
       this.networkShape = []
     }
@@ -174,11 +174,12 @@ export class State {
   regDataset: dataset.DataGenerator = dataset.regressPlane;
   seed: string;
 
-  getNetworkShape(dataPoints: dataset.DataPoint[]): number[] {
+  initNetworkShapeWithDataPoints(dataPoints: dataset.DataPoint[]): void {
     const inputShape = dataset.getInputShape(dataPoints);
     const outputShape = dataset.getOutputShape(dataPoints);
 
-    return [inputShape, 2, outputShape]
+    this.networkShape = [inputShape, 2, outputShape];
+    this.numLayers = this.networkShape.length;
   }
 
   /**

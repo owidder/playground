@@ -582,7 +582,9 @@ function drawNetwork(network: nn.Node[][]): void {
     let numNodes = network[layerIdx].length;
     let cx = layerScale(layerIdx) + RECT_SIZE / 2;
     maxY = Math.max(maxY, nodeIndexScale(numNodes));
-    addPlusMinusControl(layerScale(layerIdx), layerIdx);
+    if(layerIdx > 0 && layerIdx < numLayers-1) {
+      addPlusMinusControl(layerScale(layerIdx), layerIdx);
+    }
     for (let i = 0; i < numNodes; i++) {
       let node = network[layerIdx][i];
       let cy = nodeIndexScale(i) + RECT_SIZE / 2;
@@ -697,7 +699,7 @@ function addPlusMinusControl(x: number, layerIdx: number) {
       .attr("class", "material-icons")
       .text("remove");
 
-  let suffix = state.networkShape[layerIdx] > 1 ? "s" : "";
+  const suffix = state.networkShape[layerIdx] > 1 ? "s" : "";
   div.append("div").text(
     state.networkShape[layerIdx] + " neuron" + suffix
   );
@@ -963,7 +965,7 @@ function reset(onStartup=false) {
   iter = 0;
   let outputActivation = (state.problem === Problem.REGRESSION) ?
       nn.Activations.LINEAR : nn.Activations.TANH;
-  network = nn.buildNetwork(state.getNetworkShape(trainData), state.activation, outputActivation,
+  network = nn.buildNetwork(state.networkShape, state.activation, outputActivation,
       state.regularization, constructInputIds(), state.initZero);
   lossTrain = getLoss(network, trainData);
   lossTest = getLoss(network, testData);
@@ -1086,6 +1088,8 @@ function generateData(firstTime = false) {
   let splitIndex = Math.floor(data.length * state.percTrainData / 100);
   trainData = data.slice(0, splitIndex);
   testData = data.slice(splitIndex);
+
+  state.initNetworkShapeWithDataPoints(trainData);
 /*
   heatMap.updatePoints(trainData);
   heatMap.updateTestPoints(state.showTestData ? testData : []);
@@ -1120,10 +1124,10 @@ function simulationStarted() {
 }
 */
 
+setLabelName("label");
 drawDatasetThumbnails();
 initTutorial();
 makeGUI();
 generateData(true);
-setLabelName("label");
 reset(true);
 hideControls();
