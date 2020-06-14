@@ -28,7 +28,7 @@ import {
   getKeyFromValue,
   Problem
 } from "./stateTf";
-import {Example2D, shuffle, DataPoint, getLabelName, setLabelName} from "./datasetV5";
+import {shuffle, DataPoint, getLabelName, setLabelName} from "./datasetV5";
 import {AppendingLineChart} from "./linechartV5";
 import * as d3 from 'd3';
 import 'd3-selection-multi';
@@ -963,7 +963,7 @@ function reset(onStartup=false) {
   iter = 0;
   let outputActivation = (state.problem === Problem.REGRESSION) ?
       nn.Activations.LINEAR : nn.Activations.TANH;
-  network = nn.buildNetwork(state.networkShape, state.activation, outputActivation,
+  network = nn.buildNetwork(state.getNetworkShape(trainData), state.activation, outputActivation,
       state.regularization, constructInputIds(), state.initZero);
   lossTrain = getLoss(network, trainData);
   lossTest = getLoss(network, testData);

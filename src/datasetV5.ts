@@ -29,6 +29,22 @@ export const setLabelName = (ln: string) => labelName = ln;
 export const getLabelName = () => labelName;
 export type DataPoint = {[key: string]: number | string};
 
+export const getInputShape = (dataPoints: DataPoint[]): number => {
+  return dataPoints.reduce((maxNum, dataPoint) =>
+      Math.max(maxNum, Object.keys(dataPoint).filter(key => key != labelName).length), 0)
+}
+
+export const getOutputShape = (dataPoints: DataPoint[]): number => {
+  if(typeof dataPoints[0][labelName] == "number") {
+    return 1
+  }
+  const labelObj = dataPoints.reduce((lo, dataPoint) => {
+    return {...lo, [dataPoint[labelName]]: 1}
+  }, {});
+
+  return Object.keys(labelObj).length
+}
+
 type Point = {
   x: number,
   y: number

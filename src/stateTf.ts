@@ -14,7 +14,8 @@ limitations under the License.
 ==============================================================================*/
 
 import * as nn from "./nn";
-import * as dataset from "./dataset";
+import * as dataset from "./datasetV5";
+import {DataPoint} from "./datasetV5";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -98,10 +99,18 @@ export interface Property {
   name: string;
   type: Type;
   keyMap?: {[key: string]: any};
-};
+}
 
 // Add the GUI state.
 export class State {
+
+  constructor(dataPoints?: DataPoint[]) {
+    if(dataPoints) {
+      this.networkShape = this.getNetworkShape(dataPoints)
+    } else {
+      this.networkShape = []
+    }
+  }
 
   private static PROPS: Property[] = [
     {name: "activation", type: Type.OBJECT, keyMap: activations},
@@ -151,7 +160,7 @@ export class State {
   numHiddenLayers = 1;
   numLayers = 4;
   hiddenLayerControls: any[] = [];
-  networkShape: number[] = [2, 4, 2, 1];
+  networkShape: number[];
   x = true;
   y = true;
   xTimesY = false;
@@ -165,16 +174,23 @@ export class State {
   regDataset: dataset.DataGenerator = dataset.regressPlane;
   seed: string;
 
+  getNetworkShape(dataPoints: dataset.DataPoint[]): number[] {
+    const inputShape = dataset.getInputShape(dataPoints);
+    const outputShape = dataset.getOutputShape(dataPoints);
+
+    return [inputShape, 2, outputShape]
+  }
+
   /**
    * Deserializes the state from the url hash.
    */
-  static deserializeState(): State {
+  static deserializeState(dataPoints?: DataPoint[]): State {
     let map: {[key: string]: string} = {};
     for (let keyvalue of window.location.hash.slice(1).split("&")) {
       let [name, value] = keyvalue.split("=");
       map[name] = value;
     }
-    let state = new State();
+    let state = new State(dataPoints);
 
     function hasKey(name: string): boolean {
       return name in map && map[name] != null && map[name].trim() !== "";
