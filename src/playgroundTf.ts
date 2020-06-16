@@ -15,6 +15,7 @@ limitations under the License.
 
 import "material-design-lite/material.css";
 import "./css/styles.css";
+const tf = require('@tensorflow/tfjs');
 
 import * as nn from "./nn";
 // import {HeatMap, reduceMatrix} from "./heatmapV5";
@@ -175,8 +176,10 @@ let network: nn.Node[][] = null;
 let lossTrain = 0;
 let lossTest = 0;
 let player = new Player();
+/*
 let lineChart = new AppendingLineChart(d3.select("#linechart"),
     ["#777", "black"]);
+*/
 
 function makeGUI() {
   d3.select("#reset-button").on("click", () => {
@@ -289,6 +292,7 @@ function makeGUI() {
   percTrain.property("value", state.percTrainData);
   d3.select("label[for='percTrainData'] .value").text(state.percTrainData);
 
+/*
   let noise = d3.select("#noise").on("input", function() {
     state.noise = (this as any).value;
     d3.select("label[for='noise'] .value").text((this as any).value);
@@ -308,7 +312,9 @@ function makeGUI() {
   }
   noise.property("value", state.noise);
   d3.select("label[for='noise'] .value").text(state.noise);
+*/
 
+/*
   let batchSize = d3.select("#batchSize").on("input", function() {
     state.batchSize = (this as any).value;
     d3.select("label[for='batchSize'] .value").text((this as any).value);
@@ -317,6 +323,7 @@ function makeGUI() {
   });
   batchSize.property("value", state.batchSize);
   d3.select("label[for='batchSize'] .value").text(state.batchSize);
+*/
 
   let activationDropdown = d3.select("#activations").on("change", function() {
     state.activation = activations[(this as any).value];
@@ -352,7 +359,7 @@ function makeGUI() {
   let problem = d3.select("#problem").on("change", function() {
     state.problem = problems[(this as any).value];
     generateData();
-    drawDatasetThumbnails();
+    // drawDatasetThumbnails();
     parametersChanged = true;
     reset();
   });
@@ -538,11 +545,14 @@ function drawNetwork(network: nn.Node[][]): void {
   d3.select("#network").selectAll("div.canvas").remove();
   d3.select("#network").selectAll("div.plus-minus-neurons").remove();
 
-  // Get the width of the svg container.
+  const columnFeatures = d3.select(".column.features");
+  columnFeatures.style("height", "1000px");
+
   let padding = 3;
   let co = d3.select(".column.output").node() as HTMLDivElement;
-  let cf = d3.select(".column.features").node() as HTMLDivElement;
-  let width = co.offsetLeft - cf.offsetLeft;
+  let cf = columnFeatures.node() as HTMLDivElement;
+  //let width = co.offsetLeft - cf.offsetLeft;
+  const width = window.innerWidth;
   svg.attr("width", width);
 
   // Map of all node coordinates.
@@ -844,6 +854,10 @@ function updateDecisionBoundary(network: nn.Node[][], firstTime: boolean) {
   }
 }
 
+const computeCategoricalLoss = (network: nn.Node[][], dataPoints: DataPoint[]): number[] => {
+  return [0]
+}
+
 function getLoss(network: nn.Node[][], dataPoints: DataPoint[]): number {
   let loss = 0;
   for (let i = 0; i < dataPoints.length; i++) {
@@ -890,10 +904,12 @@ function updateUI(firstStep = false) {
   }
 
   // Update loss and iteration number.
+/*
   d3.select("#loss-train").text(humanReadable(lossTrain));
   d3.select("#loss-test").text(humanReadable(lossTest));
+*/
   d3.select("#iter-number").text(addCommas(zeroPad(iter)));
-  lineChart.addDataPoint([lossTrain, lossTest]);
+  // lineChart.addDataPoint([lossTrain, lossTest]);
 }
 
 function constructInputIds(): string[] {
@@ -953,7 +969,7 @@ export function getOutputWeights(network: nn.Node[][]): number[] {
 }
 
 function reset(onStartup=false) {
-  lineChart.reset();
+  // lineChart.reset();
   state.serialize();
   player.pause();
 
@@ -1125,7 +1141,7 @@ function simulationStarted() {
 */
 
 setLabelName("label");
-drawDatasetThumbnails();
+// drawDatasetThumbnails();
 initTutorial();
 makeGUI();
 generateData(true);

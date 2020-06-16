@@ -272,6 +272,12 @@ export function forwardProp(network: Node[][], inputs: number[]): number {
   return network[network.length - 1][0].output;
 }
 
+export const forwardPropReturningAllOutputs = (network: Node[][], inputs: number[]): number[] => {
+  forwardProp(network, inputs);
+
+  return network[network.length - 1].map(n => n.output)
+}
+
 /**
  * Runs a backward propagation using the provided target and the
  * computed output of the previous call to forward propagation.
