@@ -15,7 +15,8 @@ limitations under the License.
 
 import "material-design-lite/material.css";
 import "./css/styles.css";
-const tf = require('@tensorflow/tfjs');
+import {categoricalCrossentropy} from "./tf/tfUtil";
+import {tf} from "./tf/tfJsWrapper";
 
 import * as nn from "./nn";
 // import {HeatMap, reduceMatrix} from "./heatmapV5";
@@ -29,7 +30,8 @@ import {
   getKeyFromValue,
   Problem
 } from "./stateTf";
-import {shuffle, DataPoint, getLabelName, setLabelName} from "./datasetV5";
+import {shuffle, DataPoint, getLabelName, getOneHotEncodingFromDataPoint} from "./datasetV5";
+import {oneHot} from "./mlUtil";
 import {AppendingLineChart} from "./linechartV5";
 import * as d3 from 'd3';
 import 'd3-selection-multi';
@@ -870,6 +872,22 @@ function getLoss(network: nn.Node[][], dataPoints: DataPoint[]): number {
   return loss / dataPoints.length;
 }
 
+const getCategoricalLoss = (network: nn.Node[][], dataPoints: DataPoint[]): number => {
+  let loss = 0;
+  for (let i = 0; i < dataPoints.length; i++) {
+    const dataPoint = dataPoints[i];
+    const inputArray = constructInputFromDataPoint(dataPoint);
+    const outputArray = nn.forwardPropReturningAllOutputs(network, inputArray);
+    const expected = getOneHotEncodingFromDataPoint(dataPoint);
+    const currentLoss = tf.metrics.categoricalCrossentropy(expected, outputArray);
+    const data = currentLoss.dataSync();
+    loss += data[0];
+  }
+  const relLoss = loss / dataPoints.length;
+  console.log(`cat loss: ${relLoss}`);
+  return relLoss;
+}
+
 function updateUI(firstStep = false) {
   // Update the links visually.
   updateWeightsUI(network, d3.select("g.core"));
@@ -951,6 +969,7 @@ function oneStep(): void {
   lossTrain = getLoss(network, trainData);
   lossTest = getLoss(network, testData);
   updateUI();
+  getCategoricalLoss(network, trainData);
 }
 
 export function getOutputWeights(network: nn.Node[][]): number[] {
@@ -984,6 +1003,7 @@ function reset(onStartup=false) {
   network = nn.buildNetwork(state.networkShape, state.activation, outputActivation,
       state.regularization, constructInputIds(), state.initZero);
   lossTrain = getLoss(network, trainData);
+  getCategoricalLoss(network, trainData);
   lossTest = getLoss(network, testData);
   drawNetwork(network);
   updateUI(true);
@@ -1105,7 +1125,7 @@ function generateData(firstTime = false) {
   trainData = data.slice(0, splitIndex);
   testData = data.slice(splitIndex);
 
-  state.initNetworkShapeWithDataPoints(trainData);
+  state.initNetworkShapeWithDataPoints(trainData, "label");
 /*
   heatMap.updatePoints(trainData);
   heatMap.updateTestPoints(state.showTestData ? testData : []);
@@ -1140,7 +1160,6 @@ function simulationStarted() {
 }
 */
 
-setLabelName("label");
 // drawDatasetThumbnails();
 initTutorial();
 makeGUI();

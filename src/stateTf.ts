@@ -104,9 +104,9 @@ export interface Property {
 // Add the GUI state.
 export class State {
 
-  constructor(dataPoints?: DataPoint[]) {
+  constructor(dataPoints?: DataPoint[], labelName?: string) {
     if(dataPoints) {
-      this.initNetworkShapeWithDataPoints(dataPoints)
+      this.initNetworkShapeWithDataPoints(dataPoints, labelName)
     } else {
       this.networkShape = []
     }
@@ -174,9 +174,10 @@ export class State {
   regDataset: dataset.DataGenerator = dataset.regressPlane;
   seed: string;
 
-  initNetworkShapeWithDataPoints(dataPoints: dataset.DataPoint[]): void {
-    const inputShape = dataset.getInputShape(dataPoints);
-    const outputShape = dataset.getOutputShape(dataPoints);
+  initNetworkShapeWithDataPoints(dataPoints: dataset.DataPoint[], labelName: string): void {
+    dataset.init(dataPoints, labelName);
+    const inputShape = dataset.getInputShape();
+    const outputShape = dataset.getOutputShape();
 
     this.networkShape = [inputShape, 2, outputShape];
     this.numLayers = this.networkShape.length;
@@ -185,13 +186,13 @@ export class State {
   /**
    * Deserializes the state from the url hash.
    */
-  static deserializeState(dataPoints?: DataPoint[]): State {
+  static deserializeState(dataPoints?: DataPoint[], labelName?: string): State {
     let map: {[key: string]: string} = {};
     for (let keyvalue of window.location.hash.slice(1).split("&")) {
       let [name, value] = keyvalue.split("=");
       map[name] = value;
     }
-    let state = new State(dataPoints);
+    let state = new State(dataPoints, labelName);
 
     function hasKey(name: string): boolean {
       return name in map && map[name] != null && map[name].trim() !== "";

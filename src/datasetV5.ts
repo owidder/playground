@@ -14,6 +14,7 @@ limitations under the License.
 ==============================================================================*/
 
 import * as d3 from 'd3';
+import {oneHot} from "./mlUtil";
 
 /**
  * A two dimensional example: x and y coordinates with the label.
@@ -25,24 +26,33 @@ export type Example2D = {
 };
 
 let labelName: string;
-export const setLabelName = (ln: string) => labelName = ln;
 export const getLabelName = () => labelName;
 export type DataPoint = {[key: string]: number | string};
 
-export const getInputShape = (dataPoints: DataPoint[]): number => {
+let dataPoints: DataPoint[];
+let labelArray: string[];
+export const init = (_dataPoints: DataPoint[], _labelName: string): void => {
+  dataPoints = _dataPoints;
+  labelName = _labelName;
+  const labelObj = _dataPoints.reduce((lo, dataPoint) => {
+    return {...lo, [dataPoint[_labelName]]: 1}
+  }, {});
+
+  labelArray = Object.keys(labelObj);
+}
+
+export const getInputShape = (): number => {
   return dataPoints.reduce((maxNum, dataPoint) =>
       Math.max(maxNum, Object.keys(dataPoint).filter(key => key != labelName).length), 0)
 }
 
-export const getOutputShape = (dataPoints: DataPoint[]): number => {
-  if(typeof dataPoints[0][labelName] == "number") {
-    return 1
-  }
-  const labelObj = dataPoints.reduce((lo, dataPoint) => {
-    return {...lo, [dataPoint[labelName]]: 1}
-  }, {});
+export const getOutputShape = (): number => {
+  return labelArray.length
+}
 
-  return Object.keys(labelObj).length
+export const getOneHotEncodingFromDataPoint = (dataPoint: DataPoint): (0|1)[] => {
+  const index = labelArray.indexOf(String(dataPoint[labelName]));
+  return  oneHot(labelArray.length, index)
 }
 
 type Point = {
