@@ -15,8 +15,8 @@ limitations under the License.
 
 import "material-design-lite/material.css";
 import "./css/styles.css";
-import {categoricalCrossentropy} from "./tf/tfUtil";
 import {tf} from "./tf/tfJsWrapper";
+import {buildModel, getModel} from "./tf/modelBuilder";
 
 import * as nn from "./nn";
 // import {HeatMap, reduceMatrix} from "./heatmapV5";
@@ -31,8 +31,6 @@ import {
   Problem
 } from "./stateTf";
 import {shuffle, DataPoint, getLabelName, getOneHotEncodingFromDataPoint} from "./datasetV5";
-import {oneHot} from "./mlUtil";
-import {AppendingLineChart} from "./linechartV5";
 import * as d3 from 'd3';
 import 'd3-selection-multi';
 
@@ -194,6 +192,10 @@ function makeGUI() {
     player.playOrPause();
   });
 
+  d3.select("#build-button").on("click", function () {
+    buildModel(state);
+  });
+
   player.onPlayPause(isPlaying => {
     d3.select("#play-pause-button").classed("playing", isPlaying);
   });
@@ -329,6 +331,7 @@ function makeGUI() {
 
   let activationDropdown = d3.select("#activations").on("change", function() {
     state.activation = activations[(this as any).value];
+    state.activationName = (this as any).value;
     parametersChanged = true;
     reset();
   });
@@ -860,16 +863,24 @@ const computeCategoricalLoss = (network: nn.Node[][], dataPoints: DataPoint[]): 
   return [0]
 }
 
-function getLoss(network: nn.Node[][], dataPoints: DataPoint[]): number {
+function getLoss(network: nn.Node[][], dataPoints: DataPoint[], type: string): number {
   let loss = 0;
+  let lossCrossentropy = 0;
   for (let i = 0; i < dataPoints.length; i++) {
     let dataPoint = dataPoints[i];
-    // let input = constructInput(dataPoint.x, dataPoint.y);
-    let input = constructInputFromDataPoint(dataPoint);
-    let output = nn.forwardProp(network, input);
-    loss += nn.Errors.SQUARE.error(output, (dataPoint[getLabelName()] as number));
+    const inputArray = constructInputFromDataPoint(dataPoint);
+    const outputArray = nn.forwardPropReturningAllOutputs(network, inputArray);
+    loss += nn.Errors.SQUARE.error(outputArray[0], (dataPoint[getLabelName()] as number));
+
+    const expected = getOneHotEncodingFromDataPoint(dataPoint);
+    const currentLossCrossentropyTensor = tf.metrics.categoricalCrossentropy(expected, outputArray);
+    const currentLossCrossentropy = currentLossCrossentropyTensor.dataSync();
+    lossCrossentropy += currentLossCrossentropy[0];
   }
-  return loss / dataPoints.length;
+  console.log(`cat loss (${type}): ${lossCrossentropy / dataPoints.length}`);
+  const relLoss = loss / dataPoints.length;
+  console.log(`loss (${type}): ${relLoss}`);
+  return relLoss;
 }
 
 const getCategoricalLoss = (network: nn.Node[][], dataPoints: DataPoint[]): number => {
@@ -966,10 +977,13 @@ function oneStep(): void {
     }
   });
   // Compute the loss.
-  lossTrain = getLoss(network, trainData);
-  lossTest = getLoss(network, testData);
+  lossTrain = getLoss(network, trainData, "train");
+  lossTest = getLoss(network, testData, "test");
   updateUI();
-  getCategoricalLoss(network, trainData);
+}
+
+function oneStepTf(model: any) {
+
 }
 
 export function getOutputWeights(network: nn.Node[][]): number[] {
@@ -1002,9 +1016,8 @@ function reset(onStartup=false) {
       nn.Activations.LINEAR : nn.Activations.TANH;
   network = nn.buildNetwork(state.networkShape, state.activation, outputActivation,
       state.regularization, constructInputIds(), state.initZero);
-  lossTrain = getLoss(network, trainData);
-  getCategoricalLoss(network, trainData);
-  lossTest = getLoss(network, testData);
+  lossTrain = getLoss(network, trainData, "reset train");
+  lossTest = getLoss(network, testData, "reset test");
   drawNetwork(network);
   updateUI(true);
 }

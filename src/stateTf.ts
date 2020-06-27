@@ -28,6 +28,11 @@ export let activations: {[key: string]: nn.ActivationFunction} = {
   "linear": nn.Activations.LINEAR
 };
 
+export const activationNames: {[key: string]: string} =
+    ['elu','hardSigmoid','linear','relu','relu6','selu','sigmoid','softmax','softplus','softsign','tanh'].reduce((_activationNames, name) => {
+      return {..._activationNames, [name]: name}
+    }, {});
+
 /** A map between names and regularization functions. */
 export let regularizations: {[key: string]: nn.RegularizationFunction} = {
   "none": null,
@@ -114,6 +119,7 @@ export class State {
 
   private static PROPS: Property[] = [
     {name: "activation", type: Type.OBJECT, keyMap: activations},
+    {name: "activationName", type: Type.STRING, keyMap: activationNames},
     {name: "regularization", type: Type.OBJECT, keyMap: regularizations},
     {name: "batchSize", type: Type.NUMBER},
     {name: "dataset", type: Type.OBJECT, keyMap: datasets},
@@ -152,6 +158,7 @@ export class State {
   tutorial: string = null;
   percTrainData = 50;
   activation = nn.Activations.TANH;
+  activationName = "tanh";
   regularization: nn.RegularizationFunction = null;
   problem = Problem.CLASSIFICATION;
   initZero = false;
