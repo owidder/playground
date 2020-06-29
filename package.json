@@ -37,6 +37,7 @@
     "@types/d3": "^5.7.2",
     "@types/d3-selection-multi": "^1.0.7",
     "@types/d3-v3": "npm:@types/d3@^3.5.34",
+    "awesome-typescript-loader": "^5.2.1",
     "concat": "^1.0.3",
     "concurrently": "5.2.0",
     "copyfiles": "2.3.0",

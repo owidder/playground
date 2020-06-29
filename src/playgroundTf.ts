@@ -16,7 +16,7 @@ limitations under the License.
 import "material-design-lite/material.css";
 import "./css/styles.css";
 import {tf} from "./tf/tfJsWrapper";
-import {buildModel, getModel} from "./tf/modelBuilder";
+import {Model} from "./tf/model";
 
 import * as nn from "./nn";
 // import {HeatMap, reduceMatrix} from "./heatmapV5";
@@ -193,7 +193,6 @@ function makeGUI() {
   });
 
   d3.select("#build-button").on("click", function () {
-    buildModel(state);
   });
 
   player.onPlayPause(isPlaying => {

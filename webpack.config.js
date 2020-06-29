@@ -28,7 +28,7 @@ module.exports = {
                         test: /\.ts$/,
                         include: absPath("src"),
                         use: [{
-                            loader: 'ts-loader',
+                            loader: 'awesome-typescript-loader',
                             options: {
                                 onlyCompileBundledFiles: true,
                                 configFile: 'tsconfigTf.json'
