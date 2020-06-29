@@ -15,8 +15,9 @@ limitations under the License.
 
 import * as d3 from 'd3';
 import {oneHot} from "./mlUtil";
-import {tf} from "./tf/tfJsWrapper";
 import {Tensor2D} from "@tensorflow/tfjs-core/dist/tensor";
+
+import * as tf from "@tensorflow/tfjs";
 
 /**
  * A two dimensional example: x and y coordinates with the label.

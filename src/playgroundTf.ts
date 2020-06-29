@@ -15,7 +15,7 @@ limitations under the License.
 
 import "material-design-lite/material.css";
 import "./css/styles.css";
-import {tf} from "./tf/tfJsWrapper";
+import * as tf from "@tensorflow/tfjs";
 import {Model} from "./tf/model";
 
 import * as nn from "./nn";
@@ -872,7 +872,9 @@ function getLoss(network: nn.Node[][], dataPoints: DataPoint[], type: string): n
     loss += nn.Errors.SQUARE.error(outputArray[0], (dataPoint[getLabelName()] as number));
 
     const expected = getOneHotEncodingFromDataPoint(dataPoint);
-    const currentLossCrossentropyTensor = tf.metrics.categoricalCrossentropy(expected, outputArray);
+    const expectedTensor = tf.tensor2d(expected);
+    const outputTensor = tf.tensor2d(outputArray);
+    const currentLossCrossentropyTensor = tf.metrics.categoricalCrossentropy(expectedTensor, outputTensor);
     const currentLossCrossentropy = currentLossCrossentropyTensor.dataSync();
     lossCrossentropy += currentLossCrossentropy[0];
   }
@@ -889,7 +891,9 @@ const getCategoricalLoss = (network: nn.Node[][], dataPoints: DataPoint[]): numb
     const inputArray = constructInputFromDataPoint(dataPoint);
     const outputArray = nn.forwardPropReturningAllOutputs(network, inputArray);
     const expected = getOneHotEncodingFromDataPoint(dataPoint);
-    const currentLoss = tf.metrics.categoricalCrossentropy(expected, outputArray);
+    const expectedTensor = tf.tensor2d(expected);
+    const outputTensor = tf.tensor2d(outputArray);
+    const currentLoss = tf.metrics.categoricalCrossentropy(expectedTensor, outputTensor);
     const data = currentLoss.dataSync();
     loss += data[0];
   }
