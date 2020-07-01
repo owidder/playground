@@ -15,11 +15,13 @@ limitations under the License.
 
 import "material-design-lite/material.css";
 import "./css/styles.css";
+import "./css/stylesTf.scss";
 import * as tf from "@tensorflow/tfjs";
 import {Model} from "./tf/model";
+import {Dataset} from "./datasetV5";
 
 import * as nn from "./nn";
-// import {HeatMap, reduceMatrix} from "./heatmapV5";
+
 import {
   State,
   datasets,
@@ -34,7 +36,10 @@ import {shuffle, DataPoint, getLabelName, getOneHotEncodingFromDataPoint} from "
 import * as d3 from 'd3';
 import 'd3-selection-multi';
 
-let mainWidth;
+let mainWidth: number;
+
+let dataset: Dataset;
+let model: Model;
 
 // More scrolling
 d3.select(".more button").on("click", function() {
@@ -193,6 +198,7 @@ function makeGUI() {
   });
 
   d3.select("#build-button").on("click", function () {
+    model = new Model(state, dataset);
   });
 
   player.onPlayPause(isPlaying => {
@@ -871,14 +877,15 @@ function getLoss(network: nn.Node[][], dataPoints: DataPoint[], type: string): n
     const outputArray = nn.forwardPropReturningAllOutputs(network, inputArray);
     loss += nn.Errors.SQUARE.error(outputArray[0], (dataPoint[getLabelName()] as number));
 
-    const expected = getOneHotEncodingFromDataPoint(dataPoint);
+/*     const expected = getOneHotEncodingFromDataPoint(dataPoint);
     const expectedTensor = tf.tensor2d(expected);
     const outputTensor = tf.tensor2d(outputArray);
     const currentLossCrossentropyTensor = tf.metrics.categoricalCrossentropy(expectedTensor, outputTensor);
     const currentLossCrossentropy = currentLossCrossentropyTensor.dataSync();
     lossCrossentropy += currentLossCrossentropy[0];
+ */
   }
-  console.log(`cat loss (${type}): ${lossCrossentropy / dataPoints.length}`);
+  // console.log(`cat loss (${type}): ${lossCrossentropy / dataPoints.length}`);
   const relLoss = loss / dataPoints.length;
   console.log(`loss (${type}): ${relLoss}`);
   return relLoss;
@@ -1180,5 +1187,9 @@ function simulationStarted() {
 initTutorial();
 makeGUI();
 generateData(true);
+
+dataset = new Dataset(trainData, testData, "label");
+model = new Model(state, dataset);
+
 reset(true);
 hideControls();
