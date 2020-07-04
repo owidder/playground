@@ -30,6 +30,13 @@ export class Model {
             }
             this._sequential.add(tf.layers.dense(config))
         })
+    
+        this._sequential.summary();
+
+        this._sequential.compile({
+            loss: "categoricalCrossentropy",
+            optimizer: tf.train.adam()
+        });
     }
 
     public fitStep = async (): Promise<History> => {

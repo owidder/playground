@@ -1,5 +1,10 @@
-.ui-stepButton {
-    &.inactive {
-        color: green
+.ui-button {
+    &:disabled {
+        color: gray;
+        cursor: not-allowed;
+    }
+
+    &.outdated {
+        background-color: red;
     }
 }

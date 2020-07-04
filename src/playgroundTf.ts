@@ -20,9 +20,11 @@ import * as tf from "@tensorflow/tfjs";
 import {Model} from "./tf/model";
 import {Dataset} from "./datasetV5";
 
+import * as ui from "./ui/ui";
+
 import * as nn from "./nn";
 
-import {
+ import {
   State,
   datasets,
   regDatasets,
@@ -199,6 +201,8 @@ function makeGUI() {
 
   d3.select("#build-button").on("click", function () {
     model = new Model(state, dataset);
+    d3.select("#build-button").classed("outdated", false);
+    d3.select("#build-button").classed("current", true);
   });
 
   player.onPlayPause(isPlaying => {
@@ -209,6 +213,12 @@ function makeGUI() {
     player.pause();
     oneStep();
   });
+
+  d3.select("#next-step-tf-button").on("click", async () => {
+    d3.select("#next-step-tf-button").attr("disabled", true);
+    await model.fitStep();
+    d3.select("#next-step-tf-button").attr("disabled", false);
+  })
 
   d3.select("#data-regen-button").on("click", () => {
     generateData();
@@ -1012,6 +1022,8 @@ export function getOutputWeights(network: nn.Node[][]): number[] {
 }
 
 function reset(onStartup=false) {
+  ui.modelOutdated();
+
   // lineChart.reset();
   state.serialize();
   player.pause();

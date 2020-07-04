@@ -186,7 +186,11 @@ export class State {
     const inputShape = dataset.getInputShape();
     const outputShape = dataset.getOutputShape();
 
-    this.networkShape = [inputShape, 2, outputShape];
+    if(!this.networkShape || this.networkShape.length == 0) {
+      this.networkShape = [inputShape, 2, outputShape];
+    } else {
+      this.networkShape = [inputShape, ...this.networkShape.slice(1, this.networkShape.length-1), outputShape];
+    }
     this.numLayers = this.networkShape.length;
   }
 
