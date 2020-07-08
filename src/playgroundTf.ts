@@ -275,7 +275,7 @@ function makeGUI() {
     }
     state.networkShape.splice(state.networkShape.length - 2, 0, 2);
     state.numLayers++;
-    parametersChanged = true;
+    // parametersChanged = true;
     reset();
   });
 
@@ -285,7 +285,7 @@ function makeGUI() {
     }
     state.numLayers--;
     state.networkShape.splice(state.networkShape.length - 2);
-    parametersChanged = true;
+    // parametersChanged = true;
     reset();
   });
 
@@ -355,7 +355,7 @@ function makeGUI() {
   let activationDropdown = d3.select("#activations").on("change", function() {
     state.activation = activations[(this as any).value];
     state.activationName = (this as any).value;
-    parametersChanged = true;
+    // parametersChanged = true;
     reset();
   });
   activationDropdown.property("value",
@@ -364,14 +364,14 @@ function makeGUI() {
   let learningRate = d3.select("#learningRate").on("change", function() {
     state.learningRate = +(this as any).value;
     state.serialize();
-    parametersChanged = true;
+    // parametersChanged = true;
   });
   learningRate.property("value", state.learningRate);
 
   let regularDropdown = d3.select("#regularizations").on("change",
       function() {
     state.regularization = regularizations[(this as any).value];
-    parametersChanged = true;
+    // parametersChanged = true;
     reset();
   });
   regularDropdown.property("value",
@@ -379,7 +379,7 @@ function makeGUI() {
 
   let regularRate = d3.select("#regularRate").on("change", function() {
     state.regularizationRate = +(this as any).value;
-    parametersChanged = true;
+    // parametersChanged = true;
     reset();
   });
   regularRate.property("value", state.regularizationRate);
@@ -717,7 +717,7 @@ function addPlusMinusControl(x: number, layerIdx: number) {
           return;
         }
         state.networkShape[layerIdx]++;
-        parametersChanged = true;
+        // parametersChanged = true;
         reset();
       })
     .append("i")
@@ -732,7 +732,7 @@ function addPlusMinusControl(x: number, layerIdx: number) {
           return;
         }
         state.networkShape[layerIdx]--;
-        parametersChanged = true;
+        // parametersChanged = true;
         reset();
       })
     .append("i")
@@ -1007,10 +1007,6 @@ function oneStep(): void {
   // lossTrain = getLoss(network, trainData, "train");
   // lossTest = getLoss(network, testData, "test");
   updateUI();
-}
-
-function oneStepTf(model: any) {
-
 }
 
 export function getOutputWeights(network: nn.Node[][]): number[] {
