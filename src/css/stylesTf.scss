@@ -1,9 +1,4 @@
 .ui-button {
-    &:disabled {
-        color: gray;
-        cursor: not-allowed;
-    }
-
     &.outdated {
         background-color: red;
     }

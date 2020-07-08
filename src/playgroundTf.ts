@@ -19,6 +19,7 @@ import "./css/stylesTf.scss";
 import * as tf from "@tensorflow/tfjs";
 import {Model} from "./tf/model";
 import {Dataset} from "./datasetV5";
+import * as dataReader from "./data/dataReader";
 
 import * as ui from "./ui/ui";
 
@@ -34,7 +35,7 @@ import * as nn from "./nn";
   getKeyFromValue,
   Problem
 } from "./stateTf";
-import {shuffle, DataPoint, getLabelName, getOneHotEncodingFromDataPoint} from "./datasetV5";
+import {DataPoint} from "./datasetV5";
 import * as d3 from 'd3';
 import 'd3-selection-multi';
 
@@ -159,7 +160,7 @@ state.getHiddenProps().forEach(prop => {
   }
 });
 
-let boundary: {[id: string]: number[][]} = {};
+// let boundary: {[id: string]: number[][]} = {};
 let selectedNodeId: string = null;
 // Plot the heatmap.
 let xDomain: [number, number] = [-6, 6];
@@ -180,8 +181,8 @@ let iter = 0;
 let trainData: DataPoint[] = [];
 let testData: DataPoint[] = [];
 let network: nn.Node[][] = null;
-let lossTrain = 0;
-let lossTest = 0;
+// let lossTrain = 0;
+// let lossTest = 0;
 let player = new Player();
 /*
 let lineChart = new AppendingLineChart(d3.select("#linechart"),
@@ -201,8 +202,7 @@ function makeGUI() {
 
   d3.select("#build-button").on("click", function () {
     model = new Model(state, dataset);
-    d3.select("#build-button").classed("outdated", false);
-    d3.select("#build-button").classed("current", true);
+    ui.modelCurrent();
   });
 
   player.onPlayPause(isPlaying => {
@@ -215,16 +215,19 @@ function makeGUI() {
   });
 
   d3.select("#next-step-tf-button").on("click", async () => {
-    d3.select("#next-step-tf-button").attr("disabled", true);
+    ui.stepStarted();
     await model.fitStep();
-    d3.select("#next-step-tf-button").attr("disabled", false);
+    ui.stepEnded();
   })
 
+/*
   d3.select("#data-regen-button").on("click", () => {
     generateData();
     parametersChanged = true;
   });
+*/
 
+/*
   let dataThumbnails = d3.selectAll("canvas[data-dataset]");
   dataThumbnails.on("click", function() {
     let newDataset = datasets[(this as any).dataset.dataset];
@@ -238,12 +241,14 @@ function makeGUI() {
     parametersChanged = true;
     reset();
   });
+*/
 
   let datasetKey = getKeyFromValue(datasets, state.dataset);
   // Select the dataset according to the current state.
   d3.select(`canvas[data-dataset=${datasetKey}]`)
     .classed("selected", true);
 
+/*
   let regDataThumbnails = d3.selectAll("canvas[data-regDataset]");
   regDataThumbnails.on("click", function() {
     let newDataset = regDatasets[(this as any).dataset.regdataset];
@@ -257,6 +262,7 @@ function makeGUI() {
     parametersChanged = true;
     reset();
   });
+*/
 
   let regDatasetKey = getKeyFromValue(regDatasets, state.regDataset);
   // Select the dataset according to the current state.
@@ -301,6 +307,7 @@ function makeGUI() {
   // Check/uncheck the checbox according to the current state.
   discretize.property("checked", state.discretize);
 
+/*
   let percTrain = d3.select("#percTrainData").on("input", function() {
     state.percTrainData = (this as any).value;
     d3.select("label[for='percTrainData'] .value").text((this as any).value);
@@ -310,6 +317,7 @@ function makeGUI() {
   });
   percTrain.property("value", state.percTrainData);
   d3.select("label[for='percTrainData'] .value").text(state.percTrainData);
+*/
 
 /*
   let noise = d3.select("#noise").on("input", function() {
@@ -376,6 +384,7 @@ function makeGUI() {
   });
   regularRate.property("value", state.regularizationRate);
 
+/*
   let problem = d3.select("#problem").on("change", function() {
     state.problem = problems[(this as any).value];
     generateData();
@@ -384,6 +393,7 @@ function makeGUI() {
     reset();
   });
   problem.property("value", getKeyFromValue(problems, state.problem));
+*/
 
   // Add scale to the gradient color map.
   let x = d3.scaleLinear().domain([-1, 1]).range([0, 144]);
@@ -830,53 +840,49 @@ function drawLink(
  * It returns a map where each key is the node ID and the value is a square
  * matrix of the outputs of the network for each input in the grid respectively.
  */
-function updateDecisionBoundary(network: nn.Node[][], firstTime: boolean) {
-  if (firstTime) {
-    boundary = {};
-    nn.forEachNode(network, true, node => {
-      boundary[node.id] = new Array(DENSITY);
-    });
-    // Go through all predefined inputs.
-    for (let nodeId in INPUTS) {
-      boundary[nodeId] = new Array(DENSITY);
-    }
-  }
-  let xScale = d3.scaleLinear().domain([0, DENSITY - 1]).range(xDomain);
-  let yScale = d3.scaleLinear().domain([DENSITY - 1, 0]).range(xDomain);
+// function updateDecisionBoundary(network: nn.Node[][], firstTime: boolean) {
+//   if (firstTime) {
+//     boundary = {};
+//     nn.forEachNode(network, true, node => {
+//       boundary[node.id] = new Array(DENSITY);
+//     });
+//     // Go through all predefined inputs.
+//     for (let nodeId in INPUTS) {
+//       boundary[nodeId] = new Array(DENSITY);
+//     }
+//   }
+//   let xScale = d3.scaleLinear().domain([0, DENSITY - 1]).range(xDomain);
+//   let yScale = d3.scaleLinear().domain([DENSITY - 1, 0]).range(xDomain);
 
-  let i = 0, j = 0;
-  for (i = 0; i < DENSITY; i++) {
-    if (firstTime) {
-      nn.forEachNode(network, true, node => {
-        boundary[node.id][i] = new Array(DENSITY);
-      });
-      // Go through all predefined inputs.
-      for (let nodeId in INPUTS) {
-        boundary[nodeId][i] = new Array(DENSITY);
-      }
-    }
-    for (j = 0; j < DENSITY; j++) {
-      // 1 for points inside the circle, and 0 for points outside the circle.
-      let x = xScale(i);
-      let y = yScale(j);
-      let input = constructInput(x, y);
-      nn.forwardProp(network, input);
-      nn.forEachNode(network, true, node => {
-        boundary[node.id][i][j] = node.output;
-      });
-      if (firstTime) {
-        // Go through all predefined inputs.
-        for (let nodeId in INPUTS) {
-          boundary[nodeId][i][j] = INPUTS[nodeId].f(x, y);
-        }
-      }
-    }
-  }
-}
-
-const computeCategoricalLoss = (network: nn.Node[][], dataPoints: DataPoint[]): number[] => {
-  return [0]
-}
+//   let i = 0, j = 0;
+//   for (i = 0; i < DENSITY; i++) {
+//     if (firstTime) {
+//       nn.forEachNode(network, true, node => {
+//         boundary[node.id][i] = new Array(DENSITY);
+//       });
+//       // Go through all predefined inputs.
+//       for (let nodeId in INPUTS) {
+//         boundary[nodeId][i] = new Array(DENSITY);
+//       }
+//     }
+//     for (j = 0; j < DENSITY; j++) {
+//       // 1 for points inside the circle, and 0 for points outside the circle.
+//       let x = xScale(i);
+//       let y = yScale(j);
+//       let input = constructInput(x, y);
+//       nn.forwardProp(network, input);
+//       nn.forEachNode(network, true, node => {
+//         boundary[node.id][i][j] = node.output;
+//       });
+//       if (firstTime) {
+//         // Go through all predefined inputs.
+//         for (let nodeId in INPUTS) {
+//           boundary[nodeId][i][j] = INPUTS[nodeId].f(x, y);
+//         }
+//       }
+//     }
+//   }
+// }
 
 function getLoss(network: nn.Node[][], dataPoints: DataPoint[], type: string): number {
   let loss = 0;
@@ -885,7 +891,7 @@ function getLoss(network: nn.Node[][], dataPoints: DataPoint[], type: string): n
     let dataPoint = dataPoints[i];
     const inputArray = constructInputFromDataPoint(dataPoint);
     const outputArray = nn.forwardPropReturningAllOutputs(network, inputArray);
-    loss += nn.Errors.SQUARE.error(outputArray[0], (dataPoint[getLabelName()] as number));
+    loss += nn.Errors.SQUARE.error(outputArray[0], (dataPoint[dataset.getLabelName()] as number));
 
 /*     const expected = getOneHotEncodingFromDataPoint(dataPoint);
     const expectedTensor = tf.tensor2d(expected);
@@ -901,6 +907,7 @@ function getLoss(network: nn.Node[][], dataPoints: DataPoint[], type: string): n
   return relLoss;
 }
 
+/*
 const getCategoricalLoss = (network: nn.Node[][], dataPoints: DataPoint[]): number => {
   let loss = 0;
   for (let i = 0; i < dataPoints.length; i++) {
@@ -918,6 +925,7 @@ const getCategoricalLoss = (network: nn.Node[][], dataPoints: DataPoint[]): numb
   console.log(`cat loss: ${relLoss}`);
   return relLoss;
 }
+*/
 
 function updateUI(firstStep = false) {
   // Update the links visually.
@@ -925,9 +933,9 @@ function updateUI(firstStep = false) {
   // Update the bias values visually.
   updateBiasesUI(network);
   // Get the decision boundary of the network.
-  updateDecisionBoundary(network, firstStep);
-  let selectedId = selectedNodeId != null ?
-      selectedNodeId : nn.getOutputNode(network).id;
+  // updateDecisionBoundary(network, firstStep);
+  // let selectedId = selectedNodeId != null ?
+  //     selectedNodeId : nn.getOutputNode(network).id;
   // heatMap.updateBackground(boundary[selectedId], state.discretize);
 
   // Update all decision boundaries.
@@ -948,15 +956,14 @@ function updateUI(firstStep = false) {
     return s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
-  function humanReadable(n: number): string {
-    return n.toFixed(3);
-  }
+  // function humanReadable(n: number): string {
+  //   return n.toFixed(3);
+  // }
 
   // Update loss and iteration number.
-/*
-  d3.select("#loss-train").text(humanReadable(lossTrain));
-  d3.select("#loss-test").text(humanReadable(lossTest));
-*/
+  // d3.select("#loss-train").text(humanReadable(lossTrain));
+  // d3.select("#loss-test").text(humanReadable(lossTest));
+
   d3.select("#iter-number").text(addCommas(zeroPad(iter)));
   // lineChart.addDataPoint([lossTrain, lossTest]);
 }
@@ -971,18 +978,18 @@ function constructInputIds(): string[] {
   return result;
 }
 
-function constructInput(x: number, y: number): number[] {
-  let input: number[] = [];
-  for (let inputName in INPUTS) {
-    if (state[inputName]) {
-      input.push(INPUTS[inputName].f(x, y));
-    }
-  }
-  return input;
-}
+// function constructInput(x: number, y: number): number[] {
+//   let input: number[] = [];
+//   for (let inputName in INPUTS) {
+//     if (state[inputName]) {
+//       input.push(INPUTS[inputName].f(x, y));
+//     }
+//   }
+//   return input;
+// }
 
 const constructInputFromDataPoint = (dataPoint: DataPoint): number[] => {
-  return Object.keys(dataPoint).filter(key => key != getLabelName()).map(key => (dataPoint[key] as number));
+  return Object.keys(dataPoint).filter(key => key != dataset.getLabelName()).map(key => (dataPoint[key] as number));
 }
 
 function oneStep(): void {
@@ -991,14 +998,14 @@ function oneStep(): void {
     // let input = constructInput(point.x, point.y);
     let input = constructInputFromDataPoint(point);
     nn.forwardProp(network, input);
-    nn.backProp(network, (point[getLabelName()] as number), nn.Errors.SQUARE);
+    nn.backProp(network, (point[dataset.getLabelName()] as number), nn.Errors.SQUARE);
     if ((i + 1) % state.batchSize === 0) {
       nn.updateWeights(network, state.learningRate, state.regularizationRate);
     }
   });
   // Compute the loss.
-  lossTrain = getLoss(network, trainData, "train");
-  lossTest = getLoss(network, testData, "test");
+  // lossTrain = getLoss(network, trainData, "train");
+  // lossTest = getLoss(network, testData, "test");
   updateUI();
 }
 
@@ -1038,8 +1045,8 @@ function reset(onStartup=false) {
       nn.Activations.LINEAR : nn.Activations.TANH;
   network = nn.buildNetwork(state.networkShape, state.activation, outputActivation,
       state.regularization, constructInputIds(), state.initZero);
-  lossTrain = getLoss(network, trainData, "reset train");
-  lossTest = getLoss(network, testData, "reset test");
+  // lossTrain = getLoss(network, trainData, "reset train");
+  // lossTest = getLoss(network, testData, "reset test");
   drawNetwork(network);
   updateUI(true);
 }
@@ -1068,39 +1075,39 @@ function initTutorial() {
   });
 }
 
-function drawDatasetThumbnails() {
-  function renderThumbnail(canvas, dataGenerator) {
-    let w = 100;
-    let h = 100;
-    canvas.setAttribute("width", w);
-    canvas.setAttribute("height", h);
-    let context = canvas.getContext("2d");
-    let data = dataGenerator(200, 0);
-    data.forEach(function(d) {
-      context.fillStyle = colorScale(d.label);
-      context.fillRect(w * (d.x + 6) / 12, h * (d.y + 6) / 12, 4, 4);
-    });
-    d3.select(canvas.parentNode).style("display", null);
-  }
-  d3.selectAll(".dataset").style("display", "none");
+// function drawDatasetThumbnails() {
+//   function renderThumbnail(canvas, dataGenerator) {
+//     let w = 100;
+//     let h = 100;
+//     canvas.setAttribute("width", w);
+//     canvas.setAttribute("height", h);
+//     let context = canvas.getContext("2d");
+//     let data = dataGenerator(200, 0);
+//     data.forEach(function(d) {
+//       context.fillStyle = colorScale(d.label);
+//       context.fillRect(w * (d.x + 6) / 12, h * (d.y + 6) / 12, 4, 4);
+//     });
+//     d3.select(canvas.parentNode).style("display", null);
+//   }
+//   d3.selectAll(".dataset").style("display", "none");
 
-  if (state.problem === Problem.CLASSIFICATION) {
-    for (let dataset in datasets) {
-      let canvas: any =
-          document.querySelector(`canvas[data-dataset=${dataset}]`);
-      let dataGenerator = datasets[dataset];
-      renderThumbnail(canvas, dataGenerator);
-    }
-  }
-  if (state.problem === Problem.REGRESSION) {
-    for (let regDataset in regDatasets) {
-      let canvas: any =
-          document.querySelector(`canvas[data-regDataset=${regDataset}]`);
-      let dataGenerator = regDatasets[regDataset];
-      renderThumbnail(canvas, dataGenerator);
-    }
-  }
-}
+//   if (state.problem === Problem.CLASSIFICATION) {
+//     for (let dataset in datasets) {
+//       let canvas: any =
+//           document.querySelector(`canvas[data-dataset=${dataset}]`);
+//       let dataGenerator = datasets[dataset];
+//       renderThumbnail(canvas, dataGenerator);
+//     }
+//   }
+//   if (state.problem === Problem.REGRESSION) {
+//     for (let regDataset in regDatasets) {
+//       let canvas: any =
+//           document.querySelector(`canvas[data-regDataset=${regDataset}]`);
+//       let dataGenerator = regDatasets[regDataset];
+//       renderThumbnail(canvas, dataGenerator);
+//     }
+//   }
+// }
 
 function hideControls() {
   // Set display:none to all the UI elements that are hidden.
@@ -1141,34 +1148,34 @@ function hideControls() {
     .attr("href", window.location.href);
 }
 
-function generateData(firstTime = false) {
-  if (!firstTime) {
-    // Change the seed.
-    state.seed = Math.random().toFixed(5);
-    state.serialize();
-  }
-  Math.seedrandom(state.seed);
-  let numSamples = (state.problem === Problem.REGRESSION) ?
-      NUM_SAMPLES_REGRESS : NUM_SAMPLES_CLASSIFY;
-  let generator = state.problem === Problem.CLASSIFICATION ?
-      state.dataset : state.regDataset;
-  let data = generator(numSamples, state.noise / 100);
-  // Shuffle the data in-place.
-  shuffle(data);
-  // Split into train and test data.
-  let splitIndex = Math.floor(data.length * state.percTrainData / 100);
-  trainData = data.slice(0, splitIndex);
-  testData = data.slice(splitIndex);
+// function generateData(firstTime = false) {
+//   if (!firstTime) {
+//     // Change the seed.
+//     state.seed = Math.random().toFixed(5);
+//     state.serialize();
+//   }
+//   Math.seedrandom(state.seed);
+//   let numSamples = (state.problem === Problem.REGRESSION) ?
+//       NUM_SAMPLES_REGRESS : NUM_SAMPLES_CLASSIFY;
+//   let generator = state.problem === Problem.CLASSIFICATION ?
+//       state.dataset : state.regDataset;
+//   let data = generator(numSamples, state.noise / 100);
+//   // Shuffle the data in-place.
+//   shuffle(data);
+//   // Split into train and test data.
+//   let splitIndex = Math.floor(data.length * state.percTrainData / 100);
+//   trainData = data.slice(0, splitIndex);
+//   testData = data.slice(splitIndex);
 
-  state.initNetworkShapeWithDataPoints(trainData, "label");
-/*
-  heatMap.updatePoints(trainData);
-  heatMap.updateTestPoints(state.showTestData ? testData : []);
-*/
-}
+//   state.initNetworkShapeWithDataPoints(trainData, "label");
+// /*
+//   heatMap.updatePoints(trainData);
+//   heatMap.updateTestPoints(state.showTestData ? testData : []);
+// */
+// }
 
-let firstInteraction = true;
-let parametersChanged = false;
+// let firstInteraction = true;
+// let parametersChanged = false;
 
 /*
 function userHasInteracted() {
@@ -1198,10 +1205,11 @@ function simulationStarted() {
 // drawDatasetThumbnails();
 initTutorial();
 makeGUI();
-generateData(true);
+//generateData(true);
+trainData = dataReader.train;
+testData = dataReader.test;
 
-dataset = new Dataset(trainData, testData, "label");
-model = new Model(state, dataset);
+dataset = new Dataset(trainData, testData, "species");
 
 reset(true);
 hideControls();

@@ -15,7 +15,8 @@ limitations under the License.
 
 import * as nn from "./nn";
 import * as dataset from "./datasetV5";
-import {DataPoint} from "./datasetV5";
+import {DataPoint, Dataset} from "./datasetV5";
+import { data } from "@tensorflow/tfjs";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -109,9 +110,9 @@ export interface Property {
 // Add the GUI state.
 export class State {
 
-  constructor(dataPoints?: DataPoint[], labelName?: string) {
-    if(dataPoints) {
-      this.initNetworkShapeWithDataPoints(dataPoints, labelName)
+  constructor(dataset?: Dataset) {
+    if(dataset) {
+      this.initNetworkShapeWithDataset(dataset)
     } else {
       this.networkShape = []
     }
@@ -177,12 +178,11 @@ export class State {
   sinX = false;
   cosY = false;
   sinY = false;
-  dataset: dataset.DataGenerator = dataset.classifyCircleData;
-  regDataset: dataset.DataGenerator = dataset.regressPlane;
+  // dataset: dataset.DataGenerator = dataset.classifyCircleData;
+  // regDataset: dataset.DataGenerator = dataset.regressPlane;
   seed: string;
 
-  initNetworkShapeWithDataPoints(dataPoints: dataset.DataPoint[], labelName: string): void {
-    dataset.init(dataPoints, labelName);
+  initNetworkShapeWithDataset(dataset: Dataset): void {
     const inputShape = dataset.getInputShape();
     const outputShape = dataset.getOutputShape();
 
@@ -197,13 +197,13 @@ export class State {
   /**
    * Deserializes the state from the url hash.
    */
-  static deserializeState(dataPoints?: DataPoint[], labelName?: string): State {
+  static deserializeState(dataset?: Dataset): State {
     let map: {[key: string]: string} = {};
     for (let keyvalue of window.location.hash.slice(1).split("&")) {
       let [name, value] = keyvalue.split("=");
       map[name] = value;
     }
-    let state = new State(dataPoints, labelName);
+    let state = new State(dataset);
 
     function hasKey(name: string): boolean {
       return name in map && map[name] != null && map[name].trim() !== "";

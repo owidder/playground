@@ -24,6 +24,7 @@ export class Model {
             const config: DenseLayerArgs = {
                 activation: layerIndex == state.networkShape.length-1 ? "softmax" : (state.activationName as ActivationIdentifier),
                 units: numberOfNodesInLayer,
+                name: `${layerIndex}`
             }
             if(layerIndex == 0) {
                 config.inputShape = [state.networkShape[0]]
@@ -40,6 +41,15 @@ export class Model {
     }
 
     public fitStep = async (): Promise<History> => {
-        return this._sequential.fit(this._dataset.getTrainInputTensor(), this._dataset.getTrainOutputTensor());
+        const inputTensor = this._dataset.getTrainInputTensor();
+        const outputTensor = this._dataset.getTrainOutputTensor();
+        const history = await this._sequential.fit(inputTensor, outputTensor, {epochs: 5});
+        const weights = this._sequential.getLayer("", 1).getWeights();
+        const kernelWeights = await weights[0].data();
+        const biasWeights = await weights[1].data();
+        console.log(kernelWeights);
+        console.log(biasWeights);
+        console.log(history.history.loss[0])
+        return history;
     }
 }
