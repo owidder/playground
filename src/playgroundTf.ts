@@ -109,28 +109,28 @@ class Player {
   private callback: (isPlaying: boolean) => void = null;
 
   /** Plays/pauses the player. */
-  playOrPause() {
-    if (this.isPlaying) {
-      this.isPlaying = false;
-      this.pause();
-    } else {
-      this.isPlaying = true;
-      this.play();
-    }
-  }
+  // playOrPause() {
+  //   if (this.isPlaying) {
+  //     this.isPlaying = false;
+  //     this.pause();
+  //   } else {
+  //     this.isPlaying = true;
+  //     this.play();
+  //   }
+  // }
 
   onPlayPause(callback: (isPlaying: boolean) => void) {
     this.callback = callback;
   }
 
-  play() {
-    this.pause();
-    this.isPlaying = true;
-    if (this.callback) {
-      this.callback(this.isPlaying);
-    }
-    this.start(this.timerIndex);
-  }
+  // play() {
+  //   this.pause();
+  //   this.isPlaying = true;
+  //   if (this.callback) {
+  //     this.callback(this.isPlaying);
+  //   }
+  //   this.start(this.timerIndex);
+  // }
 
   pause() {
     this.timerIndex++;
@@ -140,54 +140,16 @@ class Player {
     }
   }
 
-  private start(localTimerIndex: number) {
-    d3.timer(() => {
-      if (localTimerIndex < this.timerIndex) {
-        return true;  // Done.
-      }
-      oneStep();
-      return false;  // Not done.
-    }, 0);
-  }
+//   private start(localTimerIndex: number) {
+//     d3.timer(() => {
+//       if (localTimerIndex < this.timerIndex) {
+//         return true;  // Done.
+//       }
+//       oneStep();
+//       return false;  // Not done.
+//     }, 0);
+//   }
 }
-
-let state = State.deserializeState();
-
-// Filter out inputs that are hidden.
-state.getHiddenProps().forEach(prop => {
-  if (prop in INPUTS) {
-    delete INPUTS[prop];
-  }
-});
-
-// let boundary: {[id: string]: number[][]} = {};
-let selectedNodeId: string = null;
-// Plot the heatmap.
-let xDomain: [number, number] = [-6, 6];
-/*
-let heatMap =
-    new HeatMap(300, DENSITY, xDomain, xDomain, d3.select("#heatmap"),
-        {showAxes: true});
-*/
-let linkWidthScale = d3.scaleLinear()
-  .domain([0, 5])
-  .range([1, 10])
-  .clamp(true);
-let colorScale = d3.scaleLinear<string, number>()
-                     .domain([-1, 0, 1])
-                     .range(["#f59322", "#e8eaeb", "#0877bd"])
-                     .clamp(true);
-let iter = 0;
-let trainData: DataPoint[] = [];
-let testData: DataPoint[] = [];
-let network: nn.Node[][] = null;
-// let lossTrain = 0;
-// let lossTest = 0;
-let player = new Player();
-/*
-let lineChart = new AppendingLineChart(d3.select("#linechart"),
-    ["#777", "black"]);
-*/
 
 function makeGUI() {
   d3.select("#reset-button").on("click", () => {
@@ -195,24 +157,23 @@ function makeGUI() {
     d3.select("#play-pause-button");
   });
 
-  d3.select("#play-pause-button").on("click", function () {
-    // Change the button's content.
-    player.playOrPause();
-  });
-
+  // d3.select("#play-pause-button").on("click", function () {
+  //   // Change the button's content.
+  //   player.playOrPause();
+  // });
   d3.select("#build-button").on("click", function () {
     model = new Model(state, dataset);
     ui.modelCurrent();
   });
 
-  player.onPlayPause(isPlaying => {
-    d3.select("#play-pause-button").classed("playing", isPlaying);
-  });
+  // player.onPlayPause(isPlaying => {
+  //   d3.select("#play-pause-button").classed("playing", isPlaying);
+  // });
 
-  d3.select("#next-step-button").on("click", () => {
-    player.pause();
-    oneStep();
-  });
+  // d3.select("#next-step-button").on("click", () => {
+  //   player.pause();
+  //   oneStep();
+  // });
 
   d3.select("#next-step-tf-button").on("click", async () => {
     ui.stepStarted();
@@ -992,22 +953,22 @@ const constructInputFromDataPoint = (dataPoint: DataPoint): number[] => {
   return Object.keys(dataPoint).filter(key => key != dataset.getLabelName()).map(key => (dataPoint[key] as number));
 }
 
-function oneStep(): void {
-  iter++;
-  trainData.forEach((point, i) => {
-    // let input = constructInput(point.x, point.y);
-    let input = constructInputFromDataPoint(point);
-    nn.forwardProp(network, input);
-    nn.backProp(network, (point[dataset.getLabelName()] as number), nn.Errors.SQUARE);
-    if ((i + 1) % state.batchSize === 0) {
-      nn.updateWeights(network, state.learningRate, state.regularizationRate);
-    }
-  });
-  // Compute the loss.
-  // lossTrain = getLoss(network, trainData, "train");
-  // lossTest = getLoss(network, testData, "test");
-  updateUI();
-}
+// function oneStep(): void {
+//   iter++;
+//   trainData.forEach((point, i) => {
+//     // let input = constructInput(point.x, point.y);
+//     let input = constructInputFromDataPoint(point);
+//     nn.forwardProp(network, input);
+//     nn.backProp(network, (point[dataset.getLabelName()] as number), nn.Errors.SQUARE);
+//     if ((i + 1) % state.batchSize === 0) {
+//       nn.updateWeights(network, state.learningRate, state.regularizationRate);
+//     }
+//   });
+//   // Compute the loss.
+//   // lossTrain = getLoss(network, trainData, "train");
+//   // lossTest = getLoss(network, testData, "test");
+//   updateUI();
+// }
 
 export function getOutputWeights(network: nn.Node[][]): number[] {
   let weights: number[] = [];
@@ -1029,7 +990,7 @@ function reset(onStartup=false) {
 
   // lineChart.reset();
   state.serialize();
-  player.pause();
+  // player.pause();
 
   let suffix = state.numLayers !== 1 ? "s" : "";
   d3.select("#layers-label").text("Layer" + suffix);
@@ -1198,14 +1159,53 @@ function simulationStarted() {
 }
 */
 
+let state = State.deserializeState();
+
+// Filter out inputs that are hidden.
+state.getHiddenProps().forEach(prop => {
+  if (prop in INPUTS) {
+    delete INPUTS[prop];
+  }
+});
+
+// let boundary: {[id: string]: number[][]} = {};
+// let selectedNodeId: string = null;
+// Plot the heatmap.
+// let xDomain: [number, number] = [-6, 6];
+/*
+let heatMap =
+    new HeatMap(300, DENSITY, xDomain, xDomain, d3.select("#heatmap"),
+        {showAxes: true});
+*/
+let linkWidthScale = d3.scaleLinear()
+  .domain([0, 5])
+  .range([1, 10])
+  .clamp(true);
+let colorScale = d3.scaleLinear<string, number>()
+                     .domain([-1, 0, 1])
+                     .range(["#f59322", "#e8eaeb", "#0877bd"])
+                     .clamp(true);
+let iter = 0;
+let trainData: DataPoint[] = [];
+let testData: DataPoint[] = [];
+let network: nn.Node[][] = null;
+// let lossTrain = 0;
+// let lossTest = 0;
+// let player = new Player();
+/*
+let lineChart = new AppendingLineChart(d3.select("#linechart"),
+    ["#777", "black"]);
+*/
+
 // drawDatasetThumbnails();
-initTutorial();
-makeGUI();
 //generateData(true);
+
 trainData = dataReader.train;
 testData = dataReader.test;
 
 dataset = new Dataset(trainData, testData, "species");
 
+initTutorial();
+makeGUI();
 reset(true);
 hideControls();
