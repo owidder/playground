@@ -1204,6 +1204,7 @@ trainData = dataReader.train;
 testData = dataReader.test;
 
 dataset = new Dataset(trainData, testData, "species");
+state.initNetworkShapeWithDataset(dataset);
 
 initTutorial();
 makeGUI();
