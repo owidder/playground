@@ -52,4 +52,8 @@ export class Model {
         console.log(history.history.loss[0])
         return history;
     }
+    // including input layer
+    public numberOfLayers = (): number => {
+        return this._sequential.getConfig().layers.length + 1
+    }
 }

@@ -17,6 +17,7 @@ import * as nn from "./nn";
 import * as dataset from "./datasetV5";
 import {DataPoint, Dataset} from "./datasetV5";
 import { data } from "@tensorflow/tfjs";
+import {Model} from "./tf/model";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -109,6 +110,9 @@ export interface Property {
 
 // Add the GUI state.
 export class State {
+
+  private model: Model;
+  public getModel = () => this.model;
 
   constructor(dataset?: Dataset) {
     if(dataset) {
