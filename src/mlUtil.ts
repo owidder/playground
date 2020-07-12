@@ -1,5 +1,5 @@
-// kodos to: https://dev.to/ycmjason/how-to-create-range-in-javascript-539i
-function* range(start, end) {
+// kudos to: https://dev.to/ycmjason/how-to-create-range-in-javascript-539i
+export function* range(start, end) {
     if (start === end) return;
     yield start;
     yield* range(start + 1, end);

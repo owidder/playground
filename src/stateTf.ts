@@ -116,7 +116,7 @@ export class State {
 
   constructor(dataset?: Dataset) {
     if(dataset) {
-      this.initNetworkShapeWithDataset(dataset)
+      this.initModel(dataset)
     } else {
       this.networkShape = []
     }
@@ -186,7 +186,7 @@ export class State {
   // regDataset: dataset.DataGenerator = dataset.regressPlane;
   seed: string;
 
-  initNetworkShapeWithDataset(dataset: Dataset): void {
+  initModel(dataset: Dataset): void {
     const inputShape = dataset.getInputShape();
     const outputShape = dataset.getOutputShape();
 
@@ -196,6 +196,8 @@ export class State {
       this.networkShape = [inputShape, ...this.networkShape.slice(1, this.networkShape.length-1), outputShape];
     }
     this.numLayers = this.networkShape.length;
+
+    this.model = new Model(this.networkShape, this.activationName, dataset);
   }
 
   /**

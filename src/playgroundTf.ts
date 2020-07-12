@@ -38,11 +38,12 @@ import * as nn from "./nn";
 import {DataPoint} from "./datasetV5";
 import * as d3 from 'd3';
 import 'd3-selection-multi';
+import { step } from "@tensorflow/tfjs";
 
 let mainWidth: number;
 
 let dataset: Dataset;
-let model: Model;
+// let model: Model;
 
 // More scrolling
 d3.select(".more button").on("click", function() {
@@ -162,7 +163,7 @@ function makeGUI() {
   //   player.playOrPause();
   // });
   d3.select("#build-button").on("click", function () {
-    model = new Model(state, dataset);
+    state.initModel(dataset);
     ui.modelCurrent();
   });
 
@@ -177,7 +178,7 @@ function makeGUI() {
 
   d3.select("#next-step-tf-button").on("click", async () => {
     ui.stepStarted();
-    await model.fitStep();
+    await state.getModel().fitStep();
     ui.stepEnded();
   })
 
@@ -538,8 +539,8 @@ function drawNetwork(network: nn.Node[][]): void {
 
   const columnFeatures = d3.select(".column.features");
   columnFeatures.style("height", "1000px");
-
   let padding = 3;
+
   let co = d3.select(".column.output").node() as HTMLDivElement;
   let cf = columnFeatures.node() as HTMLDivElement;
   //let width = co.offsetLeft - cf.offsetLeft;
@@ -552,7 +553,7 @@ function drawNetwork(network: nn.Node[][]): void {
     .classed("core", true)
     .attr("transform", `translate(${padding},${padding})`);
   // Draw the network layer by layer.
-  let numLayers = network.length;
+  let numLayers = state.getModel().numberOfLayers();
   let featureWidth = 118;
   let layerScale = d3.scalePoint<number>()
       .domain(d3.range(0, numLayers))
@@ -580,7 +581,7 @@ function drawNetwork(network: nn.Node[][]): void {
 
   // Draw the intermediate layers.
   for (let layerIdx = 0; layerIdx < numLayers; layerIdx++) {
-    let numNodes = network[layerIdx].length;
+    let numNodes = state.getModel().layerSize(layerIdx);
     let cx = layerScale(layerIdx) + RECT_SIZE / 2;
     maxY = Math.max(maxY, nodeIndexScale(numNodes));
     if(layerIdx > 0 && layerIdx < numLayers-1) {
@@ -1204,7 +1205,7 @@ trainData = dataReader.train;
 testData = dataReader.test;
 
 dataset = new Dataset(trainData, testData, "species");
-state.initNetworkShapeWithDataset(dataset);
+state.initModel(dataset);
 
 initTutorial();
 makeGUI();
