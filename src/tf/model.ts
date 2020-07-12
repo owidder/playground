@@ -92,7 +92,7 @@ export class Model {
     }
 
     public createNetwork = (): TfNode[][] => {
-        const network = range(0, this.numberOfLayers).map(layerIndex => {
+        const network = range(0, this.numberOfLayers()).map((layerIndex: number) => {
             return this.createNodesOfLayer(layerIndex)
         })
 

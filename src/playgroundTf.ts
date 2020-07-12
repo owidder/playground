@@ -532,6 +532,7 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
 
 // Draw network
 function drawNetwork(): void {
+  const network = state.getModel().createNetwork();
   let svg = d3.select("#svg");
   // Remove all svg elements.
   svg.select("g.core").remove();
@@ -590,7 +591,7 @@ function drawNetwork(): void {
       addPlusMinusControl(layerScale(layerIdx), layerIdx);
     }
     for (let i = 0; i < numNodes; i++) {
-      let node = state.getModel().getNode(layerIdx, i);
+      let node = network[layerIdx][i];
       let cy = nodeIndexScale(i) + RECT_SIZE / 2;
       node2coord[node.id] = {cx, cy};
       drawNode(cx, cy, node.id, false, container, node);
@@ -757,7 +758,7 @@ function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
 }
 
 function drawLink(
-    input: nn.Link, node2coord: {[id: string]: {cx: number, cy: number}},
+    input: TfLink, node2coord: {[id: string]: {cx: number, cy: number}},
     network: nn.Node[][], container,
     isFirst: boolean, index: number, length: number) {
   let line = container.insert("path", ":first-child");
