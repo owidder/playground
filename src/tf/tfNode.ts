@@ -1,15 +1,14 @@
 import {TfLink} from "./tfLink";
 
 export class TfNode {
-    private id: string;
-    private inputLinks?: TfLink[];
+    id: string;
+    inputLinks?: TfLink[];
+    bias?: number;
 
-    public getId = () => this.id;
-    public getInputLinks = () => this.inputLinks;
-
-    constructor(id: string, inputLinks?: TfLink[]) {
+    constructor(id: string, inputLinks?: TfLink[], bias?: number) {
         this.id = id;
         this.inputLinks = inputLinks;
+        this.bias = bias;
     }
 }
 

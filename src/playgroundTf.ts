@@ -39,6 +39,8 @@ import {DataPoint} from "./datasetV5";
 import * as d3 from 'd3';
 import 'd3-selection-multi';
 import { step } from "@tensorflow/tfjs";
+import { TfNode } from "./tf/tfNode";
+import { TfLink } from "./tf/tfLink";
 
 let mainWidth: number;
 
@@ -374,7 +376,7 @@ function makeGUI() {
         .getBoundingClientRect().width;
     if (newWidth !== mainWidth) {
       mainWidth = newWidth;
-      drawNetwork(network);
+      drawNetwork();
       updateUI(true);
     }
   });
@@ -414,7 +416,7 @@ function updateWeightsUI(network: nn.Node[][], container) {
 }
 
 function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
-    container, node?: nn.Node) {
+    container, node?: TfNode) {
   let x = cx - RECT_SIZE / 2;
   let y = cy - RECT_SIZE / 2;
 
@@ -529,7 +531,7 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
 }
 
 // Draw network
-function drawNetwork(network: nn.Node[][]): void {
+function drawNetwork(): void {
   let svg = d3.select("#svg");
   // Remove all svg elements.
   svg.select("g.core").remove();
@@ -588,7 +590,7 @@ function drawNetwork(network: nn.Node[][]): void {
       addPlusMinusControl(layerScale(layerIdx), layerIdx);
     }
     for (let i = 0; i < numNodes; i++) {
-      let node = network[layerIdx][i];
+      let node = state.getModel().getNode(layerIdx, i);
       let cy = nodeIndexScale(i) + RECT_SIZE / 2;
       node2coord[node.id] = {cx, cy};
       drawNode(cx, cy, node.id, false, container, node);
@@ -707,7 +709,7 @@ function addPlusMinusControl(x: number, layerIdx: number) {
   );
 }
 
-function updateHoverCard(type: HoverType, nodeOrLink?: nn.Node | nn.Link,
+function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
     coordinates?: [number, number]) {
   let hovercard = d3.select("#hovercard");
   if (type == null) {
@@ -722,9 +724,9 @@ function updateHoverCard(type: HoverType, nodeOrLink?: nn.Node | nn.Link,
     input.on("input", function() {
       if ((this as any).value != null && (this as any).value !== "") {
         if (type === HoverType.WEIGHT) {
-          (nodeOrLink as nn.Link).weight = +(this as any).value;
+          (nodeOrLink as TfLink).weight = +(this as any).value;
         } else {
-          (nodeOrLink as nn.Node).bias = +(this as any).value;
+          (nodeOrLink as TfNode).bias = +(this as any).value;
         }
         updateUI();
       }
@@ -1001,11 +1003,11 @@ function reset(onStartup=false) {
   iter = 0;
   let outputActivation = (state.problem === Problem.REGRESSION) ?
       nn.Activations.LINEAR : nn.Activations.TANH;
-  network = nn.buildNetwork(state.networkShape, state.activation, outputActivation,
-      state.regularization, constructInputIds(), state.initZero);
+  // network = nn.buildNetwork(state.networkShape, state.activation, outputActivation,
+  //     state.regularization, constructInputIds(), state.initZero);
   // lossTrain = getLoss(network, trainData, "reset train");
   // lossTest = getLoss(network, testData, "reset test");
-  drawNetwork(network);
+  drawNetwork();
   updateUI(true);
 }
 
@@ -1189,7 +1191,6 @@ let colorScale = d3.scaleLinear<string, number>()
 let iter = 0;
 let trainData: DataPoint[] = [];
 let testData: DataPoint[] = [];
-let network: nn.Node[][] = null;
 // let lossTrain = 0;
 // let lossTest = 0;
 // let player = new Player();

@@ -71,20 +71,31 @@ export class Model {
 
     public static nodeId = (layerIndex: number, nodeIndex: number) => `${layerIndex}-${nodeIndex}`;
 
-    private createInputLinks = (layerIndex: number, nodeIndex: number): TfLink[] => {
-        const weights: number[] = Array.from(this._sequential.getLayer("", layerIndex).getWeights()[0].dataSync());
+    private createInputLinks = (layerIndex: number, nodeIndex: number, weights: number[]): TfLink[] => {
+        const numberOfInputLinks = this.layerSize(layerIndex-1);
         const thisNodeId = Model.nodeId(layerIndex, nodeIndex);
-        const links = weights.map((weight, i) => new TfLink(Model.nodeId(layerIndex-1, i), thisNodeId, weight));
+        const links = weights.slice(nodeIndex*numberOfInputLinks, (nodeIndex+1)*numberOfInputLinks)
+            .map((weight, i) => new TfLink(Model.nodeId(layerIndex-1, i), thisNodeId, weight));
         return links
     }
 
-    public getNode = (layerIndex: number, nodeIndex: number): TfNode => {
-        const thisNodeId = Model.nodeId(layerIndex, nodeIndex);
-        if(layerIndex == 0) {
-            return new TfNode(thisNodeId);
-        } else {
-            const inputLinks = this.createInputLinks(layerIndex, nodeIndex);
-            return new TfNode(thisNodeId, inputLinks);
-        }
+    private createNodesOfLayer = (layerIndex: number): TfNode[] => {
+        const weights: number[] = Array.from(this._sequential.getLayer("", layerIndex).getWeights()[0].dataSync());
+        const biases: number[] = Array.from(this._sequential.getLayer("", layerIndex).getWeights()[1].dataSync());
+
+        const nodes = biases.map((bias, i) => {
+            const links = this.createInputLinks(layerIndex, i, weights);
+            return new TfNode(Model.nodeId(layerIndex, i), links, bias);
+        })
+
+        return nodes
+    }
+
+    public createNetwork = (): TfNode[][] => {
+        const network = range(0, this.numberOfLayers).map(layerIndex => {
+            return this.createNodesOfLayer(layerIndex)
+        })
+
+        return network
     }
 }
