@@ -66,7 +66,7 @@ export class Model {
         if(layerIndex == 0) {
             return this._sequential.getConfig().layers[0].config.batchInputShape[1];
         } else {
-            this._sequential.getConfig().layers[layerIndex-1].config.units;
+            return this._sequential.getConfig().layers[layerIndex-1].config.units;
         }
     }
 
@@ -81,15 +81,19 @@ export class Model {
     }
 
     private createNodesOfLayer = (layerIndex: number): TfNode[] => {
-        const weights: number[] = Array.from(this._sequential.getLayer("", layerIndex).getWeights()[0].dataSync());
-        const biases: number[] = Array.from(this._sequential.getLayer("", layerIndex).getWeights()[1].dataSync());
-
-        const nodes = biases.map((bias, i) => {
-            const links = this.createInputLinks(layerIndex, i, weights);
-            return new TfNode(Model.nodeId(layerIndex, i), links, bias);
-        })
-
-        return nodes
+        if(layerIndex == 0) {
+            return range(0, this.layerSize(0)).map((i) => new TfNode(Model.nodeId(0, i)))
+        } else {
+            const weights: number[] = Array.from(this._sequential.getLayer("", layerIndex-1).getWeights()[0].dataSync());
+            const biases: number[] = Array.from(this._sequential.getLayer("", layerIndex-1).getWeights()[1].dataSync());
+    
+            const nodes = biases.map((bias, i) => {
+                const links = this.createInputLinks(layerIndex, i, weights);
+                return new TfNode(Model.nodeId(layerIndex, i), links, bias)
+            })
+    
+            return nodes
+            }
     }
 
     public getNetwork = (): TfNode[][] => {
