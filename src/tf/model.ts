@@ -72,17 +72,19 @@ export class Model {
     public static nodeId = (layerIndex: number, nodeIndex: number) => `${layerIndex}-${nodeIndex}`;
 
     private createInputLinks = (layerIndex: number, nodeIndex: number): TfLink[] => {
-        const numberOfInputNodes = this.layerSize(layerIndex-1);
-
-        return undefined
+        const weights: number[] = Array.from(this._sequential.getLayer("", layerIndex).getWeights()[0].dataSync());
+        const thisNodeId = Model.nodeId(layerIndex, nodeIndex);
+        const links = weights.map((weight, i) => new TfLink(Model.nodeId(layerIndex-1, i), thisNodeId, weight));
+        return links
     }
 
     public getNode = (layerIndex: number, nodeIndex: number): TfNode => {
+        const thisNodeId = Model.nodeId(layerIndex, nodeIndex);
         if(layerIndex == 0) {
-            return new TfNode(Model.nodeId(layerIndex, nodeIndex));
+            return new TfNode(thisNodeId);
         } else {
-            
+            const inputLinks = this.createInputLinks(layerIndex, nodeIndex);
+            return new TfNode(thisNodeId, inputLinks);
         }
-        return new TfNode(`${layerIndex}-${nodeIndex}`)
     }
 }
