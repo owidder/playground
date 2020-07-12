@@ -182,6 +182,7 @@ function makeGUI() {
     ui.stepStarted();
     await state.getModel().fitStep();
     ui.stepEnded();
+    drawNetwork();
   })
 
 /*

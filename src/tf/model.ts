@@ -51,9 +51,6 @@ export class Model {
         const weights = this._sequential.getLayer("", 1).getWeights();
         const kernelWeights = await weights[0].data();
         const biasWeights = await weights[1].data();
-        console.log(kernelWeights);
-        console.log(biasWeights);
-        console.log(history.history.loss[0])
         return history;
     }
 
@@ -86,6 +83,9 @@ export class Model {
         } else {
             const weights: number[] = Array.from(this._sequential.getLayer("", layerIndex-1).getWeights()[0].dataSync());
             const biases: number[] = Array.from(this._sequential.getLayer("", layerIndex-1).getWeights()[1].dataSync());
+
+            console.log(weights);
+            console.log(biases);
     
             const nodes = biases.map((bias, i) => {
                 const links = this.createInputLinks(layerIndex, i, weights);
