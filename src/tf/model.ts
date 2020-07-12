@@ -1,7 +1,6 @@
 import * as tf from "@tensorflow/tfjs";
 
-import {State} from "../stateTf";
-import {Dataset} from "../datasetV5";
+ import {Dataset} from "../datasetV5";
 import {TfNode} from "./tfNode";
 
 import {Sequential} from "@tensorflow/tfjs-layers/dist/models";
@@ -15,8 +14,8 @@ import {range} from "../util/mlUtil";
 export class Model {
 
     private _sequential: Sequential;
-    private _state: State;
     private _dataset: Dataset;
+    private _networkCache: TfNode[][];
 
     constructor(networkShape: number[], activationName: string, dataset: Dataset) {
         this._dataset = dataset;
@@ -44,6 +43,8 @@ export class Model {
     }
 
     public fitStep = async (): Promise<History> => {
+        this._networkCache = undefined;
+
         const inputTensor = this._dataset.getTrainInputTensor();
         const outputTensor = this._dataset.getTrainOutputTensor();
         const history = await this._sequential.fit(inputTensor, outputTensor, {epochs: 5});
@@ -91,11 +92,19 @@ export class Model {
         return nodes
     }
 
-    public createNetwork = (): TfNode[][] => {
-        const network = range(0, this.numberOfLayers()).map((layerIndex: number) => {
-            return this.createNodesOfLayer(layerIndex)
-        })
+    public getNetwork = (): TfNode[][] => {
+        if(!this._networkCache) {
+            this._networkCache = range(0, this.numberOfLayers()).map((layerIndex: number) => {
+                return this.createNodesOfLayer(layerIndex)
+            })
+        }
 
-        return network
+        return this._networkCache
+    }
+
+    public forEachNode = (ignoreInputs: boolean, accessor: (node: TfNode) => any) => {
+        this.getNetwork().slice(ignoreInputs ? 1 : 0).forEach(layer => {
+            layer.forEach(accessor)
+        })
     }
 }

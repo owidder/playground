@@ -389,13 +389,13 @@ function makeGUI() {
   }
 }
 
-function updateBiasesUI(network: nn.Node[][]) {
-  nn.forEachNode(network, true, node => {
+function updateBiasesUI(network: TfNode[][]) {
+  state.getModel().forEachNode(true, node => {
     d3.select(`rect#bias-${node.id}`).style("fill", colorScale(node.bias));
-  });
+  })
 }
 
-function updateWeightsUI(network: nn.Node[][], container) {
+function updateWeightsUI(network: TfNode[][], container) {
   for (let layerIdx = 1; layerIdx < network.length; layerIdx++) {
     let currentLayer = network[layerIdx];
     // Update all the nodes in this layer.
@@ -403,7 +403,7 @@ function updateWeightsUI(network: nn.Node[][], container) {
       let node = currentLayer[i];
       for (let j = 0; j < node.inputLinks.length; j++) {
         let link = node.inputLinks[j];
-        container.select(`#link${link.source.id}-${link.dest.id}`)
+        container.select(`#link${link.sourceId}-${link.destId}`)
             .styles({
               "stroke-dashoffset": -iter / 3,
               "stroke-width": linkWidthScale(Math.abs(link.weight)),
@@ -532,7 +532,7 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
 
 // Draw network
 function drawNetwork(): void {
-  const network = state.getModel().createNetwork();
+  const network = state.getModel().getNetwork();
   let svg = d3.select("#svg");
   // Remove all svg elements.
   svg.select("g.core").remove();
@@ -622,9 +622,9 @@ function drawNetwork(): void {
         let lastNodePrevLayer = prevLayer[prevLayer.length - 1];
         if (targetIdWithCallout == null &&
             i === numNodes - 1 &&
-            link.source.id === lastNodePrevLayer.id &&
-            (link.source.id !== idWithCallout || numLayers <= 5) &&
-            link.dest.id !== idWithCallout &&
+            link.sourceId === lastNodePrevLayer.id &&
+            (link.sourceId !== idWithCallout || numLayers <= 5) &&
+            link.destId !== idWithCallout &&
             prevLayer.length >= numNodes) {
           let midPoint = path.getPointAtLength(path.getTotalLength() * 0.7);
           calloutWeights.styles({
@@ -632,7 +632,7 @@ function drawNetwork(): void {
             top: `${midPoint.y + 5}px`,
             left: `${midPoint.x + 3}px`
           });
-          targetIdWithCallout = link.dest.id;
+          targetIdWithCallout = link.destId;
         }
       }
     }
@@ -740,8 +740,8 @@ function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
     (input.node() as HTMLInputElement).focus();
   });
   let value = (type === HoverType.WEIGHT) ?
-    (nodeOrLink as nn.Link).weight :
-    (nodeOrLink as nn.Node).bias;
+    (nodeOrLink as TfLink).weight :
+    (nodeOrLink as TfNode).bias;
   let name = (type === HoverType.WEIGHT) ? "Weight" : "Bias";
   hovercard.styles({
     "left": `${coordinates[0] + 20}px`,
@@ -759,11 +759,11 @@ function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
 
 function drawLink(
     input: TfLink, node2coord: {[id: string]: {cx: number, cy: number}},
-    network: nn.Node[][], container,
+    network: TfNode[][], container,
     isFirst: boolean, index: number, length: number) {
   let line = container.insert("path", ":first-child");
-  let source = node2coord[input.source.id];
-  let dest = node2coord[input.dest.id];
+  let source = node2coord[input.sourceId];
+  let dest = node2coord[input.destId];
   let datum = {
     source: {
       y: source.cx + RECT_SIZE / 2 + 2,
@@ -782,7 +782,7 @@ function drawLink(
   line.attrs({
     "marker-start": "url(#markerArrow)",
     class: "link",
-    id: "link" + input.source.id + "-" + input.dest.id,
+    id: "link" + input.sourceId + "-" + input.destId,
     d: diagonal(datum)
   });
 
@@ -893,6 +893,7 @@ const getCategoricalLoss = (network: nn.Node[][], dataPoints: DataPoint[]): numb
 */
 
 function updateUI(firstStep = false) {
+  const network = state.getModel().getNetwork();
   // Update the links visually.
   updateWeightsUI(network, d3.select("g.core"));
   // Update the bias values visually.
