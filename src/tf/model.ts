@@ -10,7 +10,7 @@ import {ActivationIdentifier} from "@tensorflow/tfjs-layers/dist/keras_format/ac
 import {History} from "@tensorflow/tfjs-layers/dist/base_callbacks";
 
 import {TfLink} from "./tfLink";
-import {range} from "../mlUtil";
+import {range} from "../util/mlUtil";
 
 export class Model {
 

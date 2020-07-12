@@ -14,7 +14,7 @@ limitations under the License.
 ==============================================================================*/
 
 import * as d3 from 'd3';
-import {oneHot} from "./mlUtil";
+import {oneHot} from "./util/mlUtil";
 import {Tensor2D} from "@tensorflow/tfjs-core/dist/tensor";
 
 import * as tf from "@tensorflow/tfjs";
