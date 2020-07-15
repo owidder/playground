@@ -15,7 +15,7 @@ export class Model {
 
     private _sequential: Sequential;
     private _dataset: Dataset;
-    private _networkCache: TfNode[][];
+    private _network: TfNode[][];
     private counter = 0;
 
     constructor(networkShape: number[], activationName: string, dataset: Dataset) {
@@ -44,8 +44,6 @@ export class Model {
     }
 
     public fitStep = async (): Promise<History> => {
-        this._networkCache = undefined;
-
         const inputTensor = this._dataset.getTrainInputTensor();
         const outputTensor = this._dataset.getTrainOutputTensor();
         const history = await this._sequential.fit(inputTensor, outputTensor, {epochs: 40});
@@ -55,6 +53,7 @@ export class Model {
         // console.log(kernelWeights);
         // console.log(biasWeights);
         console.log(history.history.loss[0])
+        this.updateNetwork();
         return history;
     }
 
@@ -96,15 +95,42 @@ export class Model {
             }
     }
 
+    private updateWeights = (layer: TfNode[], index: number): void => {
+        if(index == 0) {
+            return;
+        }
+
+        const weights: number[] = Array.from(this._sequential.getLayer("", index-1).getWeights()[0].dataSync());
+        const biases: number[] = Array.from(this._sequential.getLayer("", index-1).getWeights()[1].dataSync());
+
+        const numberOfOutputLinks = layer.length;
+        weights.forEach((weight, index) => {
+            const nodeIndex = index % numberOfOutputLinks;
+            const node = layer[nodeIndex];
+            const linkIndex = Math.floor(index / numberOfOutputLinks);
+            const link = node.inputLinks[linkIndex];
+            link.weight = weight;
+        })
+
+        biases.forEach((bias, index) => {
+            const node = layer[index];
+            node.bias = bias;
+        })
+    }
+
     public getNetwork = (): TfNode[][] => {
-        if(!this._networkCache) {
-            this._networkCache = range(0, this.numberOfLayers()).map((layerIndex: number) => {
+        if(!this._network) {
+            this._network = range(0, this.numberOfLayers()).map((layerIndex: number) => {
                 return this.createNodesOfLayer(layerIndex)
             })
             this.counter++;
         }
 
-        return this._networkCache
+        return this._network
+    }
+
+    public updateNetwork = (): void => {
+        this._network.forEach(this.updateWeights)
     }
 
     public forEachNode = (ignoreInputs: boolean, accessor: (node: TfNode) => any) => {
