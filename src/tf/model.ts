@@ -7,11 +7,12 @@ import { Sequential } from "@tensorflow/tfjs-layers/dist/models";
 import { DenseLayerArgs } from "@tensorflow/tfjs-layers/dist/layers/core";
 import { ActivationIdentifier } from "@tensorflow/tfjs-layers/dist/keras_format/activation_config";
 import { History } from "@tensorflow/tfjs-layers/dist/base_callbacks";
+import { Logs } from "@tensorflow/tfjs-layers/dist/logs";
 
 import { TfLink } from "./tfLink";
 import { range } from "../util/mlUtil";
 
-export type TotolEpochChangedCallback = (currentTotalEpoch) => void;
+export type TotalEpochsChangedCallback = (currentTotalEpoch) => void;
 
 export class Model {
 
@@ -20,12 +21,12 @@ export class Model {
     private _network: TfNode[][];
     private counter = 0;
     private totalEpochs = 0;
-    private totalEochChangedCallbacks: TotolEpochChangedCallback[] = [];
+    private totalEochsChangedCallbacks: TotalEpochsChangedCallback[] = [];
 
     public getTotalEpochs = () => this.totalEpochs;
 
-    public registerTotalEpochChangedCallback = (totalEpochChangedCallback: TotolEpochChangedCallback) => {
-        this.totalEochChangedCallbacks.push(totalEpochChangedCallback);
+    public registerTotalEpochsChangedCallback = (totalEpochsChangedCallback: TotalEpochsChangedCallback) => {
+        this.totalEochsChangedCallbacks.push(totalEpochsChangedCallback);
     }
 
     constructor(networkShape: number[], activationName: string, dataset: Dataset) {
@@ -53,9 +54,10 @@ export class Model {
         this._sequential.summary();
     }
 
-    private onBatchEnd = (): void => {
+    private onEpochEnd = (epoch: number, logs: Logs): void => {
+        console.log(logs.loss);
         this.totalEpochs++;
-        this.totalEochChangedCallbacks.forEach(tecc => {
+        this.totalEochsChangedCallbacks.forEach(tecc => {
             tecc(this.totalEpochs)
         })
     }
@@ -64,14 +66,13 @@ export class Model {
         const inputTensor = this._dataset.getTrainInputTensor();
         const outputTensor = this._dataset.getTrainOutputTensor();
         const history = await this._sequential.fit(inputTensor, outputTensor, {
-            callbacks: { onBatchEnd: this.onBatchEnd }, epochs
+            callbacks: { onEpochEnd: this.onEpochEnd }, epochs
         });
         // const weights = this._sequential.getLayer("", 1).getWeights();
         // const kernelWeights = await weights[0].data();
         // const biasWeights = await weights[1].data();
         // console.log(kernelWeights);
         // console.log(biasWeights);
-        console.log(history.history.loss[0])
         this.updateNetwork();
         return history;
     }

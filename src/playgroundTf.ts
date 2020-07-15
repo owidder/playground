@@ -405,7 +405,7 @@ function updateWeightsUI(network: TfNode[][], container) {
         let link = node.inputLinks[j];
         container.select(`#link${link.sourceId}-${link.destId}`)
             .styles({
-              "stroke-dashoffset": -iter / 3,
+              "stroke-dashoffset": -state.getModel().getTotalEpochs() / 3,
               "stroke-width": linkWidthScale(Math.abs(link.weight)),
               "stroke": colorScale(link.weight)
             })
@@ -923,7 +923,9 @@ function updateUI(firstStep = false) {
   // d3.select("#loss-test").text(humanReadable(lossTest));
 
   // lineChart.addDataPoint([lossTrain, lossTest]);
-  totalEpochsChanged(0);
+  if(firstStep) {
+    totalEpochsChanged(0);
+  }
 }
 
 const totalEpochsChanged = (totalEpochs: number): void => {
@@ -997,7 +999,7 @@ const constructInputFromDataPoint = (dataPoint: DataPoint): number[] => {
 
 function reset(onStartup=false) {
   state.initModel(dataset);
-  state.getModel().registerTotalEpochChangedCallback(totalEpochsChanged);
+  state.getModel().registerTotalEpochsChangedCallback(totalEpochsChanged);
   ui.modelCurrent();
 
   // lineChart.reset();
@@ -1009,7 +1011,7 @@ function reset(onStartup=false) {
   d3.select("#num-layers").text(state.numLayers);
 
   // Make a simple network.
-  iter = 0;
+  // iter = 0;
 //   let outputActivation = (state.problem === Problem.REGRESSION) ?
 //       nn.Activations.LINEAR : nn.Activations.TANH;
   // network = nn.buildNetwork(state.networkShape, state.activation, outputActivation,
@@ -1197,7 +1199,7 @@ let colorScale = d3.scaleLinear<string, number>()
                      .domain([-1, 0, 1])
                      .range(["#f59322", "#e8eaeb", "#0877bd"])
                      .clamp(true);
-let iter = 0;
+// let iter = 0;
 let trainData: DataPoint[] = [];
 let testData: DataPoint[] = [];
 // let lossTrain = 0;
