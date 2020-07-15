@@ -914,6 +914,19 @@ function updateUI(firstStep = false) {
   });
 */
 
+  // function humanReadable(n: number): string {
+  //   return n.toFixed(3);
+  // }
+
+  // Update loss and iteration number.
+  // d3.select("#loss-train").text(humanReadable(lossTrain));
+  // d3.select("#loss-test").text(humanReadable(lossTest));
+
+  // lineChart.addDataPoint([lossTrain, lossTest]);
+  totalEpochsChanged(0);
+}
+
+const totalEpochsChanged = (totalEpochs: number): void => {
   function zeroPad(n: number): string {
     let pad = "000000";
     return (pad + n).slice(-pad.length);
@@ -923,16 +936,7 @@ function updateUI(firstStep = false) {
     return s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
-  // function humanReadable(n: number): string {
-  //   return n.toFixed(3);
-  // }
-
-  // Update loss and iteration number.
-  // d3.select("#loss-train").text(humanReadable(lossTrain));
-  // d3.select("#loss-test").text(humanReadable(lossTest));
-
-  d3.select("#iter-number").text(addCommas(zeroPad(iter)));
-  // lineChart.addDataPoint([lossTrain, lossTest]);
+  d3.select("#iter-number").text(addCommas(zeroPad(totalEpochs)));
 }
 
 function constructInputIds(): string[] {
@@ -993,6 +997,7 @@ const constructInputFromDataPoint = (dataPoint: DataPoint): number[] => {
 
 function reset(onStartup=false) {
   state.initModel(dataset);
+  state.getModel().registerTotalEpochChangedCallback(totalEpochsChanged);
   ui.modelCurrent();
 
   // lineChart.reset();

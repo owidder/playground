@@ -1,15 +1,17 @@
 import * as tf from "@tensorflow/tfjs";
 
- import {Dataset} from "../datasetV5";
-import {TfNode} from "./tfNode";
+import { Dataset } from "../datasetV5";
+import { TfNode } from "./tfNode";
 
-import {Sequential} from "@tensorflow/tfjs-layers/dist/models";
-import {DenseLayerArgs} from "@tensorflow/tfjs-layers/dist/layers/core";
-import {ActivationIdentifier} from "@tensorflow/tfjs-layers/dist/keras_format/activation_config";
-import {History} from "@tensorflow/tfjs-layers/dist/base_callbacks";
+import { Sequential } from "@tensorflow/tfjs-layers/dist/models";
+import { DenseLayerArgs } from "@tensorflow/tfjs-layers/dist/layers/core";
+import { ActivationIdentifier } from "@tensorflow/tfjs-layers/dist/keras_format/activation_config";
+import { History } from "@tensorflow/tfjs-layers/dist/base_callbacks";
 
-import {TfLink} from "./tfLink";
-import {range} from "../util/mlUtil";
+import { TfLink } from "./tfLink";
+import { range } from "../util/mlUtil";
+
+export type TotolEpochChangedCallback = (currentTotalEpoch) => void;
 
 export class Model {
 
@@ -17,6 +19,14 @@ export class Model {
     private _dataset: Dataset;
     private _network: TfNode[][];
     private counter = 0;
+    private totalEpochs = 0;
+    private totalEochChangedCallbacks: TotolEpochChangedCallback[] = [];
+
+    public getTotalEpochs = () => this.totalEpochs;
+
+    public registerTotalEpochChangedCallback = (totalEpochChangedCallback: TotolEpochChangedCallback) => {
+        this.totalEochChangedCallbacks.push(totalEpochChangedCallback);
+    }
 
     constructor(networkShape: number[], activationName: string, dataset: Dataset) {
         this._dataset = dataset;
@@ -25,16 +35,16 @@ export class Model {
 
         networkShape.slice(1).forEach((numberOfNodesInLayer, layerIndex) => {
             const config: DenseLayerArgs = {
-                activation: layerIndex == networkShape.length-2 ? "softmax" : (activationName as ActivationIdentifier),
+                activation: layerIndex == networkShape.length - 2 ? "softmax" : (activationName as ActivationIdentifier),
                 units: numberOfNodesInLayer,
                 name: `${layerIndex}`
             }
-            if(layerIndex == 0) {
+            if (layerIndex == 0) {
                 config.inputShape = [networkShape[0]]
             }
             this._sequential.add(tf.layers.dense(config))
         })
-    
+
         this._sequential.compile({
             loss: "categoricalCrossentropy",
             optimizer: tf.train.adam()
@@ -43,11 +53,20 @@ export class Model {
         this._sequential.summary();
     }
 
-    public fitStep = async (): Promise<History> => {
+    private onBatchEnd = (): void => {
+        this.totalEpochs++;
+        this.totalEochChangedCallbacks.forEach(tecc => {
+            tecc(this.totalEpochs)
+        })
+    }
+
+    public fitStep = async (epochs = 40): Promise<History> => {
         const inputTensor = this._dataset.getTrainInputTensor();
         const outputTensor = this._dataset.getTrainOutputTensor();
-        const history = await this._sequential.fit(inputTensor, outputTensor, {epochs: 40});
-        const weights = this._sequential.getLayer("", 1).getWeights();
+        const history = await this._sequential.fit(inputTensor, outputTensor, {
+            callbacks: { onBatchEnd: this.onBatchEnd }, epochs
+        });
+        // const weights = this._sequential.getLayer("", 1).getWeights();
         // const kernelWeights = await weights[0].data();
         // const biasWeights = await weights[1].data();
         // console.log(kernelWeights);
@@ -63,10 +82,10 @@ export class Model {
     }
 
     public layerSize = (layerIndex: number): number => {
-        if(layerIndex == 0) {
+        if (layerIndex == 0) {
             return this._sequential.getConfig().layers[0].config.batchInputShape[1];
         } else {
-            return this._sequential.getConfig().layers[layerIndex-1].config.units;
+            return this._sequential.getConfig().layers[layerIndex - 1].config.units;
         }
     }
 
@@ -76,32 +95,32 @@ export class Model {
         const numberOfOutputLinks = this.layerSize(layerIndex);
         const thisNodeId = Model.nodeId(layerIndex, nodeIndex);
         const links = weights.filter((_, i) => (i % numberOfOutputLinks) == nodeIndex)
-            .map((weight, i) => new TfLink(Model.nodeId(layerIndex-1, i), thisNodeId, weight, this.counter));
+            .map((weight, i) => new TfLink(Model.nodeId(layerIndex - 1, i), thisNodeId, weight, this.counter));
         return links
     }
 
     private createNodesOfLayer = (layerIndex: number): TfNode[] => {
-        if(layerIndex == 0) {
+        if (layerIndex == 0) {
             return range(0, this.layerSize(0)).map((i) => new TfNode(Model.nodeId(0, i)))
         } else {
-            const weights: number[] = Array.from(this._sequential.getLayer("", layerIndex-1).getWeights()[0].dataSync());
-            const biases: number[] = Array.from(this._sequential.getLayer("", layerIndex-1).getWeights()[1].dataSync());
+            const weights: number[] = Array.from(this._sequential.getLayer("", layerIndex - 1).getWeights()[0].dataSync());
+            const biases: number[] = Array.from(this._sequential.getLayer("", layerIndex - 1).getWeights()[1].dataSync());
             const nodes = biases.map((bias, i) => {
                 const links = this.createInputLinks(layerIndex, i, weights);
                 return new TfNode(Model.nodeId(layerIndex, i), links, bias, this.counter)
             })
-    
+
             return nodes
-            }
+        }
     }
 
     private updateWeights = (layer: TfNode[], index: number): void => {
-        if(index == 0) {
+        if (index == 0) {
             return;
         }
 
-        const weights: number[] = Array.from(this._sequential.getLayer("", index-1).getWeights()[0].dataSync());
-        const biases: number[] = Array.from(this._sequential.getLayer("", index-1).getWeights()[1].dataSync());
+        const weights: number[] = Array.from(this._sequential.getLayer("", index - 1).getWeights()[0].dataSync());
+        const biases: number[] = Array.from(this._sequential.getLayer("", index - 1).getWeights()[1].dataSync());
 
         const numberOfOutputLinks = layer.length;
         weights.forEach((weight, index) => {
@@ -119,7 +138,7 @@ export class Model {
     }
 
     public getNetwork = (): TfNode[][] => {
-        if(!this._network) {
+        if (!this._network) {
             this._network = range(0, this.numberOfLayers()).map((layerIndex: number) => {
                 return this.createNodesOfLayer(layerIndex)
             })
