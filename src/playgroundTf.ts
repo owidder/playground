@@ -992,7 +992,8 @@ const constructInputFromDataPoint = (dataPoint: DataPoint): number[] => {
 // }
 
 function reset(onStartup=false) {
-  ui.modelOutdated();
+  state.initModel(dataset);
+  ui.modelCurrent();
 
   // lineChart.reset();
   state.serialize();

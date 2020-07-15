@@ -133,6 +133,10 @@ export class Model {
         this._network.forEach(this.updateWeights)
     }
 
+    public resetNetwork = (): void => {
+        this._network = null;
+    }
+
     public forEachNode = (ignoreInputs: boolean, accessor: (node: TfNode) => any) => {
         this.getNetwork().slice(ignoreInputs ? 1 : 0).forEach(layer => {
             layer.forEach(accessor)
