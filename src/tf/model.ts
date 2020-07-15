@@ -16,6 +16,7 @@ export class Model {
     private _sequential: Sequential;
     private _dataset: Dataset;
     private _networkCache: TfNode[][];
+    private counter = 0;
 
     constructor(networkShape: number[], activationName: string, dataset: Dataset) {
         this._dataset = dataset;
@@ -24,7 +25,7 @@ export class Model {
 
         networkShape.slice(1).forEach((numberOfNodesInLayer, layerIndex) => {
             const config: DenseLayerArgs = {
-                activation: layerIndex == networkShape.length-1 ? "softmax" : (activationName as ActivationIdentifier),
+                activation: layerIndex == networkShape.length-2 ? "softmax" : (activationName as ActivationIdentifier),
                 units: numberOfNodesInLayer,
                 name: `${layerIndex}`
             }
@@ -34,12 +35,12 @@ export class Model {
             this._sequential.add(tf.layers.dense(config))
         })
     
-        this._sequential.summary();
-
         this._sequential.compile({
             loss: "categoricalCrossentropy",
             optimizer: tf.train.adam()
         });
+
+        this._sequential.summary();
     }
 
     public fitStep = async (): Promise<History> => {
@@ -47,10 +48,13 @@ export class Model {
 
         const inputTensor = this._dataset.getTrainInputTensor();
         const outputTensor = this._dataset.getTrainOutputTensor();
-        const history = await this._sequential.fit(inputTensor, outputTensor, {epochs: 5});
+        const history = await this._sequential.fit(inputTensor, outputTensor, {epochs: 40});
         const weights = this._sequential.getLayer("", 1).getWeights();
-        const kernelWeights = await weights[0].data();
-        const biasWeights = await weights[1].data();
+        // const kernelWeights = await weights[0].data();
+        // const biasWeights = await weights[1].data();
+        // console.log(kernelWeights);
+        // console.log(biasWeights);
+        console.log(history.history.loss[0])
         return history;
     }
 
@@ -70,10 +74,10 @@ export class Model {
     public static nodeId = (layerIndex: number, nodeIndex: number) => `${layerIndex}-${nodeIndex}`;
 
     private createInputLinks = (layerIndex: number, nodeIndex: number, weights: number[]): TfLink[] => {
-        const numberOfInputLinks = this.layerSize(layerIndex-1);
+        const numberOfOutputLinks = this.layerSize(layerIndex);
         const thisNodeId = Model.nodeId(layerIndex, nodeIndex);
-        const links = weights.slice(nodeIndex*numberOfInputLinks, (nodeIndex+1)*numberOfInputLinks)
-            .map((weight, i) => new TfLink(Model.nodeId(layerIndex-1, i), thisNodeId, weight));
+        const links = weights.filter((_, i) => (i % numberOfOutputLinks) == nodeIndex)
+            .map((weight, i) => new TfLink(Model.nodeId(layerIndex-1, i), thisNodeId, weight, this.counter));
         return links
     }
 
@@ -83,13 +87,9 @@ export class Model {
         } else {
             const weights: number[] = Array.from(this._sequential.getLayer("", layerIndex-1).getWeights()[0].dataSync());
             const biases: number[] = Array.from(this._sequential.getLayer("", layerIndex-1).getWeights()[1].dataSync());
-
-            console.log(weights);
-            console.log(biases);
-    
             const nodes = biases.map((bias, i) => {
                 const links = this.createInputLinks(layerIndex, i, weights);
-                return new TfNode(Model.nodeId(layerIndex, i), links, bias)
+                return new TfNode(Model.nodeId(layerIndex, i), links, bias, this.counter)
             })
     
             return nodes
@@ -101,6 +101,7 @@ export class Model {
             this._networkCache = range(0, this.numberOfLayers()).map((layerIndex: number) => {
                 return this.createNodesOfLayer(layerIndex)
             })
+            this.counter++;
         }
 
         return this._networkCache

@@ -23,8 +23,6 @@ import * as dataReader from "./data/dataReader";
 
 import * as ui from "./ui/ui";
 
-import * as nn from "./nn";
-
  import {
   State,
   datasets,
@@ -35,6 +33,7 @@ import * as nn from "./nn";
   getKeyFromValue,
   Problem
 } from "./stateTf";
+
 import {DataPoint} from "./datasetV5";
 import * as d3 from 'd3';
 import 'd3-selection-multi';
@@ -182,7 +181,7 @@ function makeGUI() {
     ui.stepStarted();
     await state.getModel().fitStep();
     ui.stepEnded();
-    drawNetwork();
+    updateUI();
   })
 
 /*
@@ -550,6 +549,7 @@ function drawNetwork(): void {
   //let width = co.offsetLeft - cf.offsetLeft;
   const width = window.innerWidth;
   svg.attr("width", width);
+  svg.attr("height", window.innerHeight * 10);
 
   // Map of all node coordinates.
   let node2coord: {[id: string]: {cx: number, cy: number}} = {};
@@ -761,7 +761,7 @@ function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
 function drawLink(
     input: TfLink, node2coord: {[id: string]: {cx: number, cy: number}},
     network: TfNode[][], container,
-    isFirst: boolean, index: number, length: number) {
+    isFirst: boolean, index: number, length: number) { 
   let line = container.insert("path", ":first-child");
   let source = node2coord[input.sourceId];
   let dest = node2coord[input.destId];
@@ -850,28 +850,28 @@ function drawLink(
 //   }
 // }
 
-function getLoss(network: nn.Node[][], dataPoints: DataPoint[], type: string): number {
-  let loss = 0;
-  let lossCrossentropy = 0;
-  for (let i = 0; i < dataPoints.length; i++) {
-    let dataPoint = dataPoints[i];
-    const inputArray = constructInputFromDataPoint(dataPoint);
-    const outputArray = nn.forwardPropReturningAllOutputs(network, inputArray);
-    loss += nn.Errors.SQUARE.error(outputArray[0], (dataPoint[dataset.getLabelName()] as number));
+// function getLoss(network: nn.Node[][], dataPoints: DataPoint[], type: string): number {
+//   let loss = 0;
+//   let lossCrossentropy = 0;
+//   for (let i = 0; i < dataPoints.length; i++) {
+//     let dataPoint = dataPoints[i];
+//     const inputArray = constructInputFromDataPoint(dataPoint);
+//     const outputArray = nn.forwardPropReturningAllOutputs(network, inputArray);
+//     loss += nn.Errors.SQUARE.error(outputArray[0], (dataPoint[dataset.getLabelName()] as number));
 
-/*     const expected = getOneHotEncodingFromDataPoint(dataPoint);
-    const expectedTensor = tf.tensor2d(expected);
-    const outputTensor = tf.tensor2d(outputArray);
-    const currentLossCrossentropyTensor = tf.metrics.categoricalCrossentropy(expectedTensor, outputTensor);
-    const currentLossCrossentropy = currentLossCrossentropyTensor.dataSync();
-    lossCrossentropy += currentLossCrossentropy[0];
- */
-  }
-  // console.log(`cat loss (${type}): ${lossCrossentropy / dataPoints.length}`);
-  const relLoss = loss / dataPoints.length;
-  console.log(`loss (${type}): ${relLoss}`);
-  return relLoss;
-}
+// /*     const expected = getOneHotEncodingFromDataPoint(dataPoint);
+//     const expectedTensor = tf.tensor2d(expected);
+//     const outputTensor = tf.tensor2d(outputArray);
+//     const currentLossCrossentropyTensor = tf.metrics.categoricalCrossentropy(expectedTensor, outputTensor);
+//     const currentLossCrossentropy = currentLossCrossentropyTensor.dataSync();
+//     lossCrossentropy += currentLossCrossentropy[0];
+//  */
+//   }
+//   // console.log(`cat loss (${type}): ${lossCrossentropy / dataPoints.length}`);
+//   const relLoss = loss / dataPoints.length;
+//   console.log(`loss (${type}): ${relLoss}`);
+//   return relLoss;
+// }
 
 /*
 const getCategoricalLoss = (network: nn.Node[][], dataPoints: DataPoint[]): number => {
@@ -976,20 +976,20 @@ const constructInputFromDataPoint = (dataPoint: DataPoint): number[] => {
 //   updateUI();
 // }
 
-export function getOutputWeights(network: nn.Node[][]): number[] {
-  let weights: number[] = [];
-  for (let layerIdx = 0; layerIdx < network.length - 1; layerIdx++) {
-    let currentLayer = network[layerIdx];
-    for (let i = 0; i < currentLayer.length; i++) {
-      let node = currentLayer[i];
-      for (let j = 0; j < node.outputs.length; j++) {
-        let output = node.outputs[j];
-        weights.push(output.weight);
-      }
-    }
-  }
-  return weights;
-}
+// export function getOutputWeights(network: nn.Node[][]): number[] {
+//   let weights: number[] = [];
+//   for (let layerIdx = 0; layerIdx < network.length - 1; layerIdx++) {
+//     let currentLayer = network[layerIdx];
+//     for (let i = 0; i < currentLayer.length; i++) {
+//       let node = currentLayer[i];
+//       for (let j = 0; j < node.outputs.length; j++) {
+//         let output = node.outputs[j];
+//         weights.push(output.weight);
+//       }
+//     }
+//   }
+//   return weights;
+// }
 
 function reset(onStartup=false) {
   ui.modelOutdated();
@@ -1004,8 +1004,8 @@ function reset(onStartup=false) {
 
   // Make a simple network.
   iter = 0;
-  let outputActivation = (state.problem === Problem.REGRESSION) ?
-      nn.Activations.LINEAR : nn.Activations.TANH;
+//   let outputActivation = (state.problem === Problem.REGRESSION) ?
+//       nn.Activations.LINEAR : nn.Activations.TANH;
   // network = nn.buildNetwork(state.networkShape, state.activation, outputActivation,
   //     state.regularization, constructInputIds(), state.initZero);
   // lossTrain = getLoss(network, trainData, "reset train");
@@ -1215,3 +1215,4 @@ initTutorial();
 makeGUI();
 reset(true);
 hideControls();
+ui.modelCurrent();
