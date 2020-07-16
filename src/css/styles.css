@@ -62,9 +62,6 @@ body {
 }
 
 .l--page {
-  width: 944px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 @media (min-width: 1180px) {

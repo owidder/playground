@@ -90,6 +90,10 @@ export class Model {
         }
     }
 
+    public maxLayerSize = (): number => {
+        return Math.max(...range(0, this.numberOfLayers()).map(this.layerSize))
+    }
+
     public static nodeId = (layerIndex: number, nodeIndex: number) => `${layerIndex}-${nodeIndex}`;
 
     private createInputLinks = (layerIndex: number, nodeIndex: number, weights: number[]): TfLink[] => {

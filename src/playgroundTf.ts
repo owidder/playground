@@ -234,9 +234,6 @@ function makeGUI() {
     .classed("selected", true);
 
   d3.select("#add-layers").on("click", () => {
-    if (state.numLayers >= 10) {
-      return;
-    }
     state.networkShape.splice(state.networkShape.length - 2, 0, 2);
     state.numLayers++;
     // parametersChanged = true;
@@ -540,16 +537,17 @@ function drawNetwork(): void {
   d3.select("#network").selectAll("div.canvas").remove();
   d3.select("#network").selectAll("div.plus-minus-neurons").remove();
 
+  let numLayers = state.getModel().numberOfLayers();
+  const width = numLayers <= 10 ?  window.innerWidth : window.innerWidth * numLayers / 10;
+  const maxLayerSize = state.getModel().maxLayerSize();
+  const height = maxLayerSize * (RECT_SIZE + 25);
+
   const columnFeatures = d3.select(".column.features");
-  columnFeatures.style("height", "1000px");
+  columnFeatures.style("height", `${height + 100}px`);
   let padding = 3;
 
-  let co = d3.select(".column.output").node() as HTMLDivElement;
-  let cf = columnFeatures.node() as HTMLDivElement;
-  //let width = co.offsetLeft - cf.offsetLeft;
-  const width = window.innerWidth;
   svg.attr("width", width);
-  svg.attr("height", window.innerHeight * 10);
+  svg.attr("height", height);
 
   // Map of all node coordinates.
   let node2coord: {[id: string]: {cx: number, cy: number}} = {};
@@ -557,8 +555,7 @@ function drawNetwork(): void {
     .classed("core", true)
     .attr("transform", `translate(${padding},${padding})`);
   // Draw the network layer by layer.
-  let numLayers = state.getModel().numberOfLayers();
-  let featureWidth = 118;
+  let featureWidth = 10;
   let layerScale = d3.scalePoint<number>()
       .domain(d3.range(0, numLayers))
       .padding(.7)
@@ -679,9 +676,6 @@ function addPlusMinusControl(x: number, layerIdx: number) {
       .attr("class", "mdl-button mdl-js-button mdl-button--icon")
       .on("click", () => {
         let numNeurons = state.networkShape[layerIdx];
-        if (numNeurons >= 8) {
-          return;
-        }
         state.networkShape[layerIdx]++;
         // parametersChanged = true;
         reset();
