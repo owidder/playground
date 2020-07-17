@@ -15,35 +15,35 @@ limitations under the License.
 
 import * as nn from "./nn";
 import * as dataset from "./datasetV5";
-import {DataPoint, Dataset} from "./datasetV5";
-import { data } from "@tensorflow/tfjs";
-import {Model} from "./tf/model";
+import { Dataset } from "./datasetV5";
+import { Model } from "./tf/model";
+import { Player, OneStepCallback } from "./tf/player";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
 
 /** A map between names and activation functions. */
-export let activations: {[key: string]: nn.ActivationFunction} = {
+export let activations: { [key: string]: nn.ActivationFunction } = {
   "relu": nn.Activations.RELU,
   "tanh": nn.Activations.TANH,
   "sigmoid": nn.Activations.SIGMOID,
   "linear": nn.Activations.LINEAR
 };
 
-export const activationNames: {[key: string]: string} =
-    ['elu','hardSigmoid','linear','relu','relu6','selu','sigmoid','softmax','softplus','softsign','tanh'].reduce((_activationNames, name) => {
-      return {..._activationNames, [name]: name}
-    }, {});
+export const activationNames: { [key: string]: string } =
+  ['elu', 'hardSigmoid', 'linear', 'relu', 'relu6', 'selu', 'sigmoid', 'softmax', 'softplus', 'softsign', 'tanh'].reduce((_activationNames, name) => {
+    return { ..._activationNames, [name]: name }
+  }, {});
 
 /** A map between names and regularization functions. */
-export let regularizations: {[key: string]: nn.RegularizationFunction} = {
+export let regularizations: { [key: string]: nn.RegularizationFunction } = {
   "none": null,
   "L1": nn.RegularizationFunction.L1,
   "L2": nn.RegularizationFunction.L2
 };
 
 /** A map between dataset names and functions that generate classification data. */
-export let datasets: {[key: string]: dataset.DataGenerator} = {
+export let datasets: { [key: string]: dataset.DataGenerator } = {
   "circle": dataset.classifyCircleData,
   "xor": dataset.classifyXORData,
   "gauss": dataset.classifyTwoGaussData,
@@ -51,7 +51,7 @@ export let datasets: {[key: string]: dataset.DataGenerator} = {
 };
 
 /** A map between dataset names and functions that generate regression data. */
-export let regDatasets: {[key: string]: dataset.DataGenerator} = {
+export let regDatasets: { [key: string]: dataset.DataGenerator } = {
   "reg-plane": dataset.regressPlane,
   "reg-gauss": dataset.regressGaussian
 };
@@ -105,17 +105,19 @@ export let problems = {
 export interface Property {
   name: string;
   type: Type;
-  keyMap?: {[key: string]: any};
+  keyMap?: { [key: string]: any };
 }
 
 // Add the GUI state.
 export class State {
 
   private model: Model;
+  private player: Player;
   public getModel = () => this.model;
+  public getPlayer = () => this.player;
 
   constructor(dataset?: Dataset) {
-    if(dataset) {
+    if (dataset) {
       this.initModel(dataset)
     } else {
       this.networkShape = []
@@ -123,34 +125,34 @@ export class State {
   }
 
   private static PROPS: Property[] = [
-    {name: "activation", type: Type.OBJECT, keyMap: activations},
-    {name: "activationName", type: Type.STRING, keyMap: activationNames},
-    {name: "regularization", type: Type.OBJECT, keyMap: regularizations},
-    {name: "batchSize", type: Type.NUMBER},
-    {name: "dataset", type: Type.OBJECT, keyMap: datasets},
-    {name: "regDataset", type: Type.OBJECT, keyMap: regDatasets},
-    {name: "learningRate", type: Type.NUMBER},
-    {name: "regularizationRate", type: Type.NUMBER},
-    {name: "noise", type: Type.NUMBER},
-    {name: "networkShape", type: Type.ARRAY_NUMBER},
-    {name: "seed", type: Type.STRING},
-    {name: "showTestData", type: Type.BOOLEAN},
-    {name: "discretize", type: Type.BOOLEAN},
-    {name: "percTrainData", type: Type.NUMBER},
-    {name: "x", type: Type.BOOLEAN},
-    {name: "y", type: Type.BOOLEAN},
-    {name: "xTimesY", type: Type.BOOLEAN},
-    {name: "xSquared", type: Type.BOOLEAN},
-    {name: "ySquared", type: Type.BOOLEAN},
-    {name: "cosX", type: Type.BOOLEAN},
-    {name: "sinX", type: Type.BOOLEAN},
-    {name: "cosY", type: Type.BOOLEAN},
-    {name: "sinY", type: Type.BOOLEAN},
-    {name: "collectStats", type: Type.BOOLEAN},
-    {name: "tutorial", type: Type.STRING},
-    {name: "problem", type: Type.OBJECT, keyMap: problems},
-    {name: "initZero", type: Type.BOOLEAN},
-    {name: "hideText", type: Type.BOOLEAN}
+    { name: "activation", type: Type.OBJECT, keyMap: activations },
+    { name: "activationName", type: Type.STRING, keyMap: activationNames },
+    { name: "regularization", type: Type.OBJECT, keyMap: regularizations },
+    { name: "batchSize", type: Type.NUMBER },
+    { name: "dataset", type: Type.OBJECT, keyMap: datasets },
+    { name: "regDataset", type: Type.OBJECT, keyMap: regDatasets },
+    { name: "learningRate", type: Type.NUMBER },
+    { name: "regularizationRate", type: Type.NUMBER },
+    { name: "noise", type: Type.NUMBER },
+    { name: "networkShape", type: Type.ARRAY_NUMBER },
+    { name: "seed", type: Type.STRING },
+    { name: "showTestData", type: Type.BOOLEAN },
+    { name: "discretize", type: Type.BOOLEAN },
+    { name: "percTrainData", type: Type.NUMBER },
+    { name: "x", type: Type.BOOLEAN },
+    { name: "y", type: Type.BOOLEAN },
+    { name: "xTimesY", type: Type.BOOLEAN },
+    { name: "xSquared", type: Type.BOOLEAN },
+    { name: "ySquared", type: Type.BOOLEAN },
+    { name: "cosX", type: Type.BOOLEAN },
+    { name: "sinX", type: Type.BOOLEAN },
+    { name: "cosY", type: Type.BOOLEAN },
+    { name: "sinY", type: Type.BOOLEAN },
+    { name: "collectStats", type: Type.BOOLEAN },
+    { name: "tutorial", type: Type.STRING },
+    { name: "problem", type: Type.OBJECT, keyMap: problems },
+    { name: "initZero", type: Type.BOOLEAN },
+    { name: "hideText", type: Type.BOOLEAN }
   ];
 
   [key: string]: any;
@@ -186,25 +188,34 @@ export class State {
   // regDataset: dataset.DataGenerator = dataset.regressPlane;
   seed: string;
 
+  initPlayer() {
+    const oneStepCallback: OneStepCallback = async () => {
+      await this.model.fitStep()
+    }
+    this.player = new Player(oneStepCallback)    
+  }
+
   initModel(dataset: Dataset): void {
     const inputShape = dataset.getInputShape();
     const outputShape = dataset.getOutputShape();
 
-    if(!this.networkShape || this.networkShape.length == 0) {
+    if (!this.networkShape || this.networkShape.length == 0) {
       this.networkShape = [inputShape, 10, outputShape];
     } else {
-      this.networkShape = [inputShape, ...this.networkShape.slice(1, this.networkShape.length-1), outputShape];
+      this.networkShape = [inputShape, ...this.networkShape.slice(1, this.networkShape.length - 1), outputShape];
     }
     this.numLayers = this.networkShape.length;
 
     this.model = new Model(this.networkShape, this.activationName, dataset);
+
+    this.initPlayer();
   }
 
   /**
    * Deserializes the state from the url hash.
    */
   static deserializeState(dataset?: Dataset): State {
-    let map: {[key: string]: string} = {};
+    let map: { [key: string]: string } = {};
     for (let keyvalue of window.location.hash.slice(1).split("&")) {
       let [name, value] = keyvalue.split("=");
       map[name] = value;
@@ -220,12 +231,12 @@ export class State {
     }
 
     // Deserialize regular properties.
-    State.PROPS.forEach(({name, type, keyMap}) => {
+    State.PROPS.forEach(({ name, type, keyMap }) => {
       switch (type) {
         case Type.OBJECT:
           if (keyMap == null) {
             throw Error("A key-value map must be provided for state " +
-                "variables of type Object");
+              "variables of type Object");
           }
           if (hasKey(name) && map[name] in keyMap) {
             state[name] = keyMap[map[name]];
@@ -280,7 +291,7 @@ export class State {
   serialize() {
     // Serialize regular properties.
     let props: string[] = [];
-    State.PROPS.forEach(({name, type, keyMap}) => {
+    State.PROPS.forEach(({ name, type, keyMap }) => {
       let value = this[name];
       // Don't serialize missing values.
       if (value == null) {
@@ -289,7 +300,7 @@ export class State {
       if (type === Type.OBJECT) {
         value = getKeyFromValue(keyMap, value);
       } else if (type === Type.ARRAY_NUMBER ||
-          type === Type.ARRAY_STRING) {
+        type === Type.ARRAY_STRING) {
         value = value.join(",");
       }
       props.push(`${name}=${value}`);

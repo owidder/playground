@@ -21,3 +21,7 @@ export const stepStarted = () => {
 export const stepEnded = () => {
     setNextStepDisabled(false);
 }
+
+export const playPause = (isPlaying: boolean) => {
+    d3.select("#play-pause-button").classed("playing", isPlaying);
+}

@@ -159,14 +159,15 @@ function makeGUI() {
     d3.select("#play-pause-button");
   });
 
-  // d3.select("#play-pause-button").on("click", function () {
-  //   // Change the button's content.
-  //   player.playOrPause();
-  // });
-  d3.select("#build-button").on("click", function () {
-    state.initModel(dataset);
-    ui.modelCurrent();
+  d3.select("#play-pause-button").on("click", function () {
+    // Change the button's content.
+    state.getPlayer().togglePlayPause();
   });
+
+  // d3.select("#build-button").on("click", function () {
+  //   state.initModel(dataset);
+  //   ui.modelCurrent();
+  // });
 
   // player.onPlayPause(isPlaying => {
   //   d3.select("#play-pause-button").classed("playing", isPlaying);
