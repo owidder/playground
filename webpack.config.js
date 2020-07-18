@@ -53,6 +53,7 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             filename: "index.html",
+            favicon: "./favicon.png",
             inject: true,
             template: "index-template.html",
         }),
