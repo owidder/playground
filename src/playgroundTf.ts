@@ -41,7 +41,7 @@ import { step } from "@tensorflow/tfjs";
 import { TfNode } from "./tf/tfNode";
 import { TfLink } from "./tf/tfLink";
 
-let mainWidth: number;
+// let mainWidth: number;
 
 let dataset: Dataset;
 // let model: Model;
@@ -178,11 +178,8 @@ function makeGUI() {
   //   oneStep();
   // });
 
-  d3.select("#next-step-tf-button").on("click", async () => {
-    ui.stepStarted();
-    await state.getModel().fitStep();
-    ui.stepEnded();
-    updateUI();
+  d3.select("#next-step-tf-button").on("click", () => {
+    state.getModel().fitStep();
   })
 
 /*
@@ -261,11 +258,11 @@ function makeGUI() {
   showTestData.property("checked", state.showTestData);
 */
 
-  let discretize = d3.select("#discretize").on("change", function() {
-    state.discretize = (this as any).checked;
-    state.serialize();
-    updateUI();
-  });
+  // let discretize = d3.select("#discretize").on("change", function() {
+  //   state.discretize = (this as any).checked;
+  //   state.serialize();
+  //   updateUI();
+  // });
   // Check/uncheck the checbox according to the current state.
   discretize.property("checked", state.discretize);
 
@@ -369,15 +366,15 @@ function makeGUI() {
 
   // Listen for css-responsive changes and redraw the svg network.
 
-  window.addEventListener("resize", () => {
-    let newWidth = document.querySelector("#main-part")
-        .getBoundingClientRect().width;
-    if (newWidth !== mainWidth) {
-      mainWidth = newWidth;
-      drawNetwork();
-      updateUI(true);
-    }
-  });
+  // window.addEventListener("resize", () => {
+  //   let newWidth = document.querySelector("#main-part")
+  //       .getBoundingClientRect().width;
+  //   if (newWidth !== mainWidth) {
+  //     mainWidth = newWidth;
+  //     drawNetwork();
+  //     updateUI(true);
+  //   }
+  // });
 
   // Hide the text below the visualization depending on the URL.
   if (state.hideText) {
@@ -714,27 +711,27 @@ function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
     d3.select("#svg").on("click", null);
     return;
   }
-  d3.select("#svg").on("click", () => {
-    hovercard.select(".value").style("display", "none");
-    let input = hovercard.select("input");
-    input.style("display", null);
-    input.on("input", function() {
-      if ((this as any).value != null && (this as any).value !== "") {
-        if (type === HoverType.WEIGHT) {
-          (nodeOrLink as TfLink).weight = +(this as any).value;
-        } else {
-          (nodeOrLink as TfNode).bias = +(this as any).value;
-        }
-        updateUI();
-      }
-    });
-    input.on("keypress", () => {
-      if ((d3.event as any).keyCode === 13) {
-        updateHoverCard(type, nodeOrLink, coordinates);
-      }
-    });
-    (input.node() as HTMLInputElement).focus();
-  });
+  // d3.select("#svg").on("click", () => {
+  //   hovercard.select(".value").style("display", "none");
+  //   let input = hovercard.select("input");
+  //   input.style("display", null);
+  //   input.on("input", function() {
+  //     if ((this as any).value != null && (this as any).value !== "") {
+  //       if (type === HoverType.WEIGHT) {
+  //         (nodeOrLink as TfLink).weight = +(this as any).value;
+  //       } else {
+  //         (nodeOrLink as TfNode).bias = +(this as any).value;
+  //       }
+  //       updateUI();
+  //     }
+  //   });
+  //   input.on("keypress", () => {
+  //     if ((d3.event as any).keyCode === 13) {
+  //       updateHoverCard(type, nodeOrLink, coordinates);
+  //     }
+  //   });
+  //   (input.node() as HTMLInputElement).focus();
+  // });
   let value = (type === HoverType.WEIGHT) ?
     (nodeOrLink as TfLink).weight :
     (nodeOrLink as TfNode).bias;

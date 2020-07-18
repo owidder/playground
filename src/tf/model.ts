@@ -11,6 +11,7 @@ import { Logs } from "@tensorflow/tfjs-layers/dist/logs";
 
 import { TfLink } from "./tfLink";
 import { range } from "../util/mlUtil";
+import {updateUI, stepStarted, stepEnded} from "../ui/ui";
 
 export type TotalEpochsChangedCallback = (currentTotalEpoch) => void;
 
@@ -65,14 +66,13 @@ export class Model {
     public fitStep = async (epochs = 10): Promise<History> => {
         const inputTensor = this._dataset.getTrainInputTensor();
         const outputTensor = this._dataset.getTrainOutputTensor();
+
+        stepStarted();
         const history = await this._sequential.fit(inputTensor, outputTensor, {
             callbacks: { onEpochEnd: this.onEpochEnd }, epochs
         });
-        // const weights = this._sequential.getLayer("", 1).getWeights();
-        // const kernelWeights = await weights[0].data();
-        // const biasWeights = await weights[1].data();
-        // console.log(kernelWeights);
-        // console.log(biasWeights);
+        stepEnded();
+
         this.updateNetwork();
         return history;
     }
@@ -154,14 +154,15 @@ export class Model {
     }
 
     public updateNetwork = (): void => {
-        this._network.forEach(this.updateWeights)
+        this._network.forEach(this.updateWeights);
+        updateUI(false, this._network, this.totalEpochs, this.forEachNode);
     }
 
     public resetNetwork = (): void => {
         this._network = null;
     }
 
-    public forEachNode = (ignoreInputs: boolean, accessor: (node: TfNode) => any) => {
+    public forEachNode = (ignoreInputs: boolean, accessor: (node: TfNode) => any): void => {
         this.getNetwork().slice(ignoreInputs ? 1 : 0).forEach(layer => {
             layer.forEach(accessor)
         })

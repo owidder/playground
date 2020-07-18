@@ -18,6 +18,7 @@ import * as dataset from "./datasetV5";
 import { Dataset } from "./datasetV5";
 import { Model } from "./tf/model";
 import { Player, OneStepCallback } from "./tf/player";
+import {totalEpochsChanged, modelCurrent, showNumberOfLayers} from "./ui/ui";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -210,6 +211,20 @@ export class State {
 
     this.initPlayer();
   }
+
+  resetModel(dataset: Dataset) {
+    this.initModel(dataset);
+    this.getModel().registerTotalEpochsChangedCallback(totalEpochsChanged);
+    modelCurrent();
+  
+    this.serialize();
+  
+    showNumberOfLayers(this.numLayers);
+  
+    drawNetwork();
+    updateUI(true);
+  }
+  
 
   /**
    * Deserializes the state from the url hash.

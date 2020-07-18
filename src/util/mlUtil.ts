@@ -12,3 +12,7 @@ export const range = (start: number, end: number): number[] => {
 export const oneHot = (dimension: number, index: number): (0|1)[] => {
     return range(0, dimension).map((_, i) => i == index ? 1 : 0)
 }
+
+export const maxLayerSize = (layers: any[][]): number => {
+    return Math.max(...layers.map(layer => layer.length))
+}
