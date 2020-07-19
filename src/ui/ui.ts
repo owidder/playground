@@ -97,7 +97,7 @@ export const updateUI = (firstStep = false, network: TfNode[][], totalEpochs: nu
     }
 }
 
-function addPlusMinusControl(x: number, layerIdx: number, network: TfNode[][], changeNumberOfNodeCallback: ChangeNumberOfNodesCallback, resetCallback: ResetCallback) {
+function addPlusMinusControl(x: number, layerIdx: number, network: TfNode[][], changeNumberOfNodesCallback: ChangeNumberOfNodesCallback) {
     let div = d3.select("#network").append("div")
         .classed("plus-minus-neurons", true)
         .style("left", `${x - 10}px`);
@@ -106,8 +106,7 @@ function addPlusMinusControl(x: number, layerIdx: number, network: TfNode[][], c
     firstRow.append("button")
         .attr("class", "mdl-button mdl-js-button mdl-button--icon")
         .on("click", () => {
-            changeNumberOfNodeCallback(layerIdx, +1);
-            resetCallback();
+            changeNumberOfNodesCallback(layerIdx, +1);
         })
         .append("i")
         .attr("class", "material-icons")
@@ -116,9 +115,8 @@ function addPlusMinusControl(x: number, layerIdx: number, network: TfNode[][], c
     firstRow.append("button")
         .attr("class", "mdl-button mdl-js-button mdl-button--icon")
         .on("click", () => {
-            changeNumberOfNodeCallback(layerIdx, -1);
+            changeNumberOfNodesCallback(layerIdx, -1);
             // parametersChanged = true;
-            resetCallback();
         })
         .append("i")
         .attr("class", "material-icons")
@@ -234,7 +232,7 @@ function drawLink(
     return line;
 }
 
-function drawNetwork(network: TfNode[][], changeNumberOfNodesCallback: ChangeNumberOfNodesCallback, resetCallback: ResetCallback): void {
+export function drawNetwork(network: TfNode[][], changeNumberOfNodesCallback: ChangeNumberOfNodesCallback): void {
     let svg = d3.select("#svg");
     svg.select("g.core").remove();
     d3.select("#network").selectAll("div.canvas").remove();
@@ -272,7 +270,7 @@ function drawNetwork(network: TfNode[][], changeNumberOfNodesCallback: ChangeNum
         let numNodes = network[layerIdx].length;
         let cx = layerScale(layerIdx) + NODE_SIZE / 2;
         if (layerIdx > 0 && layerIdx < numLayers - 1) {
-            addPlusMinusControl(layerScale(layerIdx), layerIdx, network, changeNumberOfNodesCallback, resetCallback);
+            addPlusMinusControl(layerScale(layerIdx), layerIdx, network, changeNumberOfNodesCallback);
         }
         for (let i = 0; i < numNodes; i++) {
             let node = network[layerIdx][i];

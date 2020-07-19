@@ -1,7 +1,6 @@
 import * as tf from "@tensorflow/tfjs";
 
 import { Dataset } from "../datasetV5";
-import { TfNode } from "./tfNode";
 
 import { Sequential } from "@tensorflow/tfjs-layers/dist/models";
 import { DenseLayerArgs } from "@tensorflow/tfjs-layers/dist/layers/core";
@@ -9,9 +8,9 @@ import { ActivationIdentifier } from "@tensorflow/tfjs-layers/dist/keras_format/
 import { History } from "@tensorflow/tfjs-layers/dist/base_callbacks";
 import { Logs } from "@tensorflow/tfjs-layers/dist/logs";
 
-import { TfLink } from "./tfLink";
+import { TfNode, TfLink, NodeIterator } from "./networkTypes";
 import { range } from "../util/mlUtil";
-import {updateUI, stepStarted, stepEnded} from "../ui/ui";
+import { updateUI, stepStarted, stepEnded } from "../ui/ui";
 
 export type TotalEpochsChangedCallback = (currentTotalEpoch) => void;
 
@@ -153,6 +152,10 @@ export class Model {
         return this._network
     }
 
+    public getNetworkShape = (): number[] => {
+        return this.getNetwork().map(layer => layer.length);
+    }
+
     public updateNetwork = (): void => {
         this._network.forEach(this.updateWeights);
         updateUI(false, this._network, this.totalEpochs, this.forEachNode);
@@ -162,7 +165,7 @@ export class Model {
         this._network = null;
     }
 
-    public forEachNode = (ignoreInputs: boolean, accessor: (node: TfNode) => any): void => {
+    public forEachNode: NodeIterator = (ignoreInputs: boolean, accessor: (node: TfNode) => any): void => {
         this.getNetwork().slice(ignoreInputs ? 1 : 0).forEach(layer => {
             layer.forEach(accessor)
         })

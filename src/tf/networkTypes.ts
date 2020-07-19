@@ -33,4 +33,3 @@ export enum HoverType {
 
 export type NodeIterator = (ignoreInputs: boolean, accessor: (node: TfNode) => any) => void;
 export type ChangeNumberOfNodesCallback = (layerIndex: number, diff: number) => void;
-export type ResetCallback = () => void;

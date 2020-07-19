@@ -18,7 +18,7 @@ import * as dataset from "./datasetV5";
 import { Dataset } from "./datasetV5";
 import { Model } from "./tf/model";
 import { Player, OneStepCallback } from "./tf/player";
-import {totalEpochsChanged, modelCurrent, showNumberOfLayers} from "./ui/ui";
+import { totalEpochsChanged, modelCurrent, showNumberOfLayers, drawNetwork, updateUI } from "./ui/ui";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -114,8 +114,10 @@ export class State {
 
   private model: Model;
   private player: Player;
+  private dataset: Dataset;
   public getModel = () => this.model;
   public getPlayer = () => this.player;
+  public getDataset = () => this.dataset;
 
   constructor(dataset?: Dataset) {
     if (dataset) {
@@ -193,10 +195,11 @@ export class State {
     const oneStepCallback: OneStepCallback = async () => {
       await this.model.fitStep()
     }
-    this.player = new Player(oneStepCallback)    
+    this.player = new Player(oneStepCallback)
   }
 
-  initModel(dataset: Dataset): void {
+  initModel(dataset?: Dataset): void {
+    this.dataset = dataset ? dataset : this.dataset;
     const inputShape = dataset.getInputShape();
     const outputShape = dataset.getOutputShape();
 
@@ -212,19 +215,31 @@ export class State {
     this.initPlayer();
   }
 
-  resetModel(dataset: Dataset) {
+  resetModel(dataset?: Dataset) {
     this.initModel(dataset);
-    this.getModel().registerTotalEpochsChangedCallback(totalEpochsChanged);
+    this.model.registerTotalEpochsChangedCallback(totalEpochsChanged);
     modelCurrent();
-  
+
     this.serialize();
-  
-    showNumberOfLayers(this.numLayers);
-  
-    drawNetwork();
-    updateUI(true);
+
+    showNumberOfLayers(this.networkShape.length);
+
+    drawNetwork(this.model.getNetwork(), this.changeNumberOfNodes);
+    updateUI(true, this.model.getNetwork(), this.model.getTotalEpochs(), this.model.forEachNode);
   }
-  
+
+  addLayer(): void {
+    this.networkShape.splice(this.networkShape.length - 2, 0, 2);
+    this.resetModel();
+  }
+
+  changeNumberOfNodes(layerIndex: number, diff: number): void {
+    const current = this.networkShape[layerIndex]; 
+    if(current + diff > 0) {
+      this.networkShape[layerIndex] = current + diff;
+    }
+    this.resetModel();
+  }
 
   /**
    * Deserializes the state from the url hash.
