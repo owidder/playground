@@ -119,10 +119,6 @@ function makeGUI() {
     state.getModel().fitStep();
   })
 
-  let datasetKey = getKeyFromValue(datasets, state.dataset);
-  d3.select(`canvas[data-dataset=${datasetKey}]`)
-    .classed("selected", true);
-
   let regDatasetKey = getKeyFromValue(regDatasets, state.regDataset);
   d3.select(`canvas[data-regDataset=${regDatasetKey}]`)
     .classed("selected", true);

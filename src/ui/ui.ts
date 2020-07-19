@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { Selection } from "d3-selection/index";
 
-import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, ResetCallback, HoverType } from "../tf/networkTypes";
+import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType } from "../tf/networkTypes";
 import { maxLayerSize } from "../util/mlUtil";
 import { layers } from '@tensorflow/tfjs';
 

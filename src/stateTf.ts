@@ -200,8 +200,8 @@ export class State {
 
   initModel(dataset?: Dataset): void {
     this.dataset = dataset ? dataset : this.dataset;
-    const inputShape = dataset.getInputShape();
-    const outputShape = dataset.getOutputShape();
+    const inputShape = this.dataset.getInputShape();
+    const outputShape = this.dataset.getOutputShape();
 
     if (!this.networkShape || this.networkShape.length == 0) {
       this.networkShape = [inputShape, 10, outputShape];
@@ -210,7 +210,7 @@ export class State {
     }
     this.numLayers = this.networkShape.length;
 
-    this.model = new Model(this.networkShape, this.activationName, dataset);
+    this.model = new Model(this.networkShape, this.activationName, this.dataset);
 
     this.initPlayer();
 
@@ -225,12 +225,12 @@ export class State {
     updateUI(true, this.model.getNetwork(), this.model.getTotalEpochs(), this.model.forEachNode);
   }
 
-  addLayer(): void {
+  addLayer = (): void => {
     this.networkShape.splice(this.networkShape.length - 2, 0, 2);
     this.initModel();
   }
 
-  changeNumberOfNodes(layerIndex: number, diff: number): void {
+  changeNumberOfNodes = (layerIndex: number, diff: number): void => {
     const current = this.networkShape[layerIndex]; 
     if(current + diff > 0) {
       this.networkShape[layerIndex] = current + diff;
