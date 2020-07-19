@@ -213,10 +213,7 @@ export class State {
     this.model = new Model(this.networkShape, this.activationName, dataset);
 
     this.initPlayer();
-  }
 
-  resetModel(dataset?: Dataset) {
-    this.initModel(dataset);
     this.model.registerTotalEpochsChangedCallback(totalEpochsChanged);
     modelCurrent();
 
@@ -230,7 +227,7 @@ export class State {
 
   addLayer(): void {
     this.networkShape.splice(this.networkShape.length - 2, 0, 2);
-    this.resetModel();
+    this.initModel();
   }
 
   changeNumberOfNodes(layerIndex: number, diff: number): void {
@@ -238,7 +235,7 @@ export class State {
     if(current + diff > 0) {
       this.networkShape[layerIndex] = current + diff;
     }
-    this.resetModel();
+    this.initModel();
   }
 
   /**

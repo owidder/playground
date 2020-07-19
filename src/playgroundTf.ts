@@ -187,7 +187,7 @@ function makeGUI() {
 }
 
 function reset() {
-  state.resetModel(dataset);
+  state.initModel(dataset);
 }
 
 function initTutorial() {
@@ -223,5 +223,3 @@ state.initModel(dataset);
 
 initTutorial();
 makeGUI();
-reset();
-ui.modelCurrent();
