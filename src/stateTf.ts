@@ -18,7 +18,8 @@ import * as dataset from "./datasetV5";
 import { Dataset } from "./datasetV5";
 import { Model } from "./tf/model";
 import { Player, OneStepCallback } from "./tf/player";
-import { totalEpochsChanged, modelCurrent, showNumberOfLayers, drawNetwork, updateUI } from "./ui/ui";
+import { totalEpochsChanged, modelCurrent, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded } from "./ui/ui";
+import { tickStep } from "d3";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -195,7 +196,7 @@ export class State {
     const oneStepCallback: OneStepCallback = async () => {
       await this.model.fitStep()
     }
-    this.player = new Player(oneStepCallback)
+    this.player = new Player(oneStepCallback, stepStarted, stepEnded)
   }
 
   initModel(dataset?: Dataset): void {
@@ -227,6 +228,14 @@ export class State {
 
   addLayer = (): void => {
     this.networkShape.splice(this.networkShape.length - 2, 0, 2);
+    this.initModel();
+  }
+
+  removeLayer = (): void => {
+    if (this.networkShape.length < 3) {
+      return;
+    }
+    this.networkShape.splice(this.networkShape.length - 2, 1);
     this.initModel();
   }
 

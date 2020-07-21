@@ -108,7 +108,6 @@ let HIDABLE_CONTROLS = [
 function makeGUI() {
   d3.select("#reset-button").on("click", () => {
     reset();
-    d3.select("#play-pause-button");
   });
 
   d3.select("#play-pause-button").on("click", function () {
@@ -123,20 +122,9 @@ function makeGUI() {
   d3.select(`canvas[data-regDataset=${regDatasetKey}]`)
     .classed("selected", true);
 
-  d3.select("#add-layers").on("click", () => {
-    state.networkShape.splice(state.networkShape.length - 2, 0, 2);
-    state.numLayers++;
-    reset();
-  });
+  d3.select("#add-layers").on("click", state.addLayer);
 
-  d3.select("#remove-layers").on("click", () => {
-    if (state.numLayers <= 0) {
-      return;
-    }
-    state.numLayers--;
-    state.networkShape.splice(state.networkShape.length - 2);
-    reset();
-  });
+  d3.select("#remove-layers").on("click", state.removeLayer);
 
   let activationDropdown = d3.select("#activations").on("change", function () {
     state.activation = activations[(this as any).value];

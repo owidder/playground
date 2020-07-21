@@ -12,6 +12,10 @@ const setNextStepDisabled = (disabled: boolean) => {
     (<HTMLInputElement>document.getElementById("next-step-tf-button")).disabled = disabled;
 }
 
+const setResetDisabled = (disabled: boolean) => {
+    (<HTMLInputElement>document.getElementById("reset-button")).disabled = disabled;
+}
+
 export const modelOutdated = () => {
     d3.select("#build-button").classed("outdated", true);
     setNextStepDisabled(true);
@@ -24,10 +28,12 @@ export const modelCurrent = () => {
 
 export const stepStarted = () => {
     setNextStepDisabled(true);
+    setResetDisabled(true);
 }
 
 export const stepEnded = () => {
     setNextStepDisabled(false);
+    setResetDisabled(false);
 }
 
 export const playPause = (isPlaying: boolean) => {
