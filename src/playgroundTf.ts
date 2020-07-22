@@ -77,33 +77,33 @@ interface InputFeature {
   label?: string;
 }
 
-let INPUTS: { [name: string]: InputFeature } = {
-  "x": { f: (x, y) => x, label: "X_1" },
-  "y": { f: (x, y) => y, label: "X_2" },
-  "xSquared": { f: (x, y) => x * x, label: "X_1^2" },
-  "ySquared": { f: (x, y) => y * y, label: "X_2^2" },
-  "xTimesY": { f: (x, y) => x * y, label: "X_1X_2" },
-  "sinX": { f: (x, y) => Math.sin(x), label: "sin(X_1)" },
-  "sinY": { f: (x, y) => Math.sin(y), label: "sin(X_2)" },
-};
+// let INPUTS: { [name: string]: InputFeature } = {
+//   "x": { f: (x, y) => x, label: "X_1" },
+//   "y": { f: (x, y) => y, label: "X_2" },
+//   "xSquared": { f: (x, y) => x * x, label: "X_1^2" },
+//   "ySquared": { f: (x, y) => y * y, label: "X_2^2" },
+//   "xTimesY": { f: (x, y) => x * y, label: "X_1X_2" },
+//   "sinX": { f: (x, y) => Math.sin(x), label: "sin(X_1)" },
+//   "sinY": { f: (x, y) => Math.sin(y), label: "sin(X_2)" },
+// };
 
-let HIDABLE_CONTROLS = [
-  ["Show test data", "showTestData"],
-  ["Discretize output", "discretize"],
-  ["Play button", "playButton"],
-  ["Step button", "stepButton"],
-  ["Reset button", "resetButton"],
-  ["Learning rate", "learningRate"],
-  ["Activation", "activation"],
-  ["Regularization", "regularization"],
-  ["Regularization rate", "regularizationRate"],
-  ["Problem type", "problem"],
-  ["Which dataset", "dataset"],
-  ["Ratio train data", "percTrainData"],
-  ["Noise level", "noise"],
-  ["Batch size", "batchSize"],
-  ["# of hidden layers", "numHiddenLayers"],
-];
+// let HIDABLE_CONTROLS = [
+//   ["Show test data", "showTestData"],
+//   ["Discretize output", "discretize"],
+//   ["Play button", "playButton"],
+//   ["Step button", "stepButton"],
+//   ["Reset button", "resetButton"],
+//   ["Learning rate", "learningRate"],
+//   ["Activation", "activation"],
+//   ["Regularization", "regularization"],
+//   ["Regularization rate", "regularizationRate"],
+//   ["Problem type", "problem"],
+//   ["Which dataset", "dataset"],
+//   ["Ratio train data", "percTrainData"],
+//   ["Noise level", "noise"],
+//   ["Batch size", "batchSize"],
+//   ["# of hidden layers", "numHiddenLayers"],
+// ];
 
 function makeGUI() {
   d3.select("#reset-button").on("click", () => {
@@ -134,25 +134,25 @@ function makeGUI() {
   activationDropdown.property("value",
     getKeyFromValue(activations, state.activation));
 
-  let learningRate = d3.select("#learningRate").on("change", function () {
-    state.learningRate = +(this as any).value;
-    state.serialize();
-  });
-  learningRate.property("value", state.learningRate);
+  // let learningRate = d3.select("#learningRate").on("change", function () {
+  //   state.learningRate = +(this as any).value;
+  //   state.serialize();
+  // });
+  // learningRate.property("value", state.learningRate);
 
-  let regularDropdown = d3.select("#regularizations").on("change",
-    function () {
-      state.regularization = regularizations[(this as any).value];
-      reset();
-    });
-  regularDropdown.property("value",
-    getKeyFromValue(regularizations, state.regularization));
+  // let regularDropdown = d3.select("#regularizations").on("change",
+  //   function () {
+  //     state.regularization = regularizations[(this as any).value];
+  //     reset();
+  //   });
+  // regularDropdown.property("value",
+  //   getKeyFromValue(regularizations, state.regularization));
 
-  let regularRate = d3.select("#regularRate").on("change", function () {
-    state.regularizationRate = +(this as any).value;
-    reset();
-  });
-  regularRate.property("value", state.regularizationRate);
+  // let regularRate = d3.select("#regularRate").on("change", function () {
+  //   state.regularizationRate = +(this as any).value;
+  //   reset();
+  // });
+  // regularRate.property("value", state.regularizationRate);
 
   let x = d3.scaleLinear().domain([-1, 1]).range([0, 144]);
   let xAxis = d3.axisBottom(x)

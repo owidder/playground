@@ -3,3 +3,15 @@
         background-color: red;
     }
 }
+
+.features {
+    &.column {
+        width: 100%;
+        position: relative;
+      }
+     
+}   
+
+#main-part {
+    width: 100%;
+}
