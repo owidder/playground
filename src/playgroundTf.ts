@@ -115,7 +115,7 @@ function makeGUI() {
   });
 
   d3.select("#next-step-tf-button").on("click", () => {
-    state.getModel().fitStep();
+    state.doModelStep();
   })
 
   let regDatasetKey = getKeyFromValue(regDatasets, state.regDataset);

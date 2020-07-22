@@ -66,11 +66,9 @@ export class Model {
         const inputTensor = this._dataset.getTrainInputTensor();
         const outputTensor = this._dataset.getTrainOutputTensor();
 
-        stepStarted();
         const history = await this._sequential.fit(inputTensor, outputTensor, {
             callbacks: { onEpochEnd: this.onEpochEnd }, epochs
         });
-        stepEnded();
 
         this.updateNetwork();
         return history;

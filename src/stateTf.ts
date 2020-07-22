@@ -226,6 +226,14 @@ export class State {
     updateUI(true, this.model.getNetwork(), this.model.getTotalEpochs(), this.model.forEachNode);
   }
 
+  doModelStep = (): void => {
+    stepStarted();
+    setTimeout(async () => {
+      await this.model.fitStep();
+      stepEnded();
+      }, 100)
+  }
+
   addLayer = (): void => {
     this.networkShape.splice(this.networkShape.length - 2, 0, 2);
     this.initModel();
