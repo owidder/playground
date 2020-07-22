@@ -15,3 +15,21 @@
 #main-part {
     width: 100%;
 }
+
+.num-layers-control {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    & div, & span {
+        padding-left: .5em;
+        padding-right: .5em;
+    }
+}
+
+g.node {
+    fill: rgb(141, 118, 141);
+    stroke: black;
+    stroke-width: 2px;
+}
