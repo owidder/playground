@@ -14,7 +14,7 @@ limitations under the License.
 ==============================================================================*/
 
 import "material-design-lite/material.css";
-import "./css/styles.css";
+import "./css/stylesNew.css";
 import "./css/stylesTf.scss";
 import * as tf from "@tensorflow/tfjs";
 import { Model } from "./tf/model";

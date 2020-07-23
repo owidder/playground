@@ -4,6 +4,8 @@ const path = require("path");
 
 const absPath = relPath => path.resolve(__dirname, relPath);
 
+const template = process.env.TEMPLATE && process.env.TEMPLATE.length > 0 ? process.env.TEMPLATE : "index-template-tf.html";
+
 module.exports = {
     mode: process.env.NODE_ENV,
     entry: {
@@ -55,7 +57,7 @@ module.exports = {
             filename: "index.html",
             favicon: "./favicon.png",
             inject: true,
-            template: "index-template.html",
+            template,
         }),
         new MiniCssExtractPlugin({
             filename: `${process.env.BUNDLE_NAME}.css`,}),
