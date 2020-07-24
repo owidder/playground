@@ -5,6 +5,8 @@ import { Selection } from "d3-selection/index";
 import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType } from "../tf/networkTypes";
 import { maxLayerSize } from "../util/mlUtil";
 import { AppendingLineChart } from "../linechartV5";
+import { exp } from '@tensorflow/tfjs';
+import { test } from '../data/dataReader';
 
 const NODE_SIZE = 30;
 const BIAS_SIZE = 5;
@@ -331,7 +333,9 @@ export const makeGUI = (reset: () => void, togglePlayPause: () => void, doModelS
     let activationDropdown = d3.select("#activations").on("change", function () {
         setActivationName((this as any).value);
     });
+}
 
-    let lineChart = new AppendingLineChart(d3.select("#linechart"), ["#777", "black"]);
-
+const lineChart = new AppendingLineChart(d3.select("#linechart"), ["#777", "black"]);
+export const appendToLineChart = (trainLoss: number, testLoss: number) => {
+    lineChart.addDataPoint([trainLoss, testLoss]);
 }

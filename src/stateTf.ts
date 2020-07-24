@@ -18,8 +18,7 @@ import * as dataset from "./datasetV5";
 import { Dataset } from "./datasetV5";
 import { Model } from "./tf/model";
 import { Player, OneStepCallback } from "./tf/player";
-import { totalEpochsChanged, modelCurrent, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded } from "./ui/ui";
-import { tickStep } from "d3";
+import { totalEpochsChanged, modelCurrent, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart } from "./ui/ui";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -216,6 +215,7 @@ export class State {
     this.initPlayer();
 
     this.model.registerTotalEpochsChangedCallback(totalEpochsChanged);
+    this.model.registerEpochEndCallback(appendToLineChart);
     modelCurrent();
 
     this.serialize();

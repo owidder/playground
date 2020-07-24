@@ -14,6 +14,7 @@ import { updateUI, stepStarted, stepEnded } from "../ui/ui";
 import { Scalar } from "@tensorflow/tfjs";
 
 export type TotalEpochsChangedCallback = (currentTotalEpoch) => void;
+export type EpochEndCallback = (trainLoss: number, testLoss: number) => void;
 
 export class Model {
 
@@ -23,11 +24,16 @@ export class Model {
     private counter = 0;
     private totalEpochs = 0;
     private totalEochsChangedCallbacks: TotalEpochsChangedCallback[] = [];
+    private epochEndCallbacks: EpochEndCallback[] = [];
 
     public getTotalEpochs = () => this.totalEpochs;
 
     public registerTotalEpochsChangedCallback = (totalEpochsChangedCallback: TotalEpochsChangedCallback) => {
         this.totalEochsChangedCallbacks.push(totalEpochsChangedCallback);
+    }
+
+    public registerEpochEndCallback = (epochEndCallback: EpochEndCallback) => {
+        this.epochEndCallbacks.push(epochEndCallback);
     }
 
     constructor(networkShape: number[], activationName: string, dataset: Dataset) {
@@ -56,9 +62,13 @@ export class Model {
     }
 
     private onEpochEnd = (epoch: number, logs: Logs): void => {
-        console.log(`train: ${logs.loss}`);
-        const testLoss = this._sequential.evaluate(this._dataset.getTestInputTensor(), this._dataset.getTestOutputTensor()) as Scalar;
-        console.log(testLoss.dataSync()[0]);
+        const trainLoss = logs.loss;
+        const testLossTensor = this._sequential.evaluate(this._dataset.getTestInputTensor(), this._dataset.getTestOutputTensor()) as Scalar;
+        const testLoss = testLossTensor.dataSync()[0];
+        this.epochEndCallbacks.forEach(eec => {
+            eec(trainLoss, testLoss);
+        })
+
         this.totalEpochs++;
         this.totalEochsChangedCallbacks.forEach(tecc => {
             tecc(this.totalEpochs)
