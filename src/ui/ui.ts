@@ -1,9 +1,10 @@
 import * as d3 from 'd3';
+import 'd3-selection-multi';
 import { Selection } from "d3-selection/index";
 
 import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType } from "../tf/networkTypes";
 import { maxLayerSize } from "../util/mlUtil";
-import { layers } from '@tensorflow/tfjs';
+import { AppendingLineChart } from "../linechartV5";
 
 const NODE_SIZE = 30;
 const BIAS_SIZE = 5;
@@ -310,7 +311,7 @@ export function drawNetwork(network: TfNode[][], changeNumberOfNodesCallback: Ch
     }
 }
 
-export const makeGUI = (reset: () => void, togglePlayPause: () => void, doModelStep: () => void, addLayer: () => void, removeLayer: () => void, setActivationName: (string) => void) =>  {
+export const makeGUI = (reset: () => void, togglePlayPause: () => void, doModelStep: () => void, addLayer: () => void, removeLayer: () => void, setActivationName: (string) => void) => {
     d3.select("#reset-button").on("click", () => {
         reset();
     });
@@ -330,4 +331,7 @@ export const makeGUI = (reset: () => void, togglePlayPause: () => void, doModelS
     let activationDropdown = d3.select("#activations").on("change", function () {
         setActivationName((this as any).value);
     });
+
+    let lineChart = new AppendingLineChart(d3.select("#linechart"), ["#777", "black"]);
+
 }

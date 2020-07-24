@@ -11,6 +11,7 @@ import { Logs } from "@tensorflow/tfjs-layers/dist/logs";
 import { TfNode, TfLink, NodeIterator } from "./networkTypes";
 import { range } from "../util/mlUtil";
 import { updateUI, stepStarted, stepEnded } from "../ui/ui";
+import { Scalar } from "@tensorflow/tfjs";
 
 export type TotalEpochsChangedCallback = (currentTotalEpoch) => void;
 
@@ -55,7 +56,9 @@ export class Model {
     }
 
     private onEpochEnd = (epoch: number, logs: Logs): void => {
-        console.log(logs.loss);
+        console.log(`train: ${logs.loss}`);
+        const testLoss = this._sequential.evaluate(this._dataset.getTestInputTensor(), this._dataset.getTestOutputTensor()) as Scalar;
+        console.log(testLoss.dataSync()[0]);
         this.totalEpochs++;
         this.totalEochsChangedCallbacks.forEach(tecc => {
             tecc(this.totalEpochs)

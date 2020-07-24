@@ -42,6 +42,8 @@ export class Dataset {
   private outputShape: number;
   private trainInputTensor: Tensor2D;
   private trainOutputTensor: Tensor2D;
+  private testInputTensor: Tensor2D;
+  private testOutputTensor: Tensor2D;
 
   public getTrainData = () => this.trainData;
   public getTestData = () => this.testData;
@@ -51,6 +53,8 @@ export class Dataset {
   public getOutputShape = () => this.outputShape;
   public getTrainInputTensor = () => this.trainInputTensor;
   public getTrainOutputTensor = () => this.trainOutputTensor;
+  public getTestInputTensor = () => this.testInputTensor;
+  public getTestOutputTensor = () => this.testOutputTensor;
 
   constructor(_trainData: DataPoint[], _testData: DataPoint[], _labelName: string) {
     this.trainData = _trainData;
@@ -67,8 +71,12 @@ export class Dataset {
         Math.max(_inputShape, Object.keys(dataPoint).filter(key => key != _labelName).length), 0);
 
     this.trainInputTensor = tf.tensor2d(this.trainData.map(this.getDataFromDataPoint), [this.trainData.length, this.inputShape]);
-    const output = this.trainData.map(this.createOneHotEncoding);
-    this.trainOutputTensor = tf.tensor2d(output, [this.trainData.length, this.outputShape]);
+    const outputTrain = this.trainData.map(this.createOneHotEncoding);
+    this.trainOutputTensor = tf.tensor2d(outputTrain, [this.trainData.length, this.outputShape]);
+
+    this.testInputTensor = tf.tensor2d(this.testData.map(this.getDataFromDataPoint), [this.testData.length, this.inputShape]);
+    const outputTest = this.testData.map(this.createOneHotEncoding);
+    this.testOutputTensor = tf.tensor2d(outputTest, [this.testData.length, this.outputShape]);
   }
 
   createOneHotEncoding = (dataPoint: DataPoint): (0|1)[] => {
@@ -81,52 +89,6 @@ export class Dataset {
         .reduce((_data, attributeName) => [..._data, dataPoint[attributeName]], [])
   }
 }
-
-/*
-let dataPoints: DataPoint[];
-let labelArray: string[];
-export const init = (_dataPoints: DataPoint[], _labelName: string): void => {
-  dataPoints = _dataPoints;
-  labelName = _labelName;
-  const labelObj = _dataPoints.reduce((lo, dataPoint) => {
-    return {...lo, [dataPoint[_labelName]]: 1}
-  }, {});
-
-  labelArray = Object.keys(labelObj);
-}
-*/
-
-/*
-export const getLabelArray = (): string[] => {
-  return labelArray
-}
-*/
-
-/*
-export const getDataPoints = (): DataPoint[] => {
-  return dataPoints
-}
-*/
-
-/*
-export const getInputShape = (): number => {
-  return dataPoints.reduce((maxNum, dataPoint) =>
-      Math.max(maxNum, Object.keys(dataPoint).filter(key => key != labelName).length), 0)
-}
-*/
-
-/*
-export const getOutputShape = (): number => {
-  return labelArray.length
-}
-*/
-
-/*
-export const getOneHotEncodingFromDataPoint = (dataPoint: DataPoint): (0|1)[] => {
-  const index = labelArray.indexOf(String(dataPoint[labelName]));
-  return oneHot(labelArray.length, index)
-}
-*/
 
 type Point = {
   x: number,
