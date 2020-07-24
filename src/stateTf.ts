@@ -234,6 +234,11 @@ export class State {
       }, 100)
   }
 
+  setActivationName = (activationName: string) => {
+    this.activationName = activationName;
+    this.initModel();
+  }
+
   addLayer = (): void => {
     this.networkShape.splice(this.networkShape.length - 2, 0, 2);
     this.initModel();

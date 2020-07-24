@@ -85,10 +85,17 @@ limitations under the License.
         <label for="activations">Activation</label>
         <div class="select">
           <select id="activations">
-            <option value="relu">ReLU</option>
-            <option value="tanh">Tanh</option>
-            <option value="sigmoid">Sigmoid</option>
+            <option value="elu">eLU</option>
             <option value="linear">Linear</option>
+            <option value="relu">ReLU</option>
+            <option value="relu6">ReLU6</option>
+            <option value="selu">SeLU</option>
+            <option value="sigmoid">Sigmoid</option>
+            <option value="tanh">Tanh</option>
+            <option value="hardSigmoid">Hard Sigmoid</option>
+            <option value="softmax">Softmax</option>
+            <option value="softplus">Softplus</option>
+            <option value="softsign">Softsign</option>
           </select>
         </div>
       </div>
@@ -100,6 +107,7 @@ limitations under the License.
 
     <!-- Features Column -->
     <div class="column features">
+      <div id="linechart"></div>
       <div>
         <h4 class="num-layers-control">
           <div class="ui-numHiddenLayers">

@@ -309,3 +309,25 @@ export function drawNetwork(network: TfNode[][], changeNumberOfNodesCallback: Ch
         }
     }
 }
+
+export const makeGUI = (reset: () => void, togglePlayPause: () => void, doModelStep: () => void, addLayer: () => void, removeLayer: () => void, setActivationName: (string) => void) =>  {
+    d3.select("#reset-button").on("click", () => {
+        reset();
+    });
+
+    d3.select("#play-pause-button").on("click", function () {
+        togglePlayPause();
+    });
+
+    d3.select("#next-step-tf-button").on("click", () => {
+        doModelStep();
+    })
+
+    d3.select("#add-layers").on("click", addLayer);
+
+    d3.select("#remove-layers").on("click", removeLayer);
+
+    let activationDropdown = d3.select("#activations").on("change", function () {
+        setActivationName((this as any).value);
+    });
+}
