@@ -32,4 +32,4 @@ const reset = () => {
 
 }
 
-makeGUI(() => state.initModel(dataset), state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName);
+makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName);
