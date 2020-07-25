@@ -155,7 +155,8 @@ export class State {
     { name: "tutorial", type: Type.STRING },
     { name: "problem", type: Type.OBJECT, keyMap: problems },
     { name: "initZero", type: Type.BOOLEAN },
-    { name: "hideText", type: Type.BOOLEAN }
+    { name: "hideText", type: Type.BOOLEAN },
+    { name: "datasetUrl", type: Type.STRING },
   ];
 
   [key: string]: any;
@@ -187,8 +188,8 @@ export class State {
   sinX = false;
   cosY = false;
   sinY = false;
-  // dataset: dataset.DataGenerator = dataset.classifyCircleData;
-  // regDataset: dataset.DataGenerator = dataset.regressPlane;
+  datasetUrl = 
+
   seed: string;
 
   initPlayer() {
