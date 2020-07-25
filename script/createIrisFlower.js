@@ -18,4 +18,4 @@ const newTest = transform(test);
 
 const combined = [...newTrain, ...newTest]
 
-fs.writeFileSync("./script/sepal.json", JSON.stringify(combined));
+fs.writeFileSync("./script/irisFlower.json", JSON.stringify(combined));
