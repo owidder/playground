@@ -18,12 +18,18 @@ import "./css/stylesNew.css";
 import "./css/stylesTf.scss";
 import { Dataset } from "./datasetV5";
 import * as dataReader from "./data/dataReader";
-import {makeGUI} from "./ui/ui";
-import {State} from "./stateTf";
+import { makeGUI, resetLineChart } from "./ui/ui";
+import { State } from "./stateTf";
 
 const state = State.deserializeState();
 
 const dataset = new Dataset(dataReader.train, dataReader.test, "species");
 state.initModel(dataset);
+
+const reset = () => {
+  state.initModel(dataset);
+  resetLineChart();
+
+}
 
 makeGUI(() => state.initModel(dataset), state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName);

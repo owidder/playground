@@ -336,6 +336,11 @@ export const makeGUI = (reset: () => void, togglePlayPause: () => void, doModelS
 }
 
 const lineChart = new AppendingLineChart(d3.select("#linechart"), ["#777", "black"]);
+
 export const appendToLineChart = (trainLoss: number, testLoss: number) => {
     lineChart.addDataPoint([trainLoss, testLoss]);
+}
+
+export const resetLineChart = () => {
+    lineChart.reset();
 }
