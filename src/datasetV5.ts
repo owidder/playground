@@ -14,10 +14,12 @@ limitations under the License.
 ==============================================================================*/
 
 import * as d3 from 'd3';
-import { oneHot } from "./util/mlUtil";
 import { Tensor2D } from "@tensorflow/tfjs-core/dist/tensor";
 
 import * as tf from "@tensorflow/tfjs";
+
+import { oneHot } from "./util/mlUtil";
+import { DataPoint, DataSource } from "./tf/networkTypes";
 
 /**
  * A two dimensional example: x and y coordinates with the label.
@@ -28,19 +30,15 @@ export type Example2D = {
     label: number
 };
 
-//let labelName: string;
-//export const getLabelName = () => labelName;
-export type DataPoint = { [key: string]: number | string };
-
 export type TrainAndTest = {
     train: DataPoint[];
     test: DataPoint[];
 }
 
-export const loadDataPoints = async (url: string): Promise<DataPoint[]> => {
+export const loadDataSource = async (url: string): Promise<DataSource> => {
     const response = await fetch(url);
     const json = await response.json();
-    return (json as DataPoint[]);
+    return (json as DataSource);
 }
 
 export const splitTrainAndTest = (data: DataPoint[], testRatio: number): TrainAndTest => {
@@ -48,7 +46,7 @@ export const splitTrainAndTest = (data: DataPoint[], testRatio: number): TrainAn
     const trainSize = data.length - testSize;
     const train = data.slice(0, trainSize);
     const test = data.slice(trainSize);
-    return {train, test}
+    return { train, test }
 }
 
 export class Dataset {

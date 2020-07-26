@@ -2,11 +2,9 @@ import * as d3 from 'd3';
 import 'd3-selection-multi';
 import { Selection } from "d3-selection/index";
 
-import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType } from "../tf/networkTypes";
+import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource } from "../tf/networkTypes";
 import { maxLayerSize } from "../util/mlUtil";
 import { AppendingLineChart } from "../linechartV5";
-import { exp } from '@tensorflow/tfjs';
-import { test } from '../data/dataReader';
 
 const NODE_SIZE = 30;
 const BIAS_SIZE = 5;
@@ -349,4 +347,10 @@ function humanReadable(n: number): string {
 
 export const resetLineChart = () => {
     lineChart.reset();
+}
+
+export const showDataSource = (dataSource: DataSource): void => {
+    d3.select("#datasource-name").text(dataSource.name);
+    d3.select("#datasource-description").text(dataSource.description);
+    d3.select("#datasource-source").text(dataSource.source);
 }

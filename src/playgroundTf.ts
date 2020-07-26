@@ -16,8 +16,8 @@ limitations under the License.
 import "material-design-lite/material.css";
 import "./css/stylesNew.css";
 import "./css/stylesTf.scss";
-import { Dataset, loadDataPoints, splitTrainAndTest } from "./datasetV5";
-import { makeGUI, resetLineChart } from "./ui/ui";
+import { Dataset, loadDataSource, splitTrainAndTest } from "./datasetV5";
+import { makeGUI, resetLineChart, showDataSource } from "./ui/ui";
 import { State } from "./stateTf";
 
 const start = async () => {
@@ -25,8 +25,9 @@ const start = async () => {
 
     const datasetUrl = state.datasetUrl && state.datasetUrl.length > 0 ? state.datasetUrl : "./datasets/irisFlower.json";
 
-    const dataPoints = await loadDataPoints(datasetUrl);
-    const trainAndTest = splitTrainAndTest(dataPoints, .2);
+    const dataSource = await loadDataSource(datasetUrl);
+    showDataSource(dataSource);
+    const trainAndTest = splitTrainAndTest(dataSource.data, .2);
     const dataset = new Dataset(trainAndTest.train, trainAndTest.test, "label");
     state.initModel(dataset);
 

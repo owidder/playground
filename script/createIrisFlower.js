@@ -16,6 +16,13 @@ const testStr = fs.readFileSync("/Users/oliverwidder/dev/github/my-projects/play
 const test = JSON.parse(testStr);
 const newTest = transform(test);
 
-const combined = [...newTrain, ...newTest]
+const data = [...newTrain, ...newTest]
 
-fs.writeFileSync("./script/irisFlower.json", JSON.stringify(combined));
+const dataSource = {
+    name: "Iris Dataset (JSON Version)",
+    description: "A JSON version of the popular Iris Dataset",
+    source: "https://www.kaggle.com/rtatman/iris-dataset-json-version",
+    data
+}
+
+fs.writeFileSync("/Users/oliverwidder/dev/github/my-projects/playground/script/irisFlower.json", JSON.stringify(dataSource, null, 4));
