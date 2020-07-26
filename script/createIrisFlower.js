@@ -12,7 +12,7 @@ const trainStr = fs.readFileSync("/Users/oliverwidder/dev/github/my-projects/pla
 const train = JSON.parse(trainStr);
 const newTrain = transform(train);
 
-const testStr = fs.readFileSync("/Users/oliverwidder/dev/github/my-projects/playground/src/data/training.json");
+const testStr = fs.readFileSync("/Users/oliverwidder/dev/github/my-projects/playground/src/data/testing.json");
 const test = JSON.parse(testStr);
 const newTest = transform(test);
 

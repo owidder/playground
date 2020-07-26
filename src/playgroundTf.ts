@@ -16,20 +16,25 @@ limitations under the License.
 import "material-design-lite/material.css";
 import "./css/stylesNew.css";
 import "./css/stylesTf.scss";
-import { Dataset } from "./datasetV5";
-import * as dataReader from "./data/dataReader";
+import { Dataset, loadDataPoints, splitTrainAndTest } from "./datasetV5";
 import { makeGUI, resetLineChart } from "./ui/ui";
 import { State } from "./stateTf";
 
-const state = State.deserializeState();
+const start = async () => {
+    const state = State.deserializeState();
 
-const dataset = new Dataset(dataReader.train, dataReader.test, "species");
-state.initModel(dataset);
+    const dataPoints = await loadDataPoints("https://owidder.github.io/playground/datasets/irisFlower.json");
+    const trainAndTest = splitTrainAndTest(dataPoints, .2);
+    const dataset = new Dataset(trainAndTest.train, trainAndTest.test, "label");
+    state.initModel(dataset);
 
-const reset = () => {
-  state.initModel(dataset);
-  resetLineChart();
+    const reset = () => {
+        state.initModel(dataset);
+        resetLineChart();
 
+    }
+
+    makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName);
 }
 
-makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName);
+start();
