@@ -33,3 +33,15 @@ g.node {
     stroke: black;
     stroke-width: 2px;
 }
+
+header {
+    padding-top: .3em;
+
+    .line1 {
+        font-size: 1.5em;
+    }
+
+    .line2 {
+        font-size: .7em;
+    }
+}
