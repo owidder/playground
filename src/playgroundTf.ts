@@ -23,7 +23,9 @@ import { State } from "./stateTf";
 const start = async () => {
     const state = State.deserializeState();
 
-    const dataPoints = await loadDataPoints("https://owidder.github.io/playground/datasets/irisFlower.json");
+    const datasetUrl = state.datasetUrl && state.datasetUrl.length > 0 ? state.datasetUrl : "./datasets/irisFlower.json";
+
+    const dataPoints = await loadDataPoints(datasetUrl);
     const trainAndTest = splitTrainAndTest(dataPoints, .2);
     const dataset = new Dataset(trainAndTest.train, trainAndTest.test, "label");
     state.initModel(dataset);

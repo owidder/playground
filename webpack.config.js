@@ -1,5 +1,6 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require("path");
 
 const absPath = relPath => path.resolve(__dirname, relPath);
@@ -39,11 +40,11 @@ module.exports = {
                     },
                     {
                         test: /\.scss$/,
-                        use: [{loader: MiniCssExtractPlugin.loader}, "css-loader", "sass-loader"]
+                        use: [{ loader: MiniCssExtractPlugin.loader }, "css-loader", "sass-loader"]
                     },
                     {
                         test: /\.css$/,
-                        use: [{loader: MiniCssExtractPlugin.loader}, "css-loader"]
+                        use: [{ loader: MiniCssExtractPlugin.loader }, "css-loader"]
                     },
                 ],
             },
@@ -60,10 +61,16 @@ module.exports = {
             template,
         }),
         new MiniCssExtractPlugin({
-            filename: `${process.env.BUNDLE_NAME}.css`,}),
+            filename: `${process.env.BUNDLE_NAME}.css`,
+        }),
+        new CopyWebpackPlugin({
+            patterns: [
+                { from: 'datasets', to: 'datasets' },
+            ],
+        }),
     ],
     devServer: {
-        contentBase: path.join(__dirname, 'dist'),
+        contentBase: path.join(__dirname, process.env.DIST_FOLDER),
         compress: true,
         port: 9000
     }
