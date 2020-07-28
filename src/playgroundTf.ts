@@ -27,8 +27,7 @@ const start = async () => {
 
     const dataSource = await loadDataSource(datasetUrl);
     showDataSource(dataSource);
-    const trainAndTest = splitTrainAndTest(dataSource.data, .2);
-    const dataset = new Dataset(trainAndTest.train, trainAndTest.test, "label");
+    const dataset = new Dataset(dataSource, "label");
     state.initModel(dataset);
 
     const reset = () => {
