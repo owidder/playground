@@ -7,6 +7,8 @@ import { maxLayerSize } from "../util/mlUtil";
 import { AppendingLineChart } from "../linechartV5";
 
 const NODE_SIZE = 30;
+const NODE_GAP = 25;
+const NODE_OFFSET = 10;
 const BIAS_SIZE = 5;
 
 const setNextStepDisabled = (disabled: boolean) => {
@@ -183,6 +185,12 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
             r: NODE_SIZE / 2,
         });
 
+    if (node.name) {
+        nodeGroup.append("text")
+            .text(node.name)
+            .attr("y", -7)
+    }
+ 
     if (!isInput) {
         nodeGroup.append("rect")
             .attrs({
@@ -256,17 +264,17 @@ export function drawNetwork(network: TfNode[][], changeNumberOfNodesCallback: Ch
     svg.attr("width", width);
     svg.attr("height", height);
 
-    let node2coord: { [id: string]: { cx: number, cy: number } } = {};
-    let container = svg.append("g")
+    const node2coord: { [id: string]: { cx: number, cy: number } } = {};
+    const container = svg.append("g")
         .classed("core", true)
         .attr("transform", `translate(${padding},${padding})`);
 
-    let featureWidth = 10;
-    let layerScale = d3.scalePoint<number>()
+    const featureWidth = 10;
+    const layerScale = d3.scalePoint<number>()
         .domain(d3.range(0, numLayers))
         .padding(.7)
         .range([featureWidth, width - NODE_SIZE]);
-    let nodeIndexScale = (nodeIndex: number) => nodeIndex * (NODE_SIZE + 25);
+    const nodeIndexScale = (nodeIndex: number) => nodeIndex * (NODE_SIZE + NODE_GAP) + NODE_OFFSET;
 
 
     let calloutWeights = d3.select(".callout.weights").style("display", "none");
@@ -337,13 +345,13 @@ const lineChart = new AppendingLineChart(d3.select("#linechart"), ["#777", "blac
 
 function humanReadable(n: number): string {
     return n.toFixed(3);
-  }
+}
 
-  export const appendToLineChart = (trainLoss: number, testLoss: number) => {
+export const appendToLineChart = (trainLoss: number, testLoss: number) => {
     lineChart.addDataPoint([trainLoss, testLoss]);
     d3.select("#loss-train").text(humanReadable(trainLoss));
     d3.select("#loss-test").text(humanReadable(testLoss));
-  }
+}
 
 export const resetLineChart = () => {
     lineChart.reset();

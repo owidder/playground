@@ -122,7 +122,7 @@ export class Model {
             const biases: number[] = Array.from(this._sequential.getLayer("", layerIndex - 1).getWeights()[1].dataSync());
             const nodes = biases.map((bias, i) => {
                 const links = this.createInputLinks(layerIndex, i, weights);
-                const name = layerIndex == this._network.length - 1 ? this._dataset.getLabelValues()[i] : undefined;
+                const name = layerIndex == this.numberOfLayers() - 1 ? this._dataset.getLabelValues()[i] : undefined;
                 return new TfNode(Model.nodeId(layerIndex, i), links, bias, name)
             })
 
