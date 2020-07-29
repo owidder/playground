@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import 'd3-selection-multi';
-import { Selection, BaseType, ContainerElement } from "d3-selection/index";
+import { Selection, ContainerElement } from "d3-selection/index";
 
 import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource } from "../tf/networkTypes";
 import { maxLayerSize } from "../util/mlUtil";
