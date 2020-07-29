@@ -21,7 +21,6 @@ export class Model {
     private _sequential: Sequential;
     private _dataset: Dataset;
     private _network: TfNode[][];
-    private counter = 0;
     private totalEpochs = 0;
     private totalEochsChangedCallbacks: TotalEpochsChangedCallback[] = [];
     private epochEndCallbacks: EpochEndCallback[] = [];
@@ -110,19 +109,20 @@ export class Model {
         const numberOfOutputLinks = this.layerSize(layerIndex);
         const thisNodeId = Model.nodeId(layerIndex, nodeIndex);
         const links = weights.filter((_, i) => (i % numberOfOutputLinks) == nodeIndex)
-            .map((weight, i) => new TfLink(Model.nodeId(layerIndex - 1, i), thisNodeId, weight, this.counter));
+            .map((weight, i) => new TfLink(Model.nodeId(layerIndex - 1, i), thisNodeId, weight));
         return links
     }
 
     private createNodesOfLayer = (layerIndex: number): TfNode[] => {
         if (layerIndex == 0) {
-            return range(0, this.layerSize(0)).map((i) => new TfNode(Model.nodeId(0, i)))
+            const featureName = this._dataset.getFeatureNames();
+            return range(0, this.layerSize(0)).map((i) => new TfNode(Model.nodeId(0, i), undefined, undefined, featureName[i]))
         } else {
             const weights: number[] = Array.from(this._sequential.getLayer("", layerIndex - 1).getWeights()[0].dataSync());
             const biases: number[] = Array.from(this._sequential.getLayer("", layerIndex - 1).getWeights()[1].dataSync());
             const nodes = biases.map((bias, i) => {
                 const links = this.createInputLinks(layerIndex, i, weights);
-                return new TfNode(Model.nodeId(layerIndex, i), links, bias, this.counter)
+                return new TfNode(Model.nodeId(layerIndex, i), links, bias)
             })
 
             return nodes
@@ -157,7 +157,6 @@ export class Model {
             this._network = range(0, this.numberOfLayers()).map((layerIndex: number) => {
                 return this.createNodesOfLayer(layerIndex)
             })
-            this.counter++;
         }
 
         return this._network

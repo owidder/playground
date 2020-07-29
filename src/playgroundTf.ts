@@ -16,7 +16,7 @@ limitations under the License.
 import "material-design-lite/material.css";
 import "./css/stylesNew.css";
 import "./css/stylesTf.scss";
-import { Dataset, loadDataSource, splitTrainAndTest } from "./datasetV5";
+import { Dataset, loadDataSource } from "./datasetV5";
 import { makeGUI, resetLineChart, showDataSource } from "./ui/ui";
 import { State } from "./stateTf";
 

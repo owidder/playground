@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import 'd3-selection-multi';
-import { Selection } from "d3-selection/index";
+import { Selection, BaseType, ContainerElement } from "d3-selection/index";
 
 import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource } from "../tf/networkTypes";
 import { maxLayerSize } from "../util/mlUtil";
@@ -164,7 +164,7 @@ function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
 }
 
 function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
-    container, node?: TfNode) {
+    container: Selection<ContainerElement, any, HTMLElement, any>, node?: TfNode) {
     let x = cx - NODE_SIZE / 2;
     let y = cy - NODE_SIZE / 2;
 

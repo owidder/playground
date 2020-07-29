@@ -3,27 +3,25 @@ export class TfLink {
     sourceId: string;
     destId: string;
     weight: number;
-    ctr:  number;
 
-    constructor(sourceId: string, destId: string, weight: number, ctr?: number) {
+    constructor(sourceId: string, destId: string, weight: number) {
         this.sourceId = sourceId;
         this.destId = destId;
         this.weight = weight;
-        this.ctr = ctr;
     }
 }
 
 export class TfNode {
     id: string;
+    name?: string;
     inputLinks?: TfLink[];
     bias?: number;
-    ctr: number;
 
-    constructor(id: string, inputLinks?: TfLink[], bias?: number, ctr?: number) {
+    constructor(id: string, inputLinks?: TfLink[], bias?: number, name?: string) {
         this.id = id;
         this.inputLinks = inputLinks ? inputLinks : [];
         this.bias = bias;
-        this.ctr = ctr;
+        this.name = name;
     }
 }
 
