@@ -1,6 +1,6 @@
 import * as tf from "@tensorflow/tfjs";
 
-import { Dataset } from "../datasetV5";
+import { Dataset } from "../datasetTf";
 
 import { Sequential } from "@tensorflow/tfjs-layers/dist/models";
 import { DenseLayerArgs } from "@tensorflow/tfjs-layers/dist/layers/core";

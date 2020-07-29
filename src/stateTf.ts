@@ -14,8 +14,8 @@ limitations under the License.
 ==============================================================================*/
 
 import * as nn from "./nn";
-import * as dataset from "./datasetV5";
-import { Dataset } from "./datasetV5";
+import * as dataset from "./datasetTf";
+import { Dataset } from "./datasetTf";
 import { Model } from "./tf/model";
 import { Player, OneStepCallback } from "./tf/player";
 import { totalEpochsChanged, modelCurrent, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart } from "./ui/ui";
