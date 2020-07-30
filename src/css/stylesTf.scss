@@ -62,3 +62,9 @@ header {
         font-weight: lighter;
     }
 }
+
+select {
+    &.leftmargin {
+        margin-left: 1em;
+    }
+}
