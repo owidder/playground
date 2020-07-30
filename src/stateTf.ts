@@ -128,41 +128,14 @@ export class State {
   }
 
   private static PROPS: Property[] = [
-    { name: "activation", type: Type.OBJECT, keyMap: activations },
     { name: "activationName", type: Type.STRING, keyMap: activationNames },
     { name: "networkShape", type: Type.ARRAY_NUMBER },
     { name: "datasetUrl", type: Type.STRING },
   ];
 
   [key: string]: any;
-  learningRate = 0.03;
-  regularizationRate = 0;
-  showTestData = false;
-  noise = 0;
-  batchSize = 10;
-  discretize = false;
-  tutorial: string = null;
-  percTrainData = 50;
-  activation = nn.Activations.TANH;
   activationName = "tanh";
-  regularization: nn.RegularizationFunction = null;
-  problem = Problem.CLASSIFICATION;
-  initZero = false;
-  hideText = false;
-  collectStats = false;
-  numHiddenLayers = 1;
-  numLayers = 4;
-  hiddenLayerControls: any[] = [];
   networkShape: number[];
-  x = true;
-  y = true;
-  xTimesY = false;
-  xSquared = false;
-  ySquared = false;
-  cosX = false;
-  sinX = false;
-  cosY = false;
-  sinY = false;
   datasetUrl = "https://owidder.github.io/playground/datasets/irisFlower.json";
 
   seed: string;

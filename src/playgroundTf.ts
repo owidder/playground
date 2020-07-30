@@ -17,7 +17,7 @@ import "material-design-lite/material.css";
 import "./css/stylesNew.css";
 import "./css/stylesTf.scss";
 import { Dataset, loadDataSource } from "./datasetTf";
-import { makeGUI, resetLineChart, showDataSource } from "./ui/ui";
+import { makeGUI, resetLineChart, showDataSource, setSelectComponentByValue } from "./ui/ui";
 import { State } from "./stateTf";
 
 const start = async () => {
@@ -37,6 +37,7 @@ const start = async () => {
     }
 
     makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName);
+    setSelectComponentByValue("activations", state.activationName);
 }
 
 start();

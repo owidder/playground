@@ -319,6 +319,13 @@ export function drawNetwork(network: TfNode[][], changeNumberOfNodesCallback: Ch
     }
 }
 
+export const setSelectComponentByValue = (id: string, value: string) => {
+    const selectComponent: HTMLSelectElement = document.getElementById(id) as HTMLSelectElement;
+    const optionsArray = Array.from(selectComponent.options);
+    const index = [...optionsArray].findIndex(option => option.value == value);
+    selectComponent.selectedIndex = index;
+}
+
 export const makeGUI = (reset: () => void, togglePlayPause: () => void, doModelStep: () => void, addLayer: () => void, removeLayer: () => void, setActivationName: (string) => void) => {
     d3.select("#reset-button").on("click", () => {
         reset();
@@ -336,7 +343,7 @@ export const makeGUI = (reset: () => void, togglePlayPause: () => void, doModelS
 
     d3.select("#remove-layers").on("click", removeLayer);
 
-    let activationDropdown = d3.select("#activations").on("change", function () {
+    const activationDropdown = d3.select("#activations").on("change", function () {
         setActivationName((this as any).value);
     });
 }
