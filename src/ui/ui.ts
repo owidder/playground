@@ -190,7 +190,7 @@ function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
             .text(node.name)
             .attr("y", -7)
     }
- 
+
     if (!isInput) {
         nodeGroup.append("rect")
             .attrs({
@@ -326,7 +326,14 @@ export const setSelectComponentByValue = (id: string, value: string) => {
     selectComponent.selectedIndex = index;
 }
 
-export const makeGUI = (reset: () => void, togglePlayPause: () => void, doModelStep: () => void, addLayer: () => void, removeLayer: () => void, setActivationName: (string) => void) => {
+export const makeGUI = (reset: () => void,
+    togglePlayPause: () => void,
+    doModelStep: () => void, 
+    addLayer: () => void, 
+    removeLayer: () => void, 
+    setActivationName: (name: string) => void,
+    changeDatasetUrl: (url: string) => void) => {
+
     d3.select("#reset-button").on("click", () => {
         reset();
     });
@@ -343,9 +350,13 @@ export const makeGUI = (reset: () => void, togglePlayPause: () => void, doModelS
 
     d3.select("#remove-layers").on("click", removeLayer);
 
-    const activationDropdown = d3.select("#activations").on("change", function () {
+    d3.select("#activations").on("change", function () {
         setActivationName((this as any).value);
     });
+
+    d3.select("#datasources").on("change", function () {
+        changeDatasetUrl((this as any).value);
+    })
 }
 
 const lineChart = new AppendingLineChart(d3.select("#linechart"), ["#777", "black"]);

@@ -136,9 +136,15 @@ export class State {
   [key: string]: any;
   activationName = "tanh";
   networkShape: number[];
-  datasetUrl = "https://owidder.github.io/playground/datasets/irisFlower.json";
+  datasetUrl = "./datasets/irisFlower.json";
 
   seed: string;
+
+  changeDatasetUrl = (url: string) => {
+      this.datasetUrl = url;
+      this.serialize();
+      location.reload();
+  }
 
   initPlayer() {
     const oneStepCallback: OneStepCallback = async () => {

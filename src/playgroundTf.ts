@@ -36,8 +36,9 @@ const start = async () => {
 
     }
 
-    makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName);
+    makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName, state.changeDatasetUrl);
     setSelectComponentByValue("activations", state.activationName);
+    setSelectComponentByValue("datasources", state.datasetUrl);
 }
 
 start();
