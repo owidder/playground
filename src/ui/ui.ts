@@ -393,15 +393,19 @@ export const showBookmarks = () => {
     const bookmarks = getBookmarks();
     const divElement: Selection<HTMLDivElement, any, HTMLElement, any> = d3.select("#bookmarks");
     const initSelection: BookmarkSelection = divElement.selectAll(".bookmark");
-    const dataSelection = initSelection.data(bookmarks, bookmark => bookmark.url);
+    const dataSelection = initSelection.data(bookmarks, d => d.url);
 
     dataSelection.enter()
         .append("a")
         .attr("class", "bookmark")
+        .on("click", d => {
+            location.href = d.url;
+            location.reload();
+        })
 
     const updateSelection: BookmarkSelection = divElement.selectAll("#bookmarks .bookmark");
 
     updateSelection
-        .attr("href", bookmark => bookmark.url)
-        .text(bookmark => bookmark.name);
+        .attr("href", d => d.url)
+        .text(d => d.name);
 }

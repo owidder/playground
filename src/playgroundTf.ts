@@ -19,7 +19,7 @@ import "./css/stylesTf.scss";
 import { Dataset, loadDataSource } from "./datasetTf";
 import { makeGUI, resetLineChart, showDataSource, setSelectComponentByValue, showBookmarks } from "./ui/ui";
 import { State } from "./stateTf";
-import { addBookmark } from "./tf/bookmarks";
+import { addBookmark, initBookmarks } from "./tf/bookmarks";
 import { humanReadable } from "./util/mlUtil";
 
 const state = State.deserializeState();
@@ -48,6 +48,7 @@ const start = async () => {
 
     }
 
+    initBookmarks(state.datasetUrl);
     makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName, state.changeDatasetUrl, addCurrentBookmark);
     setSelectComponentByValue("activations", state.activationName);
     setSelectComponentByValue("datasources", state.datasetUrl);

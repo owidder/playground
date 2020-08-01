@@ -4,6 +4,16 @@ export type Bookmark = {
 }
 
 const bookmarks: Bookmark[] = [];
+let bookmarksId: string;
+
+export const initBookmarks = (_bookmarksId: string): void => {
+    bookmarksId = _bookmarksId;
+    const bookmarksString = localStorage.getItem(_bookmarksId);
+    if(bookmarksString) {
+        const savedBookmarks = JSON.parse(bookmarksString);
+        Array.prototype.push.apply(bookmarks, savedBookmarks);
+    }
+}
 
 export const addBookmark = (bookmark: Bookmark): void => {
     const index = bookmarks.findIndex(b => b.url == bookmark.url);
@@ -12,6 +22,8 @@ export const addBookmark = (bookmark: Bookmark): void => {
     } else {
         bookmarks.splice(index, 1, bookmark);
     }
+
+    localStorage.setItem(bookmarksId, JSON.stringify(bookmarks));
 }
 
 export const deleteBookmark = (name: string): void => {
