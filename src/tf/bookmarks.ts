@@ -26,9 +26,10 @@ export const addBookmark = (bookmark: Bookmark): void => {
     localStorage.setItem(bookmarksId, JSON.stringify(bookmarks));
 }
 
-export const deleteBookmark = (name: string): void => {
-    const index = bookmarks.findIndex(bookmark => bookmark.name == name);
+export const deleteBookmark = (url: string): void => {
+    const index = bookmarks.findIndex(bookmark => bookmark.url == url);
     bookmarks.splice(index, 1);
+    localStorage.setItem(bookmarksId, JSON.stringify(bookmarks));
 }
 
 export const getBookmarks = (): Bookmark[] => {

@@ -5,7 +5,7 @@ import { Selection, ContainerElement } from "d3-selection/index";
 import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource } from "../tf/networkTypes";
 import { maxLayerSize, humanReadable } from "../util/mlUtil";
 import { AppendingLineChart } from "../linechartV5";
-import { getBookmarks, Bookmark } from "../tf/bookmarks";
+import { getBookmarks, Bookmark, deleteBookmark } from "../tf/bookmarks";
 
 const NODE_SIZE = 30;
 const NODE_GAP = 25;
@@ -360,7 +360,7 @@ export const makeGUI = (reset: () => void,
         changeDatasetUrl((this as any).value);
     })
 
-    d3.select("#add-button").on("click", function() {
+    d3.select("#add-button").on("click", function () {
         addBookmark();
         showBookmarks();
     })
@@ -387,7 +387,7 @@ export const showDataSource = (dataSource: DataSource): void => {
     d3.select("#datasource-source").attr("href", dataSource.source);
 }
 
-type BookmarkSelection = Selection<HTMLAnchorElement, Bookmark, HTMLDivElement, any>
+type BookmarkSelection = Selection<HTMLDivElement, Bookmark, HTMLDivElement, any>
 
 export const showBookmarks = () => {
     const bookmarks = getBookmarks();
@@ -395,17 +395,32 @@ export const showBookmarks = () => {
     const initSelection: BookmarkSelection = divElement.selectAll(".bookmark");
     const dataSelection = initSelection.data(bookmarks, d => d.url);
 
-    dataSelection.enter()
-        .append("a")
+    const divSelection = dataSelection.enter()
+        .append("div")
         .attr("class", "bookmark")
+
+    divSelection
+        .append("a")
+        .attr("class", "bookmark-anchor")
+        .attr("href", d => d.url)
         .on("click", d => {
             location.href = d.url;
             location.reload();
         })
 
-    const updateSelection: BookmarkSelection = divElement.selectAll("#bookmarks .bookmark");
+    divSelection
+        .append("span")
+        .text("[-]")
+        .on("click", d => {
+            deleteBookmark(d.url);
+            showBookmarks();
+        })
+
+    const updateSelection: BookmarkSelection = divElement.selectAll(".bookmark-anchor");
+    updateSelection.data(bookmarks, d => d.url);
 
     updateSelection
-        .attr("href", d => d.url)
         .text(d => d.name);
+
+    dataSelection.exit().remove();
 }
