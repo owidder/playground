@@ -71,6 +71,11 @@ limitations under the License.
         </div>
         <div class="container l--page">
             <div class="timeline-controls">
+                <button class="mdl-button mdl-js-button mdl-button--icon ui-resetButton" id="add-button"
+                    title="Add Bookmark">
+                    <i class="material-icons">post_add</i>
+                </button>
+
                 <button class="mdl-button mdl-js-button mdl-button--icon ui-resetButton" id="reset-button"
                     title="Reset the network">
                     <i class="material-icons">replay</i>
@@ -126,8 +131,6 @@ limitations under the License.
     <div id="main-part" class="l--page">
 
         <div id="bookmarks">
-            <span>123</span>
-            <span>456</span>
         </div>
 
         <!-- Features Column -->
@@ -159,31 +162,6 @@ limitations under the License.
                 <div id="hovercard">
                     <div><span class="type">Weight/Bias</span> is <span class="value">0.2</span><span><input
                                 type="number" /></span>.</div>
-                </div>
-                <div class="callout thumbnail">
-                    <svg viewBox="0 0 30 30">
-                        <defs>
-                            <marker id="arrow" markerWidth="5" markerHeight="5" refx="5" refy="2.5" orient="auto"
-                                markerUnits="userSpaceOnUse">
-                                <path d="M0,0 L5,2.5 L0,5 z" />
-                            </marker>
-                        </defs>
-                        <path d="M12,30C5,20 2,15 12,0" marker-end="url(#arrow)">
-                    </svg>
-                </div>
-                <div class="callout weights">
-                    <svg viewBox="0 0 30 30">
-                        <defs>
-                            <marker id="arrow" markerWidth="5" markerHeight="5" refx="5" refy="2.5" orient="auto"
-                                markerUnits="userSpaceOnUse">
-                                <path d="M0,0 L5,2.5 L0,5 z" />
-                            </marker>
-                        </defs>
-                        <path d="M12,30C5,20 2,15 12,0" marker-end="url(#arrow)">
-                    </svg>
-                    <div class="label">
-                        The outputs are mixed with varying <b>weights</b>, shown by the thickness of the lines.
-                    </div>
                 </div>
             </div>
         </div>

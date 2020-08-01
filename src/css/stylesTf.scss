@@ -72,4 +72,7 @@ select {
 #bookmarks {
     margin-left: 1em;
     font-size: xx-small;
+    display: flex;
+    flex-direction: column;
+    width: 10%;
 }

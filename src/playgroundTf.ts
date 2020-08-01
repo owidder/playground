@@ -17,11 +17,22 @@ import "material-design-lite/material.css";
 import "./css/stylesNew.css";
 import "./css/stylesTf.scss";
 import { Dataset, loadDataSource } from "./datasetTf";
-import { makeGUI, resetLineChart, showDataSource, setSelectComponentByValue } from "./ui/ui";
+import { makeGUI, resetLineChart, showDataSource, setSelectComponentByValue, showBookmarks  } from "./ui/ui";
 import { State } from "./stateTf";
+import { addBookmark } from "./tf/bookmarks";
+
+const state = State.deserializeState();
+
+const addCurrentBookmark = () => {
+    const trainLoss = state.getModel().getCurrentTrainLoss();
+    const testLoss = state.getModel().getCurrentTestLoss();
+    const name = `${trainLoss} / ${testLoss}`;
+    const url = location.href;
+
+    addBookmark({name, url});
+}
 
 const start = async () => {
-    const state = State.deserializeState();
 
     const datasetUrl = state.datasetUrl && state.datasetUrl.length > 0 ? state.datasetUrl : "./datasets/irisFlower.json";
 
@@ -36,7 +47,7 @@ const start = async () => {
 
     }
 
-    makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName, state.changeDatasetUrl);
+    makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName, state.changeDatasetUrl, addCurrentBookmark);
     setSelectComponentByValue("activations", state.activationName);
     setSelectComponentByValue("datasources", state.datasetUrl);
 }

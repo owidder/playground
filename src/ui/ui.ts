@@ -5,6 +5,8 @@ import { Selection, ContainerElement } from "d3-selection/index";
 import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource } from "../tf/networkTypes";
 import { maxLayerSize } from "../util/mlUtil";
 import { AppendingLineChart } from "../linechartV5";
+import { addBookmark, deleteBookmark, getBookmarks, Bookmark } from "../tf/bookmarks";
+import { exp } from '@tensorflow/tfjs';
 
 const NODE_SIZE = 30;
 const NODE_GAP = 25;
@@ -328,11 +330,12 @@ export const setSelectComponentByValue = (id: string, value: string) => {
 
 export const makeGUI = (reset: () => void,
     togglePlayPause: () => void,
-    doModelStep: () => void, 
-    addLayer: () => void, 
-    removeLayer: () => void, 
+    doModelStep: () => void,
+    addLayer: () => void,
+    removeLayer: () => void,
     setActivationName: (name: string) => void,
-    changeDatasetUrl: (url: string) => void) => {
+    changeDatasetUrl: (url: string) => void,
+    addBookmark: () => void) => {
 
     d3.select("#reset-button").on("click", () => {
         reset();
@@ -357,6 +360,13 @@ export const makeGUI = (reset: () => void,
     d3.select("#datasources").on("change", function () {
         changeDatasetUrl((this as any).value);
     })
+
+    d3.select("#add-button").on("click", function() {
+        addBookmark();
+        showBookmarks();
+    })
+
+    showBookmarks()
 }
 
 const lineChart = new AppendingLineChart(d3.select("#linechart"), ["#777", "black"]);
@@ -380,4 +390,23 @@ export const showDataSource = (dataSource: DataSource): void => {
     d3.select("#datasource-description").text(dataSource.description);
     d3.select("#datasource-source").text(dataSource.source);
     d3.select("#datasource-source").attr("href", dataSource.source);
+}
+
+type BookmarkSelection = Selection<HTMLAnchorElement, Bookmark, HTMLDivElement, any>
+
+export const showBookmarks = () => {
+    const bookmarks = getBookmarks();
+    const divElement: Selection<HTMLDivElement, any, HTMLElement, any> = d3.select("#bookmarks");
+    const initSelection: BookmarkSelection = divElement.selectAll(".bookmark");
+    const dataSelection = initSelection.data(bookmarks, bookmark => bookmark.url);
+
+    dataSelection.enter()
+        .append("a")
+        .attr("class", "bookmark")
+
+    const updateSelection: BookmarkSelection = divElement.selectAll("#bookmarks .bookmark");
+
+    updateSelection
+        .attr("href", bookmark => bookmark.url)
+        .text(bookmark => bookmark.name);
 }

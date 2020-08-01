@@ -24,6 +24,11 @@ export class Model {
     private totalEpochs = 0;
     private totalEochsChangedCallbacks: TotalEpochsChangedCallback[] = [];
     private epochEndCallbacks: EpochEndCallback[] = [];
+    private currentTrainLoss: number;
+    private currentTestLoss: number;
+
+    public getCurrentTrainLoss = () => this.currentTrainLoss;
+    public getCurrentTestLoss = () => this.currentTestLoss;
 
     public getTotalEpochs = () => this.totalEpochs;
 
@@ -61,11 +66,11 @@ export class Model {
     }
 
     private onEpochEnd = (epoch: number, logs: Logs): void => {
-        const trainLoss = logs.loss;
+        this.currentTrainLoss = logs.loss;
         const testLossTensor = this._sequential.evaluate(this._dataset.getTestInputTensor(), this._dataset.getTestOutputTensor()) as Scalar;
-        const testLoss = testLossTensor.dataSync()[0];
+        this.currentTestLoss = testLossTensor.dataSync()[0];
         this.epochEndCallbacks.forEach(eec => {
-            eec(trainLoss, testLoss);
+            eec(this.currentTrainLoss, this.currentTestLoss);
         })
 
         this.totalEpochs++;
