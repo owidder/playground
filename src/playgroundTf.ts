@@ -43,9 +43,7 @@ const start = async () => {
     state.initModel(dataset);
 
     const reset = () => {
-        state.initModel(dataset);
-        resetLineChart();
-
+        location.reload();
     }
 
     initBookmarks(state.datasetUrl);

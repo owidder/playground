@@ -20,24 +20,20 @@ const setResetDisabled = (disabled: boolean) => {
     (<HTMLInputElement>document.getElementById("reset-button")).disabled = disabled;
 }
 
-export const modelOutdated = () => {
-    d3.select("#build-button").classed("outdated", true);
-    setNextStepDisabled(true);
-}
-
-export const modelCurrent = () => {
-    d3.select("#build-button").classed("outdated", false);
-    setNextStepDisabled(false);
+export const setAddBookmarkDisabled = (disabled: boolean) => {
+    (<HTMLInputElement>document.getElementById("add-button")).disabled = disabled;
 }
 
 export const stepStarted = () => {
     setNextStepDisabled(true);
     setResetDisabled(true);
+    setAddBookmarkDisabled(true);
 }
 
 export const stepEnded = () => {
     setNextStepDisabled(false);
     setResetDisabled(false);
+    setAddBookmarkDisabled(false);
 }
 
 export const playPause = (isPlaying: boolean) => {
@@ -338,6 +334,7 @@ export const makeGUI = (reset: () => void,
 
     d3.select("#reset-button").on("click", () => {
         reset();
+        setAddBookmarkDisabled(true);
     });
 
     d3.select("#play-pause-button").on("click", function () {
@@ -365,7 +362,8 @@ export const makeGUI = (reset: () => void,
         showBookmarks();
     })
 
-    showBookmarks()
+    setAddBookmarkDisabled(true);
+    showBookmarks();
 }
 
 const lineChart = new AppendingLineChart(d3.select("#linechart"), ["#777", "black"]);
