@@ -17,19 +17,20 @@ import "material-design-lite/material.css";
 import "./css/stylesNew.css";
 import "./css/stylesTf.scss";
 import { Dataset, loadDataSource } from "./datasetTf";
-import { makeGUI, resetLineChart, showDataSource, setSelectComponentByValue, showBookmarks  } from "./ui/ui";
+import { makeGUI, resetLineChart, showDataSource, setSelectComponentByValue, showBookmarks } from "./ui/ui";
 import { State } from "./stateTf";
 import { addBookmark } from "./tf/bookmarks";
+import { humanReadable } from "./util/mlUtil";
 
 const state = State.deserializeState();
 
 const addCurrentBookmark = () => {
     const trainLoss = state.getModel().getCurrentTrainLoss();
     const testLoss = state.getModel().getCurrentTestLoss();
-    const name = `${trainLoss} / ${testLoss}`;
+    const name = `${humanReadable(trainLoss)} / ${humanReadable(testLoss)} (${state.getModel().getTotalEpochs()})`;
     const url = location.href;
 
-    addBookmark({name, url});
+    addBookmark({ name, url });
 }
 
 const start = async () => {

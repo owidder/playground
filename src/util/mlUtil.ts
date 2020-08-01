@@ -59,3 +59,7 @@ export const createLabelValues = (dataPoints: DataPoint[], labelName: string): s
 
     return Array.from(labelValuesSet).sort();
 }
+
+export const humanReadable = (n: number): string => {
+    return n.toFixed(3);
+}

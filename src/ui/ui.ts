@@ -3,10 +3,9 @@ import 'd3-selection-multi';
 import { Selection, ContainerElement } from "d3-selection/index";
 
 import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource } from "../tf/networkTypes";
-import { maxLayerSize } from "../util/mlUtil";
+import { maxLayerSize, humanReadable } from "../util/mlUtil";
 import { AppendingLineChart } from "../linechartV5";
-import { addBookmark, deleteBookmark, getBookmarks, Bookmark } from "../tf/bookmarks";
-import { exp } from '@tensorflow/tfjs';
+import { getBookmarks, Bookmark } from "../tf/bookmarks";
 
 const NODE_SIZE = 30;
 const NODE_GAP = 25;
@@ -370,10 +369,6 @@ export const makeGUI = (reset: () => void,
 }
 
 const lineChart = new AppendingLineChart(d3.select("#linechart"), ["#777", "black"]);
-
-function humanReadable(n: number): string {
-    return n.toFixed(3);
-}
 
 export const appendToLineChart = (trainLoss: number, testLoss: number) => {
     lineChart.addDataPoint([trainLoss, testLoss]);
