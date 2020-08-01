@@ -79,4 +79,15 @@ select {
     & a {
         color: black;
     }
+
+    & .bookmark {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        .delete-button {
+            font-size: 1.75em;
+            cursor: pointer;
+        }
+    }
 }

@@ -410,7 +410,8 @@ export const showBookmarks = () => {
 
     divSelection
         .append("span")
-        .text("[-]")
+        .attr("class", "material-icons delete-button")
+        .text("delete_forever")
         .on("click", d => {
             deleteBookmark(d.url);
             showBookmarks();
