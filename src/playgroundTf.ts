@@ -29,8 +29,10 @@ const addCurrentBookmark = () => {
     const testLoss = state.getModel().getCurrentTestLoss();
     const name = `${humanReadable(trainLoss)} / ${humanReadable(testLoss)} (${state.getModel().getTotalEpochs()})`;
     const url = location.href;
+    const networkShape = state.getModel().getNetworkShape(); 
+    const activation = state.getModel().getActivationName();
 
-    addBookmark({ name, url });
+    addBookmark({ name, url, networkShape, activation });
 }
 
 const start = async () => {

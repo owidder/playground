@@ -26,11 +26,12 @@ export class Model {
     private epochEndCallbacks: EpochEndCallback[] = [];
     private currentTrainLoss: number;
     private currentTestLoss: number;
+    private activationName: string;
 
     public getCurrentTrainLoss = () => this.currentTrainLoss;
     public getCurrentTestLoss = () => this.currentTestLoss;
-
     public getTotalEpochs = () => this.totalEpochs;
+    public getActivationName = () => this.activationName;
 
     public registerTotalEpochsChangedCallback = (totalEpochsChangedCallback: TotalEpochsChangedCallback) => {
         this.totalEochsChangedCallbacks.push(totalEpochsChangedCallback);
@@ -42,6 +43,7 @@ export class Model {
 
     constructor(networkShape: number[], activationName: string, dataset: Dataset) {
         this._dataset = dataset;
+        this.activationName = activationName;
 
         this._sequential = tf.sequential();
 

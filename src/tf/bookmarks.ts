@@ -1,6 +1,8 @@
 export type Bookmark = {
     name: string;
     url: string;
+    networkShape: number[];
+    activation: string;
 }
 
 const bookmarks: Bookmark[] = [];

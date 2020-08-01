@@ -157,9 +157,23 @@ function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
     hovercard.select(".value")
         .style("display", null)
         .text(value.toPrecision(2));
-    hovercard.select("input")
-        .property("value", value.toPrecision(2))
-        .style("display", "none");
+}
+
+function updateLinkHoverCard(networkShape: number[], activation: string, coordinates?: [number, number]) {
+    const linkHovercard = d3.select("#link-hovercard");
+
+    linkHovercard.styles({
+        "left": `${coordinates[0] + 20}px`,
+        "top": `${coordinates[1]}px`,
+        "display": "block"
+    });
+    linkHovercard.select(".network-shape").text(JSON.stringify(networkShape));
+    linkHovercard.select(".activation").text(activation);
+}
+
+const hideLinkHoverCard = () => {
+    const hovercard = d3.select("#link-hovercard");
+    hovercard.style("display", "none");
 }
 
 function drawNode(cx: number, cy: number, nodeId: string, isInput: boolean,
@@ -404,6 +418,12 @@ export const showBookmarks = () => {
         .on("click", d => {
             location.href = d.url;
             location.reload();
+        })
+        .on("mouseenter", function(d) {
+            updateLinkHoverCard(d.networkShape, d.activation, d3.mouse(this));
+        })
+        .on("mouseleave", function() {
+            hideLinkHoverCard();
         })
 
     divSelection

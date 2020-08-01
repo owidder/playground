@@ -91,3 +91,21 @@ select {
         }
     }
 }
+
+#link-hovercard {
+    display: none;
+}
+
+#link-hovercard {
+    display      : none;
+    position     : absolute;
+    padding      : 5px;
+    border       : 1px solid #aaa;
+    z-index      : 1000;
+    background   : #fff;
+    cursor       : default;
+    border-radius: 5px;
+    left         : 240px;
+    width        : 150px;
+    top          : -20px;
+}
