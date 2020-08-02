@@ -337,6 +337,10 @@ export const setSelectComponentByValue = (id: string, value: string) => {
     selectComponent.selectedIndex = index;
 }
 
+export const showDatasetUrl = (datasetUrl: string) => {
+    (document.getElementById("input-dataset-url") as HTMLInputElement).value = datasetUrl;
+}
+
 export const makeGUI = (reset: () => void,
     togglePlayPause: () => void,
     doModelStep: () => void,
@@ -374,6 +378,10 @@ export const makeGUI = (reset: () => void,
     d3.select("#add-button").on("click", function () {
         addBookmark();
         showBookmarks();
+    })
+
+    d3.select("#goto-dataset").on("click", function() {
+        changeDatasetUrl((document.getElementById("input-dataset-url") as HTMLInputElement).value)
     })
 
     setAddBookmarkDisabled(true);
