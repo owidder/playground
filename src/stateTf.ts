@@ -155,6 +155,12 @@ export class State {
         this.player = new Player(oneStepCallback, stepStarted, stepEnded)
     }
 
+    refreshModel(dataset?: Dataset): void {
+        this.dataset = dataset ? dataset : this.dataset;
+        this.serialize();
+        location.reload();
+    }
+
     initModel(dataset?: Dataset): void {
         this.dataset = dataset ? dataset : this.dataset;
         const inputShape = this.dataset.getInputShape();
@@ -167,7 +173,7 @@ export class State {
         }
         this.numLayers = this.networkShape.length;
 
-        this.model = new Model(this.networkShape, this.activationName, this.dataset);
+        this.model = new Model(this.networkShape, this.activationName, this.dataset, this.batchSize);
 
         this.initPlayer();
 
@@ -192,17 +198,17 @@ export class State {
 
     setActivationName = (activationName: string) => {
         this.activationName = activationName;
-        this.initModel();
+        this.refreshModel();
     }
 
     setBatchSize = (batchSize: number) => {
         this.batchSize = batchSize;
-        this.initModel();
+        this.refreshModel();
     }
 
     addLayer = (): void => {
         this.networkShape.splice(this.networkShape.length - 2, 0, 2);
-        this.initModel();
+        this.refreshModel();
     }
 
     removeLayer = (): void => {
@@ -210,7 +216,7 @@ export class State {
             return;
         }
         this.networkShape.splice(this.networkShape.length - 2, 1);
-        this.initModel();
+        this.refreshModel();
     }
 
     changeNumberOfNodes = (layerIndex: number, diff: number): void => {
@@ -218,7 +224,7 @@ export class State {
         if (current + diff > 0) {
             this.networkShape[layerIndex] = current + diff;
         }
-        this.initModel();
+        this.refreshModel();
     }
 
     /**

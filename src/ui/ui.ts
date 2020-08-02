@@ -159,16 +159,17 @@ function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
         .text(value.toPrecision(2));
 }
 
-function updateLinkHoverCard(networkShape: number[], activation: string, coordinates?: [number, number]) {
+function updateLinkHoverCard(networkShape: number[], activation: string, batchSize: number, coordinates?: [number, number]) {
     const linkHovercard = d3.select("#link-hovercard");
 
     linkHovercard.styles({
-        "left": `${coordinates[0] + 20}px`,
-        "top": `${coordinates[1]}px`,
+        "left": `${coordinates[0] + 50}px`,
+        "top": `${coordinates[1] + 50}px`,
         "display": "block"
     });
-    linkHovercard.select(".network-shape").text(JSON.stringify(networkShape));
-    linkHovercard.select(".activation").text(activation);
+    linkHovercard.select(".network-shape").text(`Shape: ${JSON.stringify(networkShape)}`);
+    linkHovercard.select(".activation").text(`Activation: ${activation}`);
+    linkHovercard.select(".batchSize").text(`Batch size: ${batchSize}`);
 }
 
 const hideLinkHoverCard = () => {
@@ -443,7 +444,7 @@ export const showBookmarks = () => {
             location.reload();
         })
         .on("mouseenter", function(d) {
-            updateLinkHoverCard(d.networkShape, d.activation, d3.mouse(this));
+            updateLinkHoverCard(d.networkShape, d.activation, d.batchSize, d3.mouse(this));
         })
         .on("mouseleave", function() {
             hideLinkHoverCard();

@@ -3,6 +3,7 @@ export type Bookmark = {
     url: string;
     networkShape: number[];
     activation: string;
+    batchSize: number;
 }
 
 const bookmarks: Bookmark[] = [];

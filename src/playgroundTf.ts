@@ -31,8 +31,9 @@ const addCurrentBookmark = () => {
     const url = location.href;
     const networkShape = state.getModel().getNetworkShape(); 
     const activation = state.getModel().getActivationName();
+    const batchSize = state.batchSize;
 
-    addBookmark({ name, url, networkShape, activation });
+    addBookmark({ name, url, networkShape, activation, batchSize });
 }
 
 const start = async () => {

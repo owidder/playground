@@ -27,11 +27,13 @@ export class Model {
     private currentTrainLoss: number;
     private currentTestLoss: number;
     private activationName: string;
+    private batchSize: number;
 
     public getCurrentTrainLoss = () => this.currentTrainLoss;
     public getCurrentTestLoss = () => this.currentTestLoss;
     public getTotalEpochs = () => this.totalEpochs;
     public getActivationName = () => this.activationName;
+    public getBatchSize = () => this.batchSize;
 
     public registerTotalEpochsChangedCallback = (totalEpochsChangedCallback: TotalEpochsChangedCallback) => {
         this.totalEochsChangedCallbacks.push(totalEpochsChangedCallback);
@@ -41,7 +43,7 @@ export class Model {
         this.epochEndCallbacks.push(epochEndCallback);
     }
 
-    constructor(networkShape: number[], activationName: string, dataset: Dataset) {
+    constructor(networkShape: number[], activationName: string, dataset: Dataset, bachSize: number) {
         this._dataset = dataset;
         this.activationName = activationName;
 
@@ -81,12 +83,12 @@ export class Model {
         })
     }
 
-    public fitStep = async (batchSize = 10, epochs = 10): Promise<History> => {
+    public fitStep = async (epochs = 10): Promise<History> => {
         const inputTensor = this._dataset.getTrainInputTensor();
         const outputTensor = this._dataset.getTrainOutputTensor();
 
         const history = await this._sequential.fit(inputTensor, outputTensor, {
-            callbacks: { onEpochEnd: this.onEpochEnd }, epochs, batchSize
+            callbacks: { onEpochEnd: this.onEpochEnd }, epochs, batchSize: this.batchSize
         });
 
         this.updateNetwork();

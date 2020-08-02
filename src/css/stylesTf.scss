@@ -83,7 +83,6 @@ select {
     & .bookmark {
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
 
         .delete-button {
             font-size: 1.75em;
@@ -108,9 +107,6 @@ select {
     left         : 240px;
     width        : 150px;
     top          : -20px;
-}
-
-#top-controls .firstline-topcontrol {
 }
 
 .firstline-top-controls {
@@ -183,4 +179,8 @@ select {
         margin-right: 0;
         width: 100%;
     }
+}
+
+.link-hovercard {
+    font-size: xx-small;
 }
