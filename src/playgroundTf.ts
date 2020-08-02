@@ -17,7 +17,7 @@ import "material-design-lite/material.css";
 import "./css/stylesNew.css";
 import "./css/stylesTf.scss";
 import { Dataset, loadDataSource } from "./datasetTf";
-import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl } from "./ui/ui";
+import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent } from "./ui/ui";
 import { State } from "./stateTf";
 import { addBookmark, initBookmarks } from "./tf/bookmarks";
 import { humanReadable } from "./util/mlUtil";
@@ -49,9 +49,10 @@ const start = async () => {
     }
 
     initBookmarks(state.datasetUrl);
-    makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName, state.changeDatasetUrl, addCurrentBookmark);
+    makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName, state.changeDatasetUrl, addCurrentBookmark, state.setBatchSize);
     setSelectComponentByValue("activations", state.activationName);
     setSelectComponentByValue("datasources", state.datasetUrl);
+    initBatchSizeComponent(state.batchSize);
     showDatasetUrl(state.datasetUrl);
 }
 

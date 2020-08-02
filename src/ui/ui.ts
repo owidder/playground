@@ -330,15 +330,24 @@ export function drawNetwork(network: TfNode[][], changeNumberOfNodesCallback: Ch
     }
 }
 
-export const setSelectComponentByValue = (id: string, value: string) => {
+export const setSelectComponentByValue = (id: string, value: string): void => {
     const selectComponent: HTMLSelectElement = document.getElementById(id) as HTMLSelectElement;
     const optionsArray = Array.from(selectComponent.options);
     const index = [...optionsArray].findIndex(option => option.value == value);
     selectComponent.selectedIndex = index;
 }
 
-export const showDatasetUrl = (datasetUrl: string) => {
+export const showDatasetUrl = (datasetUrl: string): void => {
     (document.getElementById("input-dataset-url") as HTMLInputElement).value = datasetUrl;
+}
+
+const showBatchSize = (batchSize: number): void => {
+    d3.select("label[for='batchSize'] .value").text(batchSize);
+}
+
+export const initBatchSizeComponent = (batchSize: number): void => {
+    (document.getElementById("batchSize") as HTMLInputElement).value = batchSize.toString();
+    showBatchSize(batchSize);
 }
 
 export const makeGUI = (reset: () => void,
@@ -348,7 +357,8 @@ export const makeGUI = (reset: () => void,
     removeLayer: () => void,
     setActivationName: (name: string) => void,
     changeDatasetUrl: (url: string) => void,
-    addBookmark: () => void) => {
+    addBookmark: () => void,
+    changeBatchSize: (batchSize: number) => void) => {
 
     d3.select("#reset-button").on("click", () => {
         reset();
@@ -382,6 +392,11 @@ export const makeGUI = (reset: () => void,
 
     d3.select("#goto-dataset").on("click", function() {
         changeDatasetUrl((document.getElementById("input-dataset-url") as HTMLInputElement).value)
+    })
+
+    d3.select("#batchSize").on("change", function() {
+        changeBatchSize(Number((this as any).value));
+        showBatchSize((this as any).value);
     })
 
     setAddBookmarkDisabled(true);

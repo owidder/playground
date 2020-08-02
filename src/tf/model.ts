@@ -81,12 +81,12 @@ export class Model {
         })
     }
 
-    public fitStep = async (epochs = 10): Promise<History> => {
+    public fitStep = async (batchSize = 10, epochs = 10): Promise<History> => {
         const inputTensor = this._dataset.getTrainInputTensor();
         const outputTensor = this._dataset.getTrainOutputTensor();
 
         const history = await this._sequential.fit(inputTensor, outputTensor, {
-            callbacks: { onEpochEnd: this.onEpochEnd }, epochs
+            callbacks: { onEpochEnd: this.onEpochEnd }, epochs, batchSize
         });
 
         this.updateNetwork();

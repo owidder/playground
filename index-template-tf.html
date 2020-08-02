@@ -136,12 +136,22 @@ limitations under the License.
 
     <div id="main-part" class="l--page">
 
-        <div id="bookmarks">
-            <div id="link-hovercard">
-                <ul>
-                    <li><span class="network-shape"></span></li>
-                    <li><span class="activation">tanh</span></li>
-                </ul>
+        <div class="left-side">
+            <div class="ui-batchSize">
+                <label for="batchSize">Batch size:&nbsp;&nbsp;<span class="value">1</span></label>
+                <p class="slider">
+                <div class="mdl-slider__container"><input class="mdl-slider mdl-js-slider is-lowest-value"
+                        type="range" id="batchSize" min="1" max="30" step="1" data-upgraded=",MaterialSlider">
+                </div>
+                </p>
+            </div>
+            <div id="bookmarks">
+                <div id="link-hovercard">
+                    <ul>
+                        <li><span class="network-shape"></span></li>
+                        <li><span class="activation">tanh</span></li>
+                    </ul>
+                </div>
             </div>
         </div>
 

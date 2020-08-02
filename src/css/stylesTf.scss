@@ -74,7 +74,7 @@ select {
     font-size: xx-small;
     display: flex;
     flex-direction: column;
-    width: 10%;
+    width: 100%;
 
     & a {
         color: black;
@@ -169,5 +169,18 @@ select {
             top           : 6px;
             pointer-events: none;
             }
+    }
+}
+
+.left-side {
+    margin-left: 1em;
+    display: flex;
+    flex-direction: column;
+    width: 10%;
+
+    input {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
     }
 }
