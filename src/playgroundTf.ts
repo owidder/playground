@@ -17,10 +17,11 @@ import "material-design-lite/material.css";
 import "./css/stylesNew.css";
 import "./css/stylesTf.scss";
 import { Dataset, loadDataSource } from "./datasetTf";
-import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent } from "./ui/ui";
+import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent, showTrainAndTestNumbers, initTrainAndTestNumbersComponent } from "./ui/ui";
 import { State } from "./stateTf";
 import { addBookmark, initBookmarks } from "./tf/bookmarks";
 import { humanReadable } from "./util/mlUtil";
+import { DataSource } from "./tf/networkTypes";
 
 const state = State.deserializeState();
 
@@ -29,11 +30,16 @@ const addCurrentBookmark = () => {
     const testLoss = state.getModel().getCurrentTestLoss();
     const name = `${humanReadable(trainLoss)} / ${humanReadable(testLoss)} (${state.getModel().getTotalEpochs()})`;
     const url = location.href;
-    const networkShape = state.getModel().getNetworkShape(); 
+    const networkShape = state.getModel().getNetworkShape();
     const activation = state.getModel().getActivationName();
     const batchSize = state.batchSize;
+    const percTrainData = state.percTrainData;
 
-    addBookmark({ name, url, networkShape, activation, batchSize });
+    addBookmark({ name, url, networkShape, activation, batchSize, percTrainData });
+}
+
+const newDataset = (dataSource: DataSource, ratioInPercent: number): void => {
+
 }
 
 const start = async () => {
@@ -42,7 +48,8 @@ const start = async () => {
 
     const dataSource = await loadDataSource(datasetUrl);
     showDataSource(dataSource);
-    const dataset = new Dataset(dataSource, "label");
+    const dataset = new Dataset(dataSource, "label", state.percTrainData);
+    showTrainAndTestNumbers(state.percTrainData, dataset.getTrainData().length, dataset.getTestData().length);
     state.initModel(dataset);
 
     const reset = () => {
@@ -50,10 +57,11 @@ const start = async () => {
     }
 
     initBookmarks(state.datasetUrl);
-    makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName, state.changeDatasetUrl, addCurrentBookmark, state.setBatchSize);
+    makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName, state.changeDatasetUrl, addCurrentBookmark, state.setBatchSize, state.changePercTrainData);
     setSelectComponentByValue("activations", state.activationName);
     setSelectComponentByValue("datasources", state.datasetUrl);
     initBatchSizeComponent(state.batchSize);
+    initTrainAndTestNumbersComponent(state.percTrainData);
     showDatasetUrl(state.datasetUrl);
 }
 

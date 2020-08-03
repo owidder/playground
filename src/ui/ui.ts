@@ -159,7 +159,7 @@ function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
         .text(value.toPrecision(2));
 }
 
-function updateLinkHoverCard(networkShape: number[], activation: string, batchSize: number, coordinates?: [number, number]) {
+function updateLinkHoverCard(networkShape: number[], activation: string, batchSize: number, percTrainData: number, coordinates?: [number, number]) {
     const linkHovercard = d3.select("#link-hovercard");
 
     linkHovercard.styles({
@@ -170,6 +170,7 @@ function updateLinkHoverCard(networkShape: number[], activation: string, batchSi
     linkHovercard.select(".network-shape").text(`Shape: ${JSON.stringify(networkShape)}`);
     linkHovercard.select(".activation").text(`Activation: ${activation}`);
     linkHovercard.select(".batchSize").text(`Batch size: ${batchSize}`);
+    linkHovercard.select(".percTrainData").text(`Train Data: ${percTrainData}%`);
 }
 
 const hideLinkHoverCard = () => {
@@ -351,6 +352,16 @@ export const initBatchSizeComponent = (batchSize: number): void => {
     showBatchSize(batchSize);
 }
 
+export const showTrainAndTestNumbers = (percTrainData: number, trainNumberOfDatapoints: number, testNumberOfDatapoints: number): void => {
+    d3.select(".ui-train-test-ratio .ratio-value").text(`${percTrainData}%`);
+    d3.select(".train-value").text(trainNumberOfDatapoints);
+    d3.select(".test-value").text(testNumberOfDatapoints);
+}
+
+export const initTrainAndTestNumbersComponent = (percTrainData: number): void => {
+    (document.getElementById("trainTestRatio") as HTMLInputElement).value = percTrainData.toString();
+}
+
 export const makeGUI = (reset: () => void,
     togglePlayPause: () => void,
     doModelStep: () => void,
@@ -359,7 +370,8 @@ export const makeGUI = (reset: () => void,
     setActivationName: (name: string) => void,
     changeDatasetUrl: (url: string) => void,
     addBookmark: () => void,
-    changeBatchSize: (batchSize: number) => void) => {
+    changeBatchSize: (batchSize: number) => void,
+    changePercTrainData: (percTrainData: number) => void) => {
 
     d3.select("#reset-button").on("click", () => {
         reset();
@@ -398,6 +410,10 @@ export const makeGUI = (reset: () => void,
     d3.select("#batchSize").on("change", function() {
         changeBatchSize(Number((this as any).value));
         showBatchSize((this as any).value);
+    })
+
+    d3.select("#trainTestRatio").on("change", function() {
+        changePercTrainData(Number((this as any).value));
     })
 
     setAddBookmarkDisabled(true);
@@ -444,7 +460,7 @@ export const showBookmarks = () => {
             location.reload();
         })
         .on("mouseenter", function(d) {
-            updateLinkHoverCard(d.networkShape, d.activation, d.batchSize, d3.mouse(this));
+            updateLinkHoverCard(d.networkShape, d.activation, d.batchSize, d.percTrainData, d3.mouse(this));
         })
         .on("mouseleave", function() {
             hideLinkHoverCard();

@@ -77,11 +77,11 @@ export class Dataset {
     public getTestInputTensor = () => this.testInputTensor;
     public getTestOutputTensor = () => this.testOutputTensor;
 
-    constructor(dataSource: DataSource, _labelName: string) {
+    constructor(dataSource: DataSource, _labelName: string, percTrainData: number) {
         assertValidityOfDataPoints(dataSource.data, _labelName);
 
         this.dataSource = dataSource;
-        this.trainAndTest = splitTrainAndTest(dataSource.data, .2);
+        this.trainAndTest = splitTrainAndTest(dataSource.data, 1 - (percTrainData/100));
         this.labelName = _labelName;
 
         this.labelValues = createLabelValues(dataSource.data, _labelName);

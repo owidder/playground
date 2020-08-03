@@ -146,7 +146,9 @@ limitations under the License.
                 </p>
             </div>
             <div class="ui-train-test-ratio">
-                <label for="train-test-ratio">Train / test ratio: <span class="value">10%</span></label>
+                <label for="train-test-ratio">Train / test ratio: <span class="ratio-value">10%</span></label>
+                <div for="train-test-ratio"># Train: <span class="train-value">10</span></div>
+                <div for="train-test-ratio"># Test: <span class="test-value">10</span></div>
                 <p class="slider">
                 <div class="mdl-slider__container"><input class="mdl-slider mdl-js-slider is-lowest-value"
                         type="range" id="trainTestRatio" min="10" max="90" step="10" data-upgraded=",MaterialSlider">
@@ -157,8 +159,9 @@ limitations under the License.
                 <div id="link-hovercard">
                     <ul>
                         <li><span class="network-shape"></span></li>
-                        <li><span class="activation">tanh</span></li>
-                        <li><span class="batchSize">tanh</span></li>
+                        <li><span class="activation"></span></li>
+                        <li><span class="batchSize"></span></li>
+                        <li><span class="percTrainData"></span></li>
                     </ul>
                 </div>
             </div>

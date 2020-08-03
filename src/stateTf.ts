@@ -132,6 +132,7 @@ export class State {
         { name: "networkShape", type: Type.ARRAY_NUMBER },
         { name: "datasetUrl", type: Type.STRING },
         { name: "batchSize", type: Type.NUMBER },
+        { name: "percTrainData", type: Type.NUMBER },
     ];
 
     [key: string]: any;
@@ -139,11 +140,18 @@ export class State {
     networkShape: number[];
     datasetUrl = "./datasets/irisFlower.json";
     batchSize = 10;
+    percTrainData = 80;
 
     seed: string;
 
-    changeDatasetUrl = (url: string) => {
+    changeDatasetUrl = (url: string): void => {
         this.datasetUrl = url;
+        this.serialize();
+        location.reload();
+    }
+
+    changePercTrainData = (percTrainData: number): void => {
+        this.percTrainData = percTrainData;
         this.serialize();
         location.reload();
     }

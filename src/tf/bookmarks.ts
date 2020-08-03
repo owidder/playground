@@ -4,6 +4,7 @@ export type Bookmark = {
     networkShape: number[];
     activation: string;
     batchSize: number;
+    percTrainData: number;
 }
 
 const bookmarks: Bookmark[] = [];
