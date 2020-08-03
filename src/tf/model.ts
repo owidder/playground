@@ -22,7 +22,7 @@ export class Model {
     private _dataset: Dataset;
     private _network: TfNode[][];
     private totalEpochs = 0;
-    private totalEochsChangedCallbacks: TotalEpochsChangedCallback[] = [];
+    private totalEpchsChangedCallbacks: TotalEpochsChangedCallback[] = [];
     private epochEndCallbacks: EpochEndCallback[] = [];
     private currentTrainLoss: number;
     private currentTestLoss: number;
@@ -36,7 +36,7 @@ export class Model {
     public getBatchSize = () => this.batchSize;
 
     public registerTotalEpochsChangedCallback = (totalEpochsChangedCallback: TotalEpochsChangedCallback) => {
-        this.totalEochsChangedCallbacks.push(totalEpochsChangedCallback);
+        this.totalEpchsChangedCallbacks.push(totalEpochsChangedCallback);
     }
 
     public registerEpochEndCallback = (epochEndCallback: EpochEndCallback) => {
@@ -78,7 +78,7 @@ export class Model {
         })
 
         this.totalEpochs++;
-        this.totalEochsChangedCallbacks.forEach(tecc => {
+        this.totalEpchsChangedCallbacks.forEach(tecc => {
             tecc(this.totalEpochs)
         })
     }
