@@ -38,16 +38,7 @@ const addCurrentBookmark = () => {
     addBookmark({ name, url, networkShape, activation, batchSize, percTrainData });
 }
 
-const newDataset = (dataSource: DataSource, ratioInPercent: number): void => {
-
-}
-
-const start = async () => {
-
-    const datasetUrl = state.datasetUrl && state.datasetUrl.length > 0 ? state.datasetUrl : "./datasets/irisFlower.json";
-
-    const dataSource = await loadDataSource(datasetUrl);
-    showDataSource(dataSource);
+const refresh = (dataSource: DataSource) => {
     const dataset = new Dataset(dataSource, "label", state.percTrainData);
     showTrainAndTestNumbers(state.percTrainData, dataset.getTrainData().length, dataset.getTestData().length);
     state.initModel(dataset);
@@ -56,13 +47,23 @@ const start = async () => {
         location.reload();
     }
 
-    initBookmarks(state.datasetUrl);
     makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName, state.changeDatasetUrl, addCurrentBookmark, state.setBatchSize, state.changePercTrainData);
     setSelectComponentByValue("activations", state.activationName);
     setSelectComponentByValue("datasources", state.datasetUrl);
     initBatchSizeComponent(state.batchSize);
     initTrainAndTestNumbersComponent(state.percTrainData);
     showDatasetUrl(state.datasetUrl);
+}
+
+const start = async () => {
+
+    const datasetUrl = state.datasetUrl && state.datasetUrl.length > 0 ? state.datasetUrl : "./datasets/irisFlower.json";
+    const dataSource = await loadDataSource(datasetUrl);
+    showDataSource(dataSource);
+    state.setRefreshCallback(() => refresh(dataSource));
+    initBookmarks(state.datasetUrl);
+
+    refresh(dataSource);
 }
 
 start();

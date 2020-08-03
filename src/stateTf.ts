@@ -119,13 +119,8 @@ export class State {
     public getPlayer = () => this.player;
     public getDataset = () => this.dataset;
 
-    constructor(dataset?: Dataset) {
-        if (dataset) {
-            this.initModel(dataset)
-        } else {
-            this.networkShape = []
-        }
-    }
+    private refreshCallback: () => void;
+    public setRefreshCallback = (refreshCallback: () => void) => this.refreshCallback = refreshCallback;
 
     private static PROPS: Property[] = [
         { name: "activationName", type: Type.STRING, keyMap: activationNames },
@@ -137,7 +132,7 @@ export class State {
 
     [key: string]: any;
     activationName = "tanh";
-    networkShape: number[];
+    networkShape: number[] = [];
     datasetUrl = "./datasets/irisFlower.json";
     batchSize = 10;
     percTrainData = 80;
@@ -152,8 +147,7 @@ export class State {
 
     changePercTrainData = (percTrainData: number): void => {
         this.percTrainData = percTrainData;
-        this.serialize();
-        location.reload();
+        this.refreshModel();
     }
 
     initPlayer() {
@@ -163,10 +157,9 @@ export class State {
         this.player = new Player(oneStepCallback, stepStarted, stepEnded)
     }
 
-    refreshModel(dataset?: Dataset): void {
-        this.dataset = dataset ? dataset : this.dataset;
+    refreshModel(): void {
         this.serialize();
-        location.reload();
+        this.refreshCallback();
     }
 
     initModel(dataset?: Dataset): void {
@@ -238,13 +231,13 @@ export class State {
     /**
      * Deserializes the state from the url hash.
      */
-    static deserializeState(dataset?: Dataset): State {
+    static deserializeState(): State {
         let map: { [key: string]: string } = {};
         for (let keyvalue of window.location.hash.slice(1).split("&")) {
             let [name, value] = keyvalue.split("=");
             map[name] = value;
         }
-        let state = new State(dataset);
+        let state = new State();
 
         function hasKey(name: string): boolean {
             return name in map && map[name] != null && map[name].trim() !== "";
