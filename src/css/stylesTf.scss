@@ -185,6 +185,11 @@ select {
     font-size: xx-small;
 }
 
-.ui-train-test-ratio {
+.ui-train-test-ratio, .ui-batchSize {
     font-size: .75em;
+}
+
+#goto-dataset {
+    max-width: 1em;
+    cursor: pointer;
 }
