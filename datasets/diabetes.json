@@ -1,7 +1,7 @@
 {
     "name": "Pima Indians Diabetes Database",
     "description": "Predict the onset of diabetes based on diagnostic measures",
-    "source": "https://www.kaggle.com/uciml/pima-indians-diabetes-database",
+    "originalSourceUrl": "https://www.kaggle.com/uciml/pima-indians-diabetes-database",
     "data": [
         {
             "Pregnancies": 6,

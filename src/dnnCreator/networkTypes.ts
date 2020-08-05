@@ -50,7 +50,7 @@ export type DataPoint = { [key: string]: number | string };
 
 export type DataSource = {
     name: string;
-    description?: string;
-    source?: string;
+    description: string;
+    originalSourceUrl: string;
     data: DataPoint[];
 }

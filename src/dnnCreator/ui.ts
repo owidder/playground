@@ -449,8 +449,8 @@ export const resetLineChart = () => {
 export const showDataSource = (dataSource: DataSource): void => {
     d3.select("#datasource-name").text(dataSource.name);
     d3.select("#datasource-description").text(dataSource.description);
-    d3.select("#datasource-source").text(dataSource.source);
-    d3.select("#datasource-source").attr("href", dataSource.source);
+    d3.select("#datasource-source").text(dataSource.originalSourceUrl);
+    d3.select("#datasource-source").attr("href", dataSource.originalSourceUrl);
 }
 
 type BookmarkSelection = Selection<HTMLDivElement, Bookmark, HTMLDivElement, any>
