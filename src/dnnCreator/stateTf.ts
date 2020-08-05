@@ -43,20 +43,6 @@ export let regularizations: { [key: string]: nn.RegularizationFunction } = {
     "L2": nn.RegularizationFunction.L2
 };
 
-/** A map between dataset names and functions that generate classification data. */
-export let datasets: { [key: string]: dataset.DataGenerator } = {
-    "circle": dataset.classifyCircleData,
-    "xor": dataset.classifyXORData,
-    "gauss": dataset.classifyTwoGaussData,
-    "spiral": dataset.classifySpiralData,
-};
-
-/** A map between dataset names and functions that generate regression data. */
-export let regDatasets: { [key: string]: dataset.DataGenerator } = {
-    "reg-plane": dataset.regressPlane,
-    "reg-gauss": dataset.regressGaussian
-};
-
 export function getKeyFromValue(obj: any, value: any): string {
     for (let key in obj) {
         if (obj[key] === value) {
