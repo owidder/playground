@@ -57,9 +57,10 @@ export class Model {
         this.epochEndCallbacks.push(epochEndCallback);
     }
 
-    constructor(networkShape: number[], activationName: string, dataset: Dataset, bachSize: number) {
+    constructor(networkShape: number[], activationName: string, dataset: Dataset, batchSize: number) {
         this._dataset = dataset;
         this.activationName = activationName;
+        this.batchSize = batchSize;
 
         this._sequential = tf.sequential();
 
