@@ -3,7 +3,7 @@ import 'd3-selection-multi';
 import { Selection, ContainerElement } from "d3-selection/index";
 
 import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource } from "./networkTypes";
-import { maxLayerSize, humanReadable } from "../util/mlUtil";
+import { maxLayerSize, humanReadable } from "./mlUtil";
 import { AppendingLineChart } from "../linechartV5";
 import { getBookmarks, Bookmark, deleteBookmark } from "./bookmarks";
 

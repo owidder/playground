@@ -20,7 +20,7 @@ import { Dataset, loadDataSource } from "../datasetTf";
 import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent, showTrainAndTestNumbers, initTrainAndTestNumbersComponent } from "./ui";
 import { State } from "../stateTf";
 import { addBookmark, initBookmarks } from "./bookmarks";
-import { humanReadable } from "../util/mlUtil";
+import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";
 
 const state = State.deserializeState();

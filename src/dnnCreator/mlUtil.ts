@@ -1,4 +1,4 @@
-import { DataPoint } from "../dnnCreator/networkTypes";
+import { DataPoint } from "./networkTypes";
 import { exp } from "@tensorflow/tfjs";
 
 // kudos to: https://dev.to/ycmjason/how-to-create-range-in-javascript-539i
