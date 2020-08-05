@@ -16,9 +16,9 @@ limitations under the License.
 import "material-design-lite/material.css";
 import "../css/stylesNew.css";
 import "../css/stylesTf.scss";
-import { Dataset, loadDataSource } from "../datasetTf";
+import { Dataset, loadDataSource } from "./datasetTf";
 import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent, showTrainAndTestNumbers, initTrainAndTestNumbersComponent } from "./ui";
-import { State } from "../stateTf";
+import { State } from "./stateTf";
 import { addBookmark, initBookmarks } from "./bookmarks";
 import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";

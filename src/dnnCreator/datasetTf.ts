@@ -18,9 +18,9 @@ import { Tensor2D } from "@tensorflow/tfjs-core/dist/tensor";
 
 import * as tf from "@tensorflow/tfjs";
 
-import { oneHot } from "./dnnCreator/mlUtil";
-import { DataPoint, DataSource } from "./dnnCreator/networkTypes";
-import { assertValidityOfDataPoints, getDataFromDataPoint, createOneHotEncoding, createLabelValues } from "./dnnCreator/mlUtil";
+import { oneHot } from "./mlUtil";
+import { DataPoint, DataSource } from "./networkTypes";
+import { assertValidityOfDataPoints, getDataFromDataPoint, createOneHotEncoding, createLabelValues } from "./mlUtil";
 
 /**
  * A two dimensional example: x and y coordinates with the label.

@@ -13,12 +13,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-import * as nn from "./nn";
+import * as nn from "../nn";
 import * as dataset from "./datasetTf";
 import { Dataset } from "./datasetTf";
-import { Model } from "./dnnCreator/model";
-import { Player, OneStepCallback } from "./dnnCreator/player";
-import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart, showDatasetUrl } from "./dnnCreator/ui";
+import { Model } from "./model";
+import { Player, OneStepCallback } from "./player";
+import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart, showDatasetUrl } from "./ui";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
