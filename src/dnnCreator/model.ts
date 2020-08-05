@@ -10,7 +10,7 @@ import { Logs } from "@tensorflow/tfjs-layers/dist/logs";
 
 import { TfNode, TfLink, NodeIterator } from "./networkTypes";
 import { range } from "../util/mlUtil";
-import { updateUI, stepStarted, stepEnded } from "../ui/ui";
+import { updateUI, stepStarted, stepEnded } from "./ui";
 import { Scalar } from "@tensorflow/tfjs";
 
 export type TotalEpochsChangedCallback = (currentTotalEpoch) => void;

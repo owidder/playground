@@ -1,4 +1,4 @@
-import { playPause } from "../ui/ui";
+import { playPause } from "./ui";
 import { thresholdScott } from "d3";
 
 export type OneStepCallback = () => Promise<void>;
