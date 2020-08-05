@@ -122,7 +122,7 @@ export class State {
 
     initPlayer() {
         const oneStepCallback: OneStepCallback = async () => {
-            await this.model.fitStep(this.batchSize)
+            await this.model.fitStep()
         }
         this.player = new Player(oneStepCallback, stepStarted, stepEnded)
     }
@@ -162,7 +162,7 @@ export class State {
     doModelStep = (): void => {
         stepStarted();
         setTimeout(async () => {
-            await this.model.fitStep(this.batchSize);
+            await this.model.fitStep();
             stepEnded();
         }, 100)
     }
