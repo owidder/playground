@@ -20,15 +20,6 @@ import { oneHot } from "./mlUtil";
 import { DataPoint, DataSource } from "./networkTypes";
 import { assertValidityOfDataPoints, getDataFromDataPoint, createOneHotEncoding, createLabelValues } from "./mlUtil";
 
-/**
- * A two dimensional example: x and y coordinates with the label.
- */
-export type Example2D = {
-    x: number,
-    y: number,
-    label: number
-};
-
 export type TrainAndTest = {
     train: DataPoint[];
     test: DataPoint[];

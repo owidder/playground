@@ -1,7 +1,7 @@
 {
     "name": "Iris Dataset (JSON Version)",
     "description": "A JSON version of the popular Iris Dataset",
-    "source": "https://www.kaggle.com/rtatman/iris-dataset-json-version",
+    "originalSourceUrl": "https://www.kaggle.com/rtatman/iris-dataset-json-version",
     "data": [
         {
             "sepal_length": 5.1,
