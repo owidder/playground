@@ -2,6 +2,7 @@ _tmp
 node_modules/
 dist/
 dist-tf/
+dist-dnn/
 dist-v5/
 *.log
 .vscode
