@@ -1,5 +1,4 @@
-/* Copyright 2016 Google Inc. All Rights Reserved.
-
+/* 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -23,25 +22,10 @@ import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStar
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
 
-/** A map between names and activation functions. */
-export let activations: { [key: string]: nn.ActivationFunction } = {
-    "relu": nn.Activations.RELU,
-    "tanh": nn.Activations.TANH,
-    "sigmoid": nn.Activations.SIGMOID,
-    "linear": nn.Activations.LINEAR
-};
-
 export const activationNames: { [key: string]: string } =
     ['elu', 'hardSigmoid', 'linear', 'relu', 'relu6', 'selu', 'sigmoid', 'softmax', 'softplus', 'softsign', 'tanh'].reduce((_activationNames, name) => {
         return { ..._activationNames, [name]: name }
     }, {});
-
-/** A map between names and regularization functions. */
-export let regularizations: { [key: string]: nn.RegularizationFunction } = {
-    "none": null,
-    "L1": nn.RegularizationFunction.L1,
-    "L2": nn.RegularizationFunction.L2
-};
 
 export function getKeyFromValue(obj: any, value: any): string {
     for (let key in obj) {
