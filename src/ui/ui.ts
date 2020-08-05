@@ -2,10 +2,10 @@ import * as d3 from 'd3';
 import 'd3-selection-multi';
 import { Selection, ContainerElement } from "d3-selection/index";
 
-import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource } from "../tf/networkTypes";
+import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource } from "../dnnCreator/networkTypes";
 import { maxLayerSize, humanReadable } from "../util/mlUtil";
 import { AppendingLineChart } from "../linechartV5";
-import { getBookmarks, Bookmark, deleteBookmark } from "../tf/bookmarks";
+import { getBookmarks, Bookmark, deleteBookmark } from "../dnnCreator/bookmarks";
 
 const NODE_SIZE = 30;
 const NODE_GAP = 25;

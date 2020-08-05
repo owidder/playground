@@ -31,7 +31,7 @@
     "serve-watch": "concurrently \"npx serve dist/\" \"npm run watch\"",
     "build-tf": "npm run clean-tf && mkdirp ./dist-tf && npm run prep-tf && cross-env NODE_ENV=development INDEX_TS=playgroundTf.ts DIST_FOLDER=dist-tf BUNDLE_NAME=playground webpack",
     "build-tf:watch": "npm run clean && mkdirp ./dist && npm run prep && cross-env NODE_ENV=development INDEX_TS=playgroundTf.ts DIST_FOLDER=dist-tf BUNDLE_NAME=playground webpack --watch",
-    "start-tf": "cross-env NODE_ENV=development INDEX_TS=playgroundTf.ts DIST_FOLDER=dist-tf BUNDLE_NAME=playground webpack-dev-server --open"
+    "start-tf": "cross-env NODE_ENV=development INDEX_TS=dnnCreator/index.ts DIST_FOLDER=dist-tf BUNDLE_NAME=dnnCreator webpack-dev-server --open"
   },
   "devDependencies": {
     "@types/d3": "^5.7.2",

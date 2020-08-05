@@ -16,8 +16,8 @@ limitations under the License.
 import * as nn from "./nn";
 import * as dataset from "./datasetTf";
 import { Dataset } from "./datasetTf";
-import { Model } from "./tf/model";
-import { Player, OneStepCallback } from "./tf/player";
+import { Model } from "./dnnCreator/model";
+import { Player, OneStepCallback } from "./dnnCreator/player";
 import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart, showDatasetUrl } from "./ui/ui";
 
 /** Suffix added to the state when storing if a control is hidden or not. */

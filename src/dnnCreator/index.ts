@@ -14,14 +14,14 @@ limitations under the License.
 ==============================================================================*/
 
 import "material-design-lite/material.css";
-import "./css/stylesNew.css";
-import "./css/stylesTf.scss";
-import { Dataset, loadDataSource } from "./datasetTf";
-import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent, showTrainAndTestNumbers, initTrainAndTestNumbersComponent } from "./ui/ui";
-import { State } from "./stateTf";
-import { addBookmark, initBookmarks } from "./tf/bookmarks";
-import { humanReadable } from "./util/mlUtil";
-import { DataSource } from "./tf/networkTypes";
+import "../css/stylesNew.css";
+import "../css/stylesTf.scss";
+import { Dataset, loadDataSource } from "../datasetTf";
+import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent, showTrainAndTestNumbers, initTrainAndTestNumbersComponent } from "../ui/ui";
+import { State } from "../stateTf";
+import { addBookmark, initBookmarks } from "./bookmarks";
+import { humanReadable } from "../util/mlUtil";
+import { DataSource } from "./networkTypes";
 
 const state = State.deserializeState();
 

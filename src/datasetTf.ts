@@ -19,7 +19,7 @@ import { Tensor2D } from "@tensorflow/tfjs-core/dist/tensor";
 import * as tf from "@tensorflow/tfjs";
 
 import { oneHot } from "./util/mlUtil";
-import { DataPoint, DataSource } from "./tf/networkTypes";
+import { DataPoint, DataSource } from "./dnnCreator/networkTypes";
 import { assertValidityOfDataPoints, getDataFromDataPoint, createOneHotEncoding, createLabelValues } from "./util/mlUtil";
 
 /**
