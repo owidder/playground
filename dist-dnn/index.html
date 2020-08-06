@@ -200,6 +200,86 @@ limitations under the License.
         </div>
     </div>
 
+    <article id="article-text">
+        <div class="l--body">
+          <h2>Welcome to the Deep Neural Network Creator</h2>
+          <p>The Deep Neural Network Creator is based on (sort of) Googles great <a target="_blank" href="https://playground.tensorflow.org/">Playground</a>.</p>
+          <p>What's different?</p>
+          <p>
+              <ul>
+                  <li>The Deep Neurol Network Creator is not only for the purpose of demonstrating how a DNN works. You can use it to create a DNN for yourt own data and try out how well it works</li>
+                  <li>It uses the <a target="_blank" href="https://www.tensorflow.org/js">Tensorflor library for JavaScript</a></li>
+              </ul>
+          </p>
+        </div>
+
+        <div class="l--body">
+            <h2>Choose a dataset</h2>
+            <p>You can use one of the prepared datasets via the select box on the upper left. Currently just <a target="_blank" href="https://www.kaggle.com/rtatman/iris-dataset-json-version">Iris</a> and 
+            <a target="_blank" href="https://www.kaggle.com/uciml/pima-indians-diabetes-database">Diabetes</a>. More to come</p>
+            <p>Or you use your own dataset. Make it available via a public URL. Type the URL in the input field on the upper right and click on the right arrow next to it.</p>
+            <p>Dataset format:</p>
+            <p>
+                <code><pre>
+                    [
+                        {
+                            name: string;
+                            description?: string; 
+                            originalSourceUrl?: string;
+                            data: [
+                                {
+                                    [featureName: string]: number;
+                                    label: string;
+                                }
+                            ]
+                        }
+                    ]
+                </pre></code>
+            </p>
+        </div>
+
+        <div class="l--body">
+            <h2>Configure the network</h2>
+            <p>
+                <ul>
+                    <li>Choose the activation function (not applied on the output layer, which is always 'sigmoid' - one of the current shortcomings of this alpha version)</li>
+                    <li>Choose batch size</li>
+                    <li>Choose the ratio between train and test data points</li>
+                    <li>Add and remove layers</li>
+                    <li>Add and remove neurons on each layer</li>
+                </ul>
+            </p>
+        </div>
+
+        <div class="l--body">
+            <h2>Start the fitting</h2>
+            <p>
+                <li>Press the small <i class="material-icons">skip_next</i> button to run 10 epochs (currently the number 10 is fixed - yet another alpha thingy)</li>
+                <li>Press the big <i class="material-icons">play_arrow</i> button to run chunks of 10 epochs until pause again</li>
+                <li>Train loss and test loss is shown next to activation select box</li>
+            </p>
+        </div>
+
+        <div class="l--body">
+            <h2>What if you actually like a configuration?</h2>
+            <p>Just press the <i class="material-icons">post_add</i> button to save the link in your local browser storage</p>
+            <p>The link is named: "train loss / test loss (number of epochs)" and shows up underneath the ratio slider</p>
+            <p>Be aware that just the configuraion is stored and not the trained model!!!</p>
+        </div>
+
+        <div class="l--body">
+            <h2>What's next?</h2>
+            <p>This is just a pre alpha. Lots to come</p>
+            <ul>
+                <li>Not only dense layers (e.g. convolutional layers)</li>
+                <li>Not only classification problems</li>
+                <li>More parameters to configure: Learnig rate, regularization, activation function on each layer, ...</li>
+                <li>Trained model export</li>
+                <li>Run the model with a much bigger dataset on a Python based server (maybe a bit moonshoty)</li>
+            </ul>
+        </div>
+    </article>
+
 <script src="dnnCreator.js"></script></body>
 
 </html>
