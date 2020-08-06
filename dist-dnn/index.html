@@ -1,0 +1,285 @@
+<!doctype html>
+<!-- Copyright 2016 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================-->
+<html>
+
+<head lang="en">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1024">
+    <meta name="keywords" content="neural networks,machine learning,javascript">
+
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Tensorflow — Neural Network Playground" />
+    <meta property="og:description" content="Tinker with a real neural network right here in your browser.">
+    <meta property="og:url" content="http://playground.tensorflow.org" />
+    <meta property="og:image" content="http://playground.tensorflow.org/preview.png" />
+
+    <meta name="twitter:card" value="summary_large_image">
+    <meta name="twitter:title" content="Tensorflow — Neural Network Playground">
+    <meta name="twitter:description" content="Tinker with a real neural network right here in your browser.">
+    <meta name="twitter:url" content="http://playground.tensorflow.org">
+    <meta name="twitter:image" content="http://playground.tensorflow.org/preview.png">
+    <meta name="twitter:image:width" content="560">
+    <meta name="twitter:image:height" content="295">
+
+    <meta name="author" content="Daniel Smilkov and Shan Carter">
+    <title>A Neural Network Playground</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500|Material+Icons" rel="stylesheet"
+        type="text/css">
+    <script src="lib.js"></script>
+<link rel="icon" href="favicon.png"><link href="dnnCreator.css" rel="stylesheet"></head>
+
+<body>
+    <!-- GitHub link -->
+    <a class="github-link" href="https://github.com/owidder/playground" title="Source on GitHub" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60.5 60.5"
+            width="60" height="60">
+            <polygon class="bg" points="60.5,60.5 0,0 60.5,0 " />
+            <path class="icon"
+                d="M43.1,5.8c-6.6,0-12,5.4-12,12c0,5.3,3.4,9.8,8.2,11.4c0.6,0.1,0.8-0.3,0.8-0.6c0-0.3,0-1,0-2c-3.3,0.7-4-1.6-4-1.6c-0.5-1.4-1.3-1.8-1.3-1.8c-1.1-0.7,0.1-0.7,0.1-0.7c1.2,0.1,1.8,1.2,1.8,1.2c1.1,1.8,2.8,1.3,3.5,1c0.1-0.8,0.4-1.3,0.8-1.6c-2.7-0.3-5.5-1.3-5.5-5.9c0-1.3,0.5-2.4,1.2-3.2c-0.1-0.3-0.5-1.5,0.1-3.2c0,0,1-0.3,3.3,1.2c1-0.3,2-0.4,3-0.4c1,0,2,0.1,3,0.4c2.3-1.6,3.3-1.2,3.3-1.2c0.7,1.7,0.2,2.9,0.1,3.2c0.8,0.8,1.2,1.9,1.2,3.2c0,4.6-2.8,5.6-5.5,5.9c0.4,0.4,0.8,1.1,0.8,2.2c0,1.6,0,2.9,0,3.3c0,0.3,0.2,0.7,0.8,0.6c4.8-1.6,8.2-6.1,8.2-11.4C55.1,11.2,49.7,5.8,43.1,5.8z" />
+        </svg>
+    </a>
+    <!-- Header -->
+    <header>
+        <div class="l--page line1" id="datasource-name">DNN Creator (no data loaded)</div>
+        <div class="line2" id="datasource-description"></div>
+        <a target="_blank" class="line3" id="datasource-source" href=""></a>
+    </header>
+
+    <!-- Top Controls -->
+    <div id="top-controls">
+        <div class="firstline-top-controls">
+            <div class="firstline-control normal">
+                <div class="select">
+                    <select id="datasources" class="leftmargin">
+                        <option value="./datasets/irisFlower.json">Iris</option>
+                        <option value="./datasets/diabetes.json">Diabetes</option>
+                    </select>
+                </div>
+            </div>
+            <div class="firstline-control url-input large">
+                <input id="input-dataset-url" placeholder="Load URL">
+            </div>
+            <span id="goto-dataset" class="material-icons normal">arrow_forward</span>
+        </div>
+        <div class="container l--page">
+            <div class="timeline-controls">
+                <button class="mdl-button mdl-js-button mdl-button--icon ui-resetButton" id="add-button"
+                    title="Add Bookmark">
+                    <i class="material-icons">post_add</i>
+                </button>
+
+                <button class="mdl-button mdl-js-button mdl-button--icon ui-resetButton" id="reset-button"
+                    title="Reset the network">
+                    <i class="material-icons">replay</i>
+                </button>
+
+                <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored ui-playButton"
+                    id="play-pause-button" title="Run/Pause">
+                    <i class="material-icons">play_arrow</i>
+                    <i class="material-icons">pause</i>
+                </button>
+
+                <button class="mdl-button mdl-js-button mdl-button--icon ui-stepButton ui-button"
+                    id="next-step-tf-button" title="Step">
+                    <i class="material-icons">skip_next</i>
+                </button>
+            </div>
+            <div class="control">
+                <span class="label">Epoch</span>
+                <span class="value" id="iter-number"></span>
+            </div>
+            <div class="control ui-activation">
+                <label for="activations">Activation</label>
+                <div class="select">
+                    <select id="activations">
+                        <option value="elu">eLU</option>
+                        <option value="linear">Linear</option>
+                        <option value="relu">ReLU</option>
+                        <option value="relu6">ReLU6</option>
+                        <option value="selu">SeLU</option>
+                        <option value="sigmoid">Sigmoid</option>
+                        <option value="tanh">Tanh</option>
+                        <option value="hardSigmoid">Hard Sigmoid</option>
+                        <option value="softmax">Softmax</option>
+                        <option value="softplus">Softplus</option>
+                        <option value="softsign">Softsign</option>
+                    </select>
+                </div>
+            </div>
+            <div class="metrics">
+                <div class="output-stats ui-percTrainData">
+                    <span>Test loss</span>
+                    <span class="value" id="loss-test"></span>
+                </div>
+                <div class="output-stats train">
+                    <span>Train loss</span>
+                    <span class="value" id="loss-train"></span>
+                </div>
+            </div>
+            <div id="linechart"></div>
+        </div>
+    </div>
+
+    <div id="main-part" class="l--page">
+
+        <div class="left-side">
+            <div class="ui-batchSize">
+                <label for="batchSize">Batch size:&nbsp;&nbsp;<span class="value">1</span></label>
+                <p class="slider">
+                <div class="mdl-slider__container"><input class="mdl-slider mdl-js-slider is-lowest-value"
+                        type="range" id="batchSize" min="1" max="30" step="1" data-upgraded=",MaterialSlider">
+                </div>
+                </p>
+            </div>
+            <div class="ui-train-test-ratio">
+                <label for="train-test-ratio">Train / test ratio: <span class="ratio-value">10%</span></label>
+                <div for="train-test-ratio"># Train: <span class="train-value">10</span></div>
+                <div for="train-test-ratio"># Test: <span class="test-value">10</span></div>
+                <p class="slider">
+                <div class="mdl-slider__container"><input class="mdl-slider mdl-js-slider is-lowest-value"
+                        type="range" id="trainTestRatio" min="10" max="90" step="10" data-upgraded=",MaterialSlider">
+                </div>
+                </p>
+            </div>
+            <div id="bookmarks">
+                <div id="link-hovercard">
+                    <ul>
+                        <li><span class="network-shape"></span></li>
+                        <li><span class="activation"></span></li>
+                        <li><span class="batchSize"></span></li>
+                        <li><span class="percTrainData"></span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Column -->
+        <div class="column features">
+            <div>
+                <h4 class="num-layers-control">
+                    <div class="ui-numHiddenLayers">
+                        <button id="add-layers" class="mdl-button mdl-js-button mdl-button--icon">
+                            <i class="material-icons">add</i>
+                        </button>
+                        <button id="remove-layers" class="mdl-button mdl-js-button mdl-button--icon">
+                            <i class="material-icons">remove</i>
+                        </button>
+                    </div>
+                    <span id="num-layers"></span>
+                    <span id="layers-label"></span>
+                </h4>
+            </div>
+            <div id="network">
+                <svg id="svg" width="510" height="450">
+                    <defs>
+                        <marker id="markerArrow" markerWidth="7" markerHeight="13" refX="1" refY="6" orient="auto"
+                            markerUnits="userSpaceOnUse">
+                            <path d="M2,11 L7,6 L2,2" />
+                        </marker>
+                    </defs>
+                </svg>
+                <!-- Hover card -->
+                <div id="hovercard">
+                    <div><span class="type">Weight/Bias</span> is <span class="value">0.2</span>.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <article id="article-text">
+        <div class="l--body">
+          <h2>Welcome to the Deep Neural Network Creator</h2>
+          <p>The Deep Neural Network Creator is based on (sort of) Googles great <a target="_blank" href="https://playground.tensorflow.org/">Playground</a>.</p>
+          <p>What's different?</p>
+          <p>
+              <ul>
+                  <li>The Deep Neurol Network Creator is not only for the purpose of demonstrating how a DNN works. You can use it to create a DNN for yourt own data and try out how well it works</li>
+                  <li>It uses the <a target="_blank" href="https://www.tensorflow.org/js">Tensorflor library for JavaScript</a></li>
+              </ul>
+          </p>
+        </div>
+
+        <div class="l--body">
+            <h2>Choose a dataset</h2>
+            <p>You can use one of the prepared datasets via the select box on the upper left. Currently just <a target="_blank" href="https://www.kaggle.com/rtatman/iris-dataset-json-version">Iris</a> and 
+            <a target="_blank" href="https://www.kaggle.com/uciml/pima-indians-diabetes-database">Diabetes</a>. More to come</p>
+            <p>Or you use your own dataset. Make it available via a public URL. Type the URL in the input field on the upper right and click on the right arrow next to it.</p>
+            <p>Dataset format:</p>
+            <p>
+                <code><pre>
+                    [
+                        {
+                            name: string;
+                            description?: string; 
+                            originalSourceUrl?: string;
+                            data: [
+                                {
+                                    [featureName: string]: number;
+                                    label: string;
+                                }
+                            ]
+                        }
+                    ]
+                </pre></code>
+            </p>
+        </div>
+
+        <div class="l--body">
+            <h2>Configure the network</h2>
+            <p>
+                <ul>
+                    <li>Choose the activation function (not applied on the output layer, which is always 'sigmoid' - one of the current shortcomings of this alpha version)</li>
+                    <li>Choose batch size</li>
+                    <li>Choose the ratio between train and test data points</li>
+                    <li>Add and remove layers</li>
+                    <li>Add and remove neurons on each layer</li>
+                </ul>
+            </p>
+        </div>
+
+        <div class="l--body">
+            <h2>Start the fitting</h2>
+            <p>
+                <li>Press the small <i class="material-icons">skip_next</i> button to run 10 epochs (currently the number 10 is fixed - yet another alpha thingy)</li>
+                <li>Press the big <i class="material-icons">play_arrow</i> button to run chunks of 10 epochs until pause again</li>
+                <li>Train loss and test loss is shown next to activation select box</li>
+            </p>
+        </div>
+
+        <div class="l--body">
+            <h2>What if you actually like a configuration?</h2>
+            <p>Just press the <i class="material-icons">post_add</i> button to save the link in your local browser storage</p>
+            <p>The link is named: "train loss / test loss (number of epochs)" and shows up underneath the ratio slider</p>
+            <p>Be aware that just the configuraion is stored and not the trained model!!!</p>
+        </div>
+
+        <div class="l--body">
+            <h2>What's next?</h2>
+            <p>This is just a pre alpha. Lots to come</p>
+            <ul>
+                <li>Not only dense layers (e.g. convolutional layers)</li>
+                <li>Not only classification problems</li>
+                <li>More parameters to configure: Learnig rate, regularization, activation function on each layer, ...</li>
+                <li>Trained model export</li>
+                <li>Run the model with a much bigger dataset on a Python based server (maybe a bit moonshoty)</li>
+            </ul>
+        </div>
+    </article>
+
+<script src="dnnCreator.js"></script></body>
+
+</html>
