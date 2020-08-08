@@ -12472,7 +12472,8 @@ footer .links a:hover {
   width: 100%;
   display: flex;
   flex-direction: row;
-  justify-content: center; }
+  justify-content: center;
+  top: -30px; }
   .num-layers-control div,
   .num-layers-control span {
     padding-left: .5em;
@@ -12601,6 +12602,19 @@ select.leftmargin {
 
 pre {
   border-left: 3px solid #f36d33; }
+
+.plus-minus-layers {
+  position: absolute;
+  text-align: center;
+  line-height: 28px;
+  width: 65px;
+  height: 44px;
+  font-size: 12px;
+  z-index: 100; }
+  .plus-minus-layers.remove-layer-control {
+    top: -100px; }
+  .plus-minus-layers.add-layer-control {
+    bottom: -30px; }
 
 
 /*# sourceMappingURL=dnnCreator.css.map*/
