@@ -21,6 +21,7 @@
     display        : flex;
     flex-direction : row;
     justify-content: center;
+    top: -30px;
 
     & div,
     & span {
@@ -202,9 +203,16 @@ pre {
     position   : absolute;
     text-align : center;
     line-height: 28px;
-    bottom     : -30px;
     width      : 65px;
     height     : 44px;
     font-size  : 12px;
     z-index    : 100;
+
+    &.remove-layer-control {
+        top     : -100px;
+    }
+
+    &.add-layer-control {
+        bottom: -30px;
+    }
 }

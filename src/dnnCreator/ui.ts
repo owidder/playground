@@ -55,8 +55,6 @@ export const playPause = (isPlaying: boolean) => {
 }
 
 export const showNumberOfLayers = (numLayers: number): void => {
-    let suffix = numLayers !== 1 ? "s" : "";
-    d3.select("#layers-label").text("Layer" + suffix);
     d3.select("#num-layers").text(numLayers);
 }
 
@@ -151,6 +149,7 @@ function addPlusMinusControl(x: number, layerIdx: number, network: TfNode[][], c
 const addNewLayerControl = (x: number, addNewLayer: () => void): void => {
     const div = d3.select("#network").append("div")
     .classed("plus-minus-layers", true)
+    .classed("add-layer-control", true)
     .style("left", `${x}px`);
 
     div.append("button")
@@ -166,6 +165,7 @@ const addNewLayerControl = (x: number, addNewLayer: () => void): void => {
 const addRemoveLayerControl = (x: number, removeLayer: () => void): void => {
     const div = d3.select("#network").append("div")
     .classed("plus-minus-layers", true)
+    .classed("remove-layer-control", true)
     .style("left", `${x - 10}px`);
 
     div.append("button")
@@ -433,10 +433,6 @@ export const makeGUI = (reset: () => void,
     d3.select("#next-step-tf-button").on("click", () => {
         doModelStep();
     })
-
-    d3.select("#add-layers").on("click", addLayer);
-
-    d3.select("#remove-layers").on("click", removeLayer);
 
     d3.select("#activations").on("change", function () {
         setActivationName((this as any).value);
