@@ -197,3 +197,14 @@ select {
 pre {
     border-left: 3px solid #f36d33;
 }
+
+.plus-minus-layers {
+    position   : absolute;
+    text-align : center;
+    line-height: 28px;
+    bottom        : -30px;
+    width      : 65px;
+    height     : 44px;
+    font-size  : 12px;
+    z-index    : 100;
+}

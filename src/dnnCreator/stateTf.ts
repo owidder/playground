@@ -155,7 +155,7 @@ export class State {
 
         showNumberOfLayers(this.networkShape.length);
 
-        drawNetwork(this.model.getNetwork(), this.changeNumberOfNodes);
+        drawNetwork(this.model.getNetwork(), this.changeNumberOfNodes, (index) => this.addLayerAfterLayerWithIndex(index));
         updateUI(true, this.model.getNetwork(), this.model.getTotalEpochs(), this.model.forEachNode);
     }
 
@@ -179,6 +179,11 @@ export class State {
 
     addLayer = (): void => {
         this.networkShape.splice(this.networkShape.length - 2, 0, 2);
+        this.refreshModel();
+    }
+
+    addLayerAfterLayerWithIndex = (layerIndex: number): void => {
+        this.networkShape.splice(layerIndex + 1, 0, 2);
         this.refreshModel();
     }
 
