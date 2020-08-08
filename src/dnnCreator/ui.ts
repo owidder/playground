@@ -16,7 +16,7 @@ import * as d3 from 'd3';
 import 'd3-selection-multi';
 import { Selection, ContainerElement } from "d3-selection/index";
 
-import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource } from "./networkTypes";
+import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource, AddNewLayerCallback, RemoveLayerCallback } from "./networkTypes";
 import { maxLayerSize, humanReadable } from "./mlUtil";
 import { AppendingLineChart } from "../linechartV5";
 import { getBookmarks, Bookmark, deleteBookmark } from "./bookmarks";
@@ -55,8 +55,6 @@ export const playPause = (isPlaying: boolean) => {
 }
 
 export const showNumberOfLayers = (numLayers: number): void => {
-    let suffix = numLayers !== 1 ? "s" : "";
-    d3.select("#layers-label").text("Layer" + suffix);
     d3.select("#num-layers").text(numLayers);
 }
 
@@ -136,7 +134,6 @@ function addPlusMinusControl(x: number, layerIdx: number, network: TfNode[][], c
         .attr("class", "mdl-button mdl-js-button mdl-button--icon")
         .on("click", () => {
             changeNumberOfNodesCallback(layerIdx, -1);
-            // parametersChanged = true;
         })
         .append("i")
         .attr("class", "material-icons")
@@ -147,6 +144,38 @@ function addPlusMinusControl(x: number, layerIdx: number, network: TfNode[][], c
     div.append("div").text(
         numberOfNodes + " neuron" + suffix
     );
+}
+
+const addNewLayerControl = (x: number, addNewLayer: () => void): void => {
+    const div = d3.select("#network").append("div")
+    .classed("plus-minus-layers", true)
+    .classed("add-layer-control", true)
+    .style("left", `${x}px`);
+
+    div.append("button")
+        .attr("class", "mdl-button mdl-js-button mdl-button--icon")
+        .on("click", () => {
+            addNewLayer();
+        })
+        .append("i")
+        .attr("class", "material-icons")
+        .text("library_add");
+}
+
+const addRemoveLayerControl = (x: number, removeLayer: () => void): void => {
+    const div = d3.select("#network").append("div")
+    .classed("plus-minus-layers", true)
+    .classed("remove-layer-control", true)
+    .style("left", `${x - 10}px`);
+
+    div.append("button")
+        .attr("class", "mdl-button mdl-js-button mdl-button--icon")
+        .on("click", () => {
+            removeLayer();
+        })
+        .append("i")
+        .attr("class", "material-icons")
+        .text("delete_forever");
 }
 
 function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
@@ -274,11 +303,12 @@ function drawLink(
     return line;
 }
 
-export function drawNetwork(network: TfNode[][], changeNumberOfNodesCallback: ChangeNumberOfNodesCallback): void {
+export function drawNetwork(network: TfNode[][], changeNumberOfNodesCallback: ChangeNumberOfNodesCallback, addNewLayerCallback: AddNewLayerCallback, removeLayerCallback: RemoveLayerCallback): void {
     let svg = d3.select("#svg");
     svg.select("g.core").remove();
     d3.select("#network").selectAll("div.canvas").remove();
     d3.select("#network").selectAll("div.plus-minus-neurons").remove();
+    d3.select("#network").selectAll("div.plus-minus-layers").remove();
 
     let numLayers = network.length;
     const width = numLayers <= 10 ? window.innerWidth : window.innerWidth * numLayers / 10;
@@ -311,8 +341,12 @@ export function drawNetwork(network: TfNode[][], changeNumberOfNodesCallback: Ch
     for (let layerIdx = 0; layerIdx < numLayers; layerIdx++) {
         let numNodes = network[layerIdx].length;
         let cx = layerScale(layerIdx) + NODE_SIZE / 2;
-        if (layerIdx > 0 && layerIdx < numLayers - 1) {
-            addPlusMinusControl(layerScale(layerIdx), layerIdx, network, changeNumberOfNodesCallback);
+        if (layerIdx > 0) {
+            if(layerIdx < numLayers - 1) {
+                addPlusMinusControl(layerScale(layerIdx), layerIdx, network, changeNumberOfNodesCallback);
+                addRemoveLayerControl(layerScale(layerIdx), () => removeLayerCallback(layerIdx));
+            }
+            addNewLayerControl((layerScale(layerIdx-1) + layerScale(layerIdx)) / 2, () => addNewLayerCallback(layerIdx-1));
         }
         for (let i = 0; i < numNodes; i++) {
             let node = network[layerIdx][i];
@@ -399,10 +433,6 @@ export const makeGUI = (reset: () => void,
     d3.select("#next-step-tf-button").on("click", () => {
         doModelStep();
     })
-
-    d3.select("#add-layers").on("click", addLayer);
-
-    d3.select("#remove-layers").on("click", removeLayer);
 
     d3.select("#activations").on("change", function () {
         setActivationName((this as any).value);
