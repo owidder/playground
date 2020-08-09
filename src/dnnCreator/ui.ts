@@ -205,6 +205,38 @@ const addActivationControl = (x: number, initial: string, changeActivation: (act
     selectComp.property("value", initial);
 }
 
+const addMoveLeftControl = (x: number, moveLeft: () => void): void => {
+    const div = d3.select("#network").append("div")
+        .classed("plus-minus-layers", true)
+        .classed("remove-layer-control", true)
+        .style("left", `${x - 50}px`);
+
+    div.append("button")
+        .attr("class", "mdl-button mdl-js-button mdl-button--icon")
+        .on("click", () => {
+            moveLeft();
+        })
+        .append("i")
+        .attr("class", "material-icons")
+        .text("arrow_back");
+}
+
+const addMoveRightControl = (x: number, moveRight: () => void): void => {
+    const div = d3.select("#network").append("div")
+        .classed("plus-minus-layers", true)
+        .classed("remove-layer-control", true)
+        .style("left", `${x + 32}px`);
+
+    div.append("button")
+        .attr("class", "mdl-button mdl-js-button mdl-button--icon")
+        .on("click", () => {
+            moveRight();
+        })
+        .append("i")
+        .attr("class", "material-icons")
+        .text("arrow_forward");
+}
+
 function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
     coordinates?: [number, number]) {
     const hovercard = d3.select("#hovercard");
@@ -381,6 +413,12 @@ export function drawNetwork(network: TfNode[][],
             if (layerIdx < numLayers - 1) {
                 addPlusMinusControl(layerScale(layerIdx), layerIdx, network, changeNumberOfNodesCallback);
                 addRemoveLayerControl(layerScale(layerIdx), () => removeLayerCallback(layerIdx));
+                if(layerIdx > 1) {
+                    addMoveLeftControl(layerScale(layerIdx), () => {});
+                }
+            }
+            if(layerIdx < numLayers - 2) {
+                addMoveRightControl(layerScale(layerIdx), () => {});
             }
             addActivationControl(layerScale(layerIdx), activations[layerIdx-1], (activation) => changeActivationCallback(activation, layerIdx));
             addNewLayerControl((layerScale(layerIdx - 1) + layerScale(layerIdx)) / 2, () => addNewLayerCallback(layerIdx - 1));
