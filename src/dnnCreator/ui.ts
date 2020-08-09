@@ -16,7 +16,7 @@ import * as d3 from 'd3';
 import 'd3-selection-multi';
 import { Selection, ContainerElement } from "d3-selection/index";
 
-import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource, AddNewLayerCallback, RemoveLayerCallback, ChangeActivationCallback, activationFunctionNames } from "./networkTypes";
+import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource, AddNewLayerCallback, RemoveLayerCallback, ChangeActivationCallback, activationFunctionNames, SwapLayersCallback } from "./networkTypes";
 import { maxLayerSize, humanReadable } from "./mlUtil";
 import { AppendingLineChart } from "../linechartV5";
 import { getBookmarks, Bookmark, deleteBookmark } from "./bookmarks";
@@ -205,6 +205,38 @@ const addActivationControl = (x: number, initial: string, changeActivation: (act
     selectComp.property("value", initial);
 }
 
+const addMoveLeftControl = (x: number, moveLeft: () => void): void => {
+    const div = d3.select("#network").append("div")
+        .classed("plus-minus-layers", true)
+        .classed("remove-layer-control", true)
+        .style("left", `${x - 50}px`);
+
+    div.append("button")
+        .attr("class", "mdl-button mdl-js-button mdl-button--icon")
+        .on("click", () => {
+            moveLeft();
+        })
+        .append("i")
+        .attr("class", "material-icons")
+        .text("arrow_back");
+}
+
+const addMoveRightControl = (x: number, moveRight: () => void): void => {
+    const div = d3.select("#network").append("div")
+        .classed("plus-minus-layers", true)
+        .classed("remove-layer-control", true)
+        .style("left", `${x + 32}px`);
+
+    div.append("button")
+        .attr("class", "mdl-button mdl-js-button mdl-button--icon")
+        .on("click", () => {
+            moveRight();
+        })
+        .append("i")
+        .attr("class", "material-icons")
+        .text("arrow_forward");
+}
+
 function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
     coordinates?: [number, number]) {
     const hovercard = d3.select("#hovercard");
@@ -339,6 +371,7 @@ export function drawNetwork(network: TfNode[][],
     addNewLayerCallback: AddNewLayerCallback, 
     removeLayerCallback: RemoveLayerCallback,
     changeActivationCallback: ChangeActivationCallback,
+    swapLayersCallback: SwapLayersCallback,
     activations: string[]): void {
     let svg = d3.select("#svg");
     svg.select("g.core").remove();
@@ -381,6 +414,12 @@ export function drawNetwork(network: TfNode[][],
             if (layerIdx < numLayers - 1) {
                 addPlusMinusControl(layerScale(layerIdx), layerIdx, network, changeNumberOfNodesCallback);
                 addRemoveLayerControl(layerScale(layerIdx), () => removeLayerCallback(layerIdx));
+                if(layerIdx > 1) {
+                    addMoveLeftControl(layerScale(layerIdx), () => swapLayersCallback(layerIdx, layerIdx-1));
+                }
+            }
+            if(layerIdx < numLayers - 2) {
+                addMoveRightControl(layerScale(layerIdx), () => swapLayersCallback(layerIdx, layerIdx+1));
             }
             addActivationControl(layerScale(layerIdx), activations[layerIdx-1], (activation) => changeActivationCallback(activation, layerIdx));
             addNewLayerControl((layerScale(layerIdx - 1) + layerScale(layerIdx)) / 2, () => addNewLayerCallback(layerIdx - 1));

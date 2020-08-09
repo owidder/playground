@@ -12,6 +12,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
+import { exp } from "@tensorflow/tfjs";
+
 export class TfLink {
 
     sourceId: string;
@@ -48,6 +50,7 @@ export type ChangeNumberOfNodesCallback = (layerIndex: number, diff: number) => 
 export type AddNewLayerCallback = (insertAfterLayerWithIndex: number) => void;
 export type RemoveLayerCallback = (layerIndex: number) => void;
 export type ChangeActivationCallback = (activation: string, layerIndex: number) => void;
+export type SwapLayersCallback = (layerIndex1: number, layerIndex2: number) => void;
 
 export type DataPoint = { [key: string]: number | string };
 

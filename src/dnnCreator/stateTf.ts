@@ -12,13 +12,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-import * as nn from "../nn";
-import * as dataset from "./datasetTf";
 import { Dataset } from "./datasetTf";
 import { Model } from "./model";
 import { Player, OneStepCallback } from "./player";
-import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart, showDatasetUrl } from "./ui";
-import { activations } from "../state";
+import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart } from "./ui";
+import { swapArrayElements } from "./mlUtil";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -163,7 +161,8 @@ export class State {
             this.changeNumberOfNodes,
             (index) => this.addLayerAfterLayerWithIndex(index),
             (index) => this.removeLayerWithIndex(index),
-            (activation, index) => this.changeActivationAtIndex(activation, index-1),
+            (activation, index) => this.changeActivationAtIndex(activation, index - 1),
+            (index1, index2) => this.swapLayers(index1, index2),
             this.activations);
         updateUI(true, this.model.getNetwork(), this.model.getTotalEpochs(), this.model.forEachNode);
     }
@@ -189,7 +188,7 @@ export class State {
 
     removeLayerWithIndex = (index: number): void => {
         this.networkShape.splice(index, 1);
-        this.activations.splice(index-1, 1);
+        this.activations.splice(index - 1, 1);
         this.refreshModel();
     }
 
@@ -203,6 +202,12 @@ export class State {
         if (current + diff > 0) {
             this.networkShape[layerIndex] = current + diff;
         }
+        this.refreshModel();
+    }
+
+    swapLayers = (layerIndex1: number, layerIndex2: number): void => {
+        swapArrayElements(this.networkShape, layerIndex1, layerIndex2);
+        swapArrayElements(this.activations, layerIndex1-1, layerIndex2-1);
         this.refreshModel();
     }
 
