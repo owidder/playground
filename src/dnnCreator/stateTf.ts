@@ -105,7 +105,6 @@ export class State {
     ];
 
     [key: string]: any;
-    activationName = "tanh";
     networkShape: number[] = [];
     datasetUrl = "./datasets/irisFlower.json";
     batchSize = 10;
@@ -177,32 +176,14 @@ export class State {
         }, 100)
     }
 
-    setActivationName = (activationName: string) => {
-        this.activationName = activationName;
-        this.refreshModel();
-    }
-
     setBatchSize = (batchSize: number) => {
         this.batchSize = batchSize;
-        this.refreshModel();
-    }
-
-    addLayer = (): void => {
-        this.networkShape.splice(this.networkShape.length - 2, 0, 2);
         this.refreshModel();
     }
 
     addLayerAfterLayerWithIndex = (layerIndex: number): void => {
         this.networkShape.splice(layerIndex + 1, 0, 2);
         this.activations.splice(layerIndex, 0, "sigmoid");
-        this.refreshModel();
-    }
-
-    removeLayer = (): void => {
-        if (this.networkShape.length < 3) {
-            return;
-        }
-        this.networkShape.splice(this.networkShape.length - 2, 1);
         this.refreshModel();
     }
 

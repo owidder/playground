@@ -30,7 +30,6 @@ const addCurrentBookmark = () => {
     const name = `${humanReadable(trainLoss)} / ${humanReadable(testLoss)} (${state.getModel().getTotalEpochs()})`;
     const url = location.href;
     const networkShape = state.getModel().getNetworkShape();
-    const activation = state.getModel().getActivationName();
     const activations = state.getModel().getActivations();
     const batchSize = state.batchSize;
     const percTrainData = state.percTrainData;
@@ -47,8 +46,7 @@ const refresh = (dataSource: DataSource) => {
         location.reload();
     }
 
-    makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.addLayer, state.removeLayer, state.setActivationName, state.changeDatasetUrl, addCurrentBookmark, state.setBatchSize, state.changePercTrainData);
-    setSelectComponentByValue("activations", state.activationName);
+    makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.changeDatasetUrl, addCurrentBookmark, state.setBatchSize, state.changePercTrainData);
     setSelectComponentByValue("datasources", state.datasetUrl);
     initBatchSizeComponent(state.batchSize);
     initTrainAndTestNumbersComponent(state.percTrainData);

@@ -40,14 +40,12 @@ export class Model {
     private epochEndCallbacks: EpochEndCallback[] = [];
     private currentTrainLoss: number;
     private currentTestLoss: number;
-    private activationName: string;
     private activations: string[];
     private batchSize: number;
 
     public getCurrentTrainLoss = () => this.currentTrainLoss;
     public getCurrentTestLoss = () => this.currentTestLoss;
     public getTotalEpochs = () => this.totalEpochs;
-    public getActivationName = () => this.activationName;
     public getActivations = () => this.activations;
     public getBatchSize = () => this.batchSize;
 

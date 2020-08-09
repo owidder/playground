@@ -229,22 +229,26 @@ function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
         .text(value.toPrecision(2));
 }
 
-function updateLinkHoverCard(networkShape: number[], activations: string[], batchSize: number, percTrainData: number, coordinates?: [number, number]) {
-    const linkHovercard = d3.select("#link-hovercard");
+function updateBookmarkHoverCard(networkShape: number[], activations: string[], batchSize: number, percTrainData: number, coordinates?: [number, number]) {
+    const linkHovercard = d3.select("#bookmark-hovercard");
 
     linkHovercard.styles({
         "left": `${coordinates[0] + 50}px`,
         "top": `${coordinates[1] + 50}px`,
         "display": "block"
     });
-    linkHovercard.select(".network-shape").text(`Shape: ${JSON.stringify(networkShape)}`);
-    linkHovercard.select(".activations").text(`Activations: ${activations.join(",")}`);
     linkHovercard.select(".batchSize").text(`Batch size: ${batchSize}`);
     linkHovercard.select(".percTrainData").text(`Train Data: ${percTrainData}%`);
+
+    d3.select(".network-shape").html("");
+    d3.select(".network-shape").append("ul")
+        .selectAll("li").data(d3.range(networkShape.length))
+        .enter().append("li")
+        .text((d: number) => d > 0 ? `${networkShape[d]} (${activations[d-1]})` : networkShape[d]);
 }
 
-const hideLinkHoverCard = () => {
-    const hovercard = d3.select("#link-hovercard");
+const hideBookmarkHoverCard = () => {
+    const hovercard = d3.select("#bookmark-hovercard");
     hovercard.style("display", "none");
 }
 
@@ -446,9 +450,6 @@ export const initTrainAndTestNumbersComponent = (percTrainData: number): void =>
 export const makeGUI = (reset: () => void,
     togglePlayPause: () => void,
     doModelStep: () => void,
-    addLayer: () => void,
-    removeLayer: () => void,
-    setActivationName: (name: string) => void,
     changeDatasetUrl: (url: string) => void,
     addBookmark: () => void,
     changeBatchSize: (batchSize: number) => void,
@@ -533,10 +534,10 @@ export const showBookmarks = () => {
             location.reload();
         })
         .on("mouseenter", function (d) {
-            updateLinkHoverCard(d.networkShape, d.activations, d.batchSize, d.percTrainData, d3.mouse(this));
+            updateBookmarkHoverCard(d.networkShape, d.activations, d.batchSize, d.percTrainData, d3.mouse(this));
         })
         .on("mouseleave", function () {
-            hideLinkHoverCard();
+            hideBookmarkHoverCard();
         })
 
     divSelection

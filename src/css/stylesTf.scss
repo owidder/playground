@@ -92,11 +92,7 @@ select {
     }
 }
 
-#link-hovercard {
-    display: none;
-}
-
-#link-hovercard {
+#link-hovercard, #bookmark-hovercard {
     display      : none;
     position     : absolute;
     padding      : 5px;
