@@ -237,17 +237,14 @@ function updateBookmarkHoverCard(networkShape: number[], activations: string[], 
         "top": `${coordinates[1] + 50}px`,
         "display": "block"
     });
-    linkHovercard.select(".activations").text(`Activations: ${activations.join(",")}`);
     linkHovercard.select(".batchSize").text(`Batch size: ${batchSize}`);
     linkHovercard.select(".percTrainData").text(`Train Data: ${percTrainData}%`);
 
     d3.select(".network-shape").html("");
-    const divNetworkShapeUl = d3.select(".network-shape").append("ul");
-    const networkShapeData = divNetworkShapeUl.selectAll("li").data(d3.range(networkShape.length));
-    networkShapeData.enter().append("li");
-    divNetworkShapeUl.selectAll("li")
+    d3.select(".network-shape").append("ul")
+        .selectAll("li").data(d3.range(networkShape.length))
+        .enter().append("li")
         .text((d: number) => d > 0 ? `${networkShape[d]} (${activations[d-1]})` : networkShape[d]);
-    networkShapeData.exit().remove();
 }
 
 const hideBookmarkHoverCard = () => {
