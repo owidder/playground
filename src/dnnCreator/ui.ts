@@ -16,7 +16,7 @@ import * as d3 from 'd3';
 import 'd3-selection-multi';
 import { Selection, ContainerElement } from "d3-selection/index";
 
-import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource, AddNewLayerCallback, RemoveLayerCallback } from "./networkTypes";
+import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource, AddNewLayerCallback, RemoveLayerCallback, ChangeActivationCallback, activationFunctionNames } from "./networkTypes";
 import { maxLayerSize, humanReadable } from "./mlUtil";
 import { AppendingLineChart } from "../linechartV5";
 import { getBookmarks, Bookmark, deleteBookmark } from "./bookmarks";
@@ -148,9 +148,9 @@ function addPlusMinusControl(x: number, layerIdx: number, network: TfNode[][], c
 
 const addNewLayerControl = (x: number, addNewLayer: () => void): void => {
     const div = d3.select("#network").append("div")
-    .classed("plus-minus-layers", true)
-    .classed("add-layer-control", true)
-    .style("left", `${x}px`);
+        .classed("plus-minus-layers", true)
+        .classed("add-layer-control", true)
+        .style("left", `${x}px`);
 
     div.append("button")
         .attr("class", "mdl-button mdl-js-button mdl-button--icon")
@@ -164,9 +164,9 @@ const addNewLayerControl = (x: number, addNewLayer: () => void): void => {
 
 const addRemoveLayerControl = (x: number, removeLayer: () => void): void => {
     const div = d3.select("#network").append("div")
-    .classed("plus-minus-layers", true)
-    .classed("remove-layer-control", true)
-    .style("left", `${x - 10}px`);
+        .classed("plus-minus-layers", true)
+        .classed("remove-layer-control", true)
+        .style("left", `${x - 10}px`);
 
     div.append("button")
         .attr("class", "mdl-button mdl-js-button mdl-button--icon")
@@ -176,6 +176,33 @@ const addRemoveLayerControl = (x: number, removeLayer: () => void): void => {
         .append("i")
         .attr("class", "material-icons")
         .text("delete_forever");
+}
+
+const addActivationControl = (x: number, initial: string, changeActivation: (activation: string) => void): void => {
+    const div = d3.select("#network").append("div")
+    .classed("plus-minus-layers", true)
+    .classed("activation-layers", true)
+        .style("left", `${x}px`);
+
+    const selectComp = div
+        .append("div")
+        .attr("class", "conrol ui-activation")
+        .append("div")
+        .attr("class", "select")
+        .append("select")
+        .on("change", function() {
+            const activation = d3.select(this).property("value");
+            changeActivation(activation);
+        })
+
+    selectComp.selectAll("option")
+        .data(Object.keys(activationFunctionNames))
+        .enter()
+        .append("option")
+        .attr("value", d => d)
+        .text(d => activationFunctionNames[d]);
+
+    selectComp.property("value", initial);
 }
 
 function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
@@ -303,7 +330,12 @@ function drawLink(
     return line;
 }
 
-export function drawNetwork(network: TfNode[][], changeNumberOfNodesCallback: ChangeNumberOfNodesCallback, addNewLayerCallback: AddNewLayerCallback, removeLayerCallback: RemoveLayerCallback): void {
+export function drawNetwork(network: TfNode[][], 
+    changeNumberOfNodesCallback: ChangeNumberOfNodesCallback, 
+    addNewLayerCallback: AddNewLayerCallback, 
+    removeLayerCallback: RemoveLayerCallback,
+    changeActivationCallback: ChangeActivationCallback,
+    activations: string[]): void {
     let svg = d3.select("#svg");
     svg.select("g.core").remove();
     d3.select("#network").selectAll("div.canvas").remove();
@@ -342,11 +374,12 @@ export function drawNetwork(network: TfNode[][], changeNumberOfNodesCallback: Ch
         let numNodes = network[layerIdx].length;
         let cx = layerScale(layerIdx) + NODE_SIZE / 2;
         if (layerIdx > 0) {
-            if(layerIdx < numLayers - 1) {
+            if (layerIdx < numLayers - 1) {
                 addPlusMinusControl(layerScale(layerIdx), layerIdx, network, changeNumberOfNodesCallback);
                 addRemoveLayerControl(layerScale(layerIdx), () => removeLayerCallback(layerIdx));
             }
-            addNewLayerControl((layerScale(layerIdx-1) + layerScale(layerIdx)) / 2, () => addNewLayerCallback(layerIdx-1));
+            addActivationControl(layerScale(layerIdx), activations[layerIdx-1], (activation) => changeActivationCallback(activation, layerIdx));
+            addNewLayerControl((layerScale(layerIdx - 1) + layerScale(layerIdx)) / 2, () => addNewLayerCallback(layerIdx - 1));
         }
         for (let i = 0; i < numNodes; i++) {
             let node = network[layerIdx][i];
@@ -447,16 +480,16 @@ export const makeGUI = (reset: () => void,
         showBookmarks();
     })
 
-    d3.select("#goto-dataset").on("click", function() {
+    d3.select("#goto-dataset").on("click", function () {
         changeDatasetUrl((document.getElementById("input-dataset-url") as HTMLInputElement).value)
     })
 
-    d3.select("#batchSize").on("change", function() {
+    d3.select("#batchSize").on("change", function () {
         changeBatchSize(Number((this as any).value));
         showBatchSize((this as any).value);
     })
 
-    d3.select("#trainTestRatio").on("change", function() {
+    d3.select("#trainTestRatio").on("change", function () {
         changePercTrainData(Number((this as any).value));
     })
 
@@ -503,10 +536,10 @@ export const showBookmarks = () => {
             location.href = d.url;
             location.reload();
         })
-        .on("mouseenter", function(d) {
+        .on("mouseenter", function (d) {
             updateLinkHoverCard(d.networkShape, d.activation, d.batchSize, d.percTrainData, d3.mouse(this));
         })
-        .on("mouseleave", function() {
+        .on("mouseleave", function () {
             hideLinkHoverCard();
         })
 

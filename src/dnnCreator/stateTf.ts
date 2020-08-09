@@ -18,12 +18,15 @@ import { Dataset } from "./datasetTf";
 import { Model } from "./model";
 import { Player, OneStepCallback } from "./player";
 import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart, showDatasetUrl } from "./ui";
+import { activations } from "../state";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
 
+export const activationNamesArray = ['elu', 'hardSigmoid', 'linear', 'relu', 'relu6', 'selu', 'sigmoid', 'softmax', 'softplus', 'softsign', 'tanh'];
+
 export const activationNames: { [key: string]: string } =
-    ['elu', 'hardSigmoid', 'linear', 'relu', 'relu6', 'selu', 'sigmoid', 'softmax', 'softplus', 'softsign', 'tanh'].reduce((_activationNames, name) => {
+    activationNamesArray.reduce((_activationNames, name) => {
         return { ..._activationNames, [name]: name }
     }, {});
 
@@ -98,6 +101,7 @@ export class State {
         { name: "datasetUrl", type: Type.STRING },
         { name: "batchSize", type: Type.NUMBER },
         { name: "percTrainData", type: Type.NUMBER },
+        { name: "activations", type: Type.ARRAY_STRING },
     ];
 
     [key: string]: any;
@@ -106,6 +110,7 @@ export class State {
     datasetUrl = "./datasets/irisFlower.json";
     batchSize = 10;
     percTrainData = 80;
+    activations = ["sigmoid"];
 
     seed: string;
 
@@ -155,7 +160,12 @@ export class State {
 
         showNumberOfLayers(this.networkShape.length);
 
-        drawNetwork(this.model.getNetwork(), this.changeNumberOfNodes, (index) => this.addLayerAfterLayerWithIndex(index), (index) => this.removeLayerWithIndex(index));
+        drawNetwork(this.model.getNetwork(),
+            this.changeNumberOfNodes,
+            (index) => this.addLayerAfterLayerWithIndex(index),
+            (index) => this.removeLayerWithIndex(index),
+            (activation, index) => console.log(`${activation}-${index}`),
+            this.activations);
         updateUI(true, this.model.getNetwork(), this.model.getTotalEpochs(), this.model.forEachNode);
     }
 
@@ -184,6 +194,7 @@ export class State {
 
     addLayerAfterLayerWithIndex = (layerIndex: number): void => {
         this.networkShape.splice(layerIndex + 1, 0, 2);
+        this.activations.splice(layerIndex, 0, "relu");
         this.refreshModel();
     }
 
@@ -197,7 +208,12 @@ export class State {
 
     removeLayerWithIndex = (index: number): void => {
         this.networkShape.splice(index, 1);
+        this.activations.splice(index-1, 1);
         this.refreshModel();
+    }
+
+    changeActivationAtIndex = (index: number, activation: string): void => {
+
     }
 
     changeNumberOfNodes = (layerIndex: number, diff: number): void => {

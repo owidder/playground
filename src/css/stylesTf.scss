@@ -21,7 +21,7 @@
     display        : flex;
     flex-direction : row;
     justify-content: center;
-    top: -30px;
+    top: -100px;
 
     & div,
     & span {
@@ -110,7 +110,7 @@ select {
     top          : -20px;
 }
 
-.firstline-top-controls {
+.firstline-top-controls, .activation-layers {
     display: flex;
     flex-direction: row;
     justify-content: start;
@@ -215,4 +215,8 @@ pre {
     &.add-layer-control {
         bottom: -30px;
     }
+}
+
+.activation-layers {
+    top     : -150px;
 }
