@@ -87,24 +87,6 @@ limitations under the License.
                 <span class="label">Epoch</span>
                 <span class="value" id="iter-number"></span>
             </div>
-            <div class="control ui-activation">
-                <label for="activations">Activation</label>
-                <div class="select">
-                    <select id="activations">
-                        <option value="elu">eLU</option>
-                        <option value="linear">Linear</option>
-                        <option value="relu">ReLU</option>
-                        <option value="relu6">ReLU6</option>
-                        <option value="selu">SeLU</option>
-                        <option value="sigmoid">Sigmoid</option>
-                        <option value="tanh">Tanh</option>
-                        <option value="hardSigmoid">Hard Sigmoid</option>
-                        <option value="softmax">Softmax</option>
-                        <option value="softplus">Softplus</option>
-                        <option value="softsign">Softsign</option>
-                    </select>
-                </div>
-            </div>
             <div class="metrics">
                 <div class="output-stats ui-percTrainData">
                     <span>Test loss</span>
@@ -144,7 +126,7 @@ limitations under the License.
                 <div id="link-hovercard">
                     <ul>
                         <li><span class="network-shape"></span></li>
-                        <li><span class="activation"></span></li>
+                        <li><span class="activations"></span></li>
                         <li><span class="batchSize"></span></li>
                         <li><span class="percTrainData"></span></li>
                     </ul>
@@ -220,7 +202,7 @@ limitations under the License.
             <h2>Configure the network</h2>
             <p>
                 <ul>
-                    <li>Choose the activation function (not applied on the output layer, which is always 'sigmoid' - one of the current shortcomings of this alpha version)</li>
+                    <li>Choose activation function on each layer</li>
                     <li>Choose batch size</li>
                     <li>Choose the ratio between train and test data points</li>
                     <li>Add one layer by clicking on one of the <i class="material-icons">library_add</i> buttons between two layers</li>
@@ -252,7 +234,7 @@ limitations under the License.
             <ul>
                 <li>Not only dense layers (e.g. convolutional layers)</li>
                 <li>Not only classification problems</li>
-                <li>More parameters to configure: Learnig rate, regularization, activation function on each layer, ...</li>
+                <li>More parameters to configure: Learnig rate, regularization, ...</li>
                 <li>Trained model export</li>
                 <li>Run the model with a much bigger dataset on a Python based server (maybe a bit moonshoty)</li>
             </ul>
