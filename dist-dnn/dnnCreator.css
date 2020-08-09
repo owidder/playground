@@ -12473,7 +12473,10 @@ footer .links a:hover {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  top: -100px; }
+  top: -100px;
+  z-index: 10000;
+  color: darkgray;
+  font-weight: bolder; }
   .num-layers-control div,
   .num-layers-control span {
     padding-left: .5em;
