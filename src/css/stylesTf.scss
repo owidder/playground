@@ -22,6 +22,9 @@
     flex-direction : row;
     justify-content: center;
     top: -100px;
+    z-index: 10000;
+    color: darkgray;
+    font-weight: bolder;
 
     & div,
     & span {
