@@ -47,6 +47,7 @@ export type NodeIterator = (ignoreInputs: boolean, accessor: (node: TfNode) => a
 export type ChangeNumberOfNodesCallback = (layerIndex: number, diff: number) => void;
 export type AddNewLayerCallback = (insertAfterLayerWithIndex: number) => void;
 export type RemoveLayerCallback = (layerIndex: number) => void;
+export type ChangeActivationCallback = (activation: string, layerIndex: number) => void;
 
 export type DataPoint = { [key: string]: number | string };
 
@@ -55,4 +56,18 @@ export type DataSource = {
     description: string;
     originalSourceUrl: string;
     data: DataPoint[];
+}
+
+export const activationFunctionNames = {
+    elu: "eLU",
+    linear: "Linear",
+    relu: "ReLU",
+    relu6: "ReLU6",
+    selu: "SeLU",
+    sigmoid: "Sigmoid",
+    tanh: "Tanh",
+    hardSigmoid: "Hard Sigmoid",
+    softmax: "Softmax",
+    softplus: "Softplus",
+    softsign: "Softsign"
 }

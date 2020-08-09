@@ -16,7 +16,7 @@ export type Bookmark = {
     name: string;
     url: string;
     networkShape: number[];
-    activation: string;
+    activations: string[];
     batchSize: number;
     percTrainData: number;
 }
