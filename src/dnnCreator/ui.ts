@@ -16,7 +16,7 @@ import * as d3 from 'd3';
 import 'd3-selection-multi';
 import { Selection, ContainerElement } from "d3-selection/index";
 
-import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource, AddNewLayerCallback, RemoveLayerCallback, ChangeActivationCallback, activationFunctionNames } from "./networkTypes";
+import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource, AddNewLayerCallback, RemoveLayerCallback, ChangeActivationCallback, activationFunctionNames, SwapLayersCallback } from "./networkTypes";
 import { maxLayerSize, humanReadable } from "./mlUtil";
 import { AppendingLineChart } from "../linechartV5";
 import { getBookmarks, Bookmark, deleteBookmark } from "./bookmarks";
@@ -371,6 +371,7 @@ export function drawNetwork(network: TfNode[][],
     addNewLayerCallback: AddNewLayerCallback, 
     removeLayerCallback: RemoveLayerCallback,
     changeActivationCallback: ChangeActivationCallback,
+    swapLayersCallback: SwapLayersCallback,
     activations: string[]): void {
     let svg = d3.select("#svg");
     svg.select("g.core").remove();
@@ -414,11 +415,11 @@ export function drawNetwork(network: TfNode[][],
                 addPlusMinusControl(layerScale(layerIdx), layerIdx, network, changeNumberOfNodesCallback);
                 addRemoveLayerControl(layerScale(layerIdx), () => removeLayerCallback(layerIdx));
                 if(layerIdx > 1) {
-                    addMoveLeftControl(layerScale(layerIdx), () => {});
+                    addMoveLeftControl(layerScale(layerIdx), () => swapLayersCallback(layerIdx, layerIdx-1));
                 }
             }
             if(layerIdx < numLayers - 2) {
-                addMoveRightControl(layerScale(layerIdx), () => {});
+                addMoveRightControl(layerScale(layerIdx), () => swapLayersCallback(layerIdx, layerIdx+1));
             }
             addActivationControl(layerScale(layerIdx), activations[layerIdx-1], (activation) => changeActivationCallback(activation, layerIdx));
             addNewLayerControl((layerScale(layerIdx - 1) + layerScale(layerIdx)) / 2, () => addNewLayerCallback(layerIdx - 1));
