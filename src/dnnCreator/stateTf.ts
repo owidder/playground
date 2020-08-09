@@ -164,7 +164,7 @@ export class State {
             this.changeNumberOfNodes,
             (index) => this.addLayerAfterLayerWithIndex(index),
             (index) => this.removeLayerWithIndex(index),
-            (activation, index) => console.log(`${activation}-${index}`),
+            (activation, index) => this.changeActivationAtIndex(activation, index-1),
             this.activations);
         updateUI(true, this.model.getNetwork(), this.model.getTotalEpochs(), this.model.forEachNode);
     }
@@ -212,8 +212,9 @@ export class State {
         this.refreshModel();
     }
 
-    changeActivationAtIndex = (index: number, activation: string): void => {
-
+    changeActivationAtIndex = (activation: string, index: number): void => {
+        this.activations[index] = activation;
+        this.refreshModel();
     }
 
     changeNumberOfNodes = (layerIndex: number, diff: number): void => {
