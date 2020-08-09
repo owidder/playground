@@ -230,7 +230,7 @@ function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
 }
 
 function updateBookmarkHoverCard(networkShape: number[], activations: string[], batchSize: number, percTrainData: number, coordinates?: [number, number]) {
-    const linkHovercard = d3.select("#link-hovercard");
+    const linkHovercard = d3.select("#bookmark-hovercard");
 
     linkHovercard.styles({
         "left": `${coordinates[0] + 50}px`,
@@ -244,7 +244,7 @@ function updateBookmarkHoverCard(networkShape: number[], activations: string[], 
 }
 
 const hideBookmarkHoverCard = () => {
-    const hovercard = d3.select("#link-hovercard");
+    const hovercard = d3.select("#bookmark-hovercard");
     hovercard.style("display", "none");
 }
 

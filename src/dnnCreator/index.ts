@@ -47,7 +47,6 @@ const refresh = (dataSource: DataSource) => {
     }
 
     makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.changeDatasetUrl, addCurrentBookmark, state.setBatchSize, state.changePercTrainData);
-    setSelectComponentByValue("activations", state.activationName);
     setSelectComponentByValue("datasources", state.datasetUrl);
     initBatchSizeComponent(state.batchSize);
     initTrainAndTestNumbersComponent(state.percTrainData);
