@@ -31,10 +31,11 @@ const addCurrentBookmark = () => {
     const url = location.href;
     const networkShape = state.getModel().getNetworkShape();
     const activation = state.getModel().getActivationName();
+    const activations = state.getModel().getActivations();
     const batchSize = state.batchSize;
     const percTrainData = state.percTrainData;
 
-    addBookmark({ name, url, networkShape, activation, batchSize, percTrainData });
+    addBookmark({ name, url, networkShape, activations, batchSize, percTrainData });
 }
 
 const refresh = (dataSource: DataSource) => {

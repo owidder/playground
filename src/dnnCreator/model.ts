@@ -41,12 +41,14 @@ export class Model {
     private currentTrainLoss: number;
     private currentTestLoss: number;
     private activationName: string;
+    private activations: string[];
     private batchSize: number;
 
     public getCurrentTrainLoss = () => this.currentTrainLoss;
     public getCurrentTestLoss = () => this.currentTestLoss;
     public getTotalEpochs = () => this.totalEpochs;
     public getActivationName = () => this.activationName;
+    public getActivations = () => this.activations;
     public getBatchSize = () => this.batchSize;
 
     public registerTotalEpochsChangedCallback = (totalEpochsChangedCallback: TotalEpochsChangedCallback) => {
@@ -57,16 +59,16 @@ export class Model {
         this.epochEndCallbacks.push(epochEndCallback);
     }
 
-    constructor(networkShape: number[], activationName: string, dataset: Dataset, batchSize: number) {
+    constructor(networkShape: number[], activations: string[], dataset: Dataset, batchSize: number) {
         this._dataset = dataset;
-        this.activationName = activationName;
+        this.activations = activations;
         this.batchSize = batchSize;
 
         this._sequential = tf.sequential();
 
         networkShape.slice(1).forEach((numberOfNodesInLayer, layerIndex) => {
             const config: DenseLayerArgs = {
-                activation: layerIndex == networkShape.length - 2 ? "softmax" : (activationName as ActivationIdentifier),
+                activation: activations[layerIndex] as ActivationIdentifier,
                 units: numberOfNodesInLayer,
                 name: `${layerIndex}`
             }

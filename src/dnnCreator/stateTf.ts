@@ -110,7 +110,7 @@ export class State {
     datasetUrl = "./datasets/irisFlower.json";
     batchSize = 10;
     percTrainData = 80;
-    activations = ["sigmoid"];
+    activations = ["softmax"];
 
     seed: string;
 
@@ -149,7 +149,7 @@ export class State {
         }
         this.numLayers = this.networkShape.length;
 
-        this.model = new Model(this.networkShape, this.activationName, this.dataset, this.batchSize);
+        this.model = new Model(this.networkShape, this.activations, this.dataset, this.batchSize);
 
         this.initPlayer();
 
@@ -194,7 +194,7 @@ export class State {
 
     addLayerAfterLayerWithIndex = (layerIndex: number): void => {
         this.networkShape.splice(layerIndex + 1, 0, 2);
-        this.activations.splice(layerIndex, 0, "relu");
+        this.activations.splice(layerIndex, 0, "sigmoid");
         this.refreshModel();
     }
 

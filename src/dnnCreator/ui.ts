@@ -229,7 +229,7 @@ function updateHoverCard(type: HoverType, nodeOrLink?: TfNode | TfLink,
         .text(value.toPrecision(2));
 }
 
-function updateLinkHoverCard(networkShape: number[], activation: string, batchSize: number, percTrainData: number, coordinates?: [number, number]) {
+function updateLinkHoverCard(networkShape: number[], activations: string[], batchSize: number, percTrainData: number, coordinates?: [number, number]) {
     const linkHovercard = d3.select("#link-hovercard");
 
     linkHovercard.styles({
@@ -238,7 +238,7 @@ function updateLinkHoverCard(networkShape: number[], activation: string, batchSi
         "display": "block"
     });
     linkHovercard.select(".network-shape").text(`Shape: ${JSON.stringify(networkShape)}`);
-    linkHovercard.select(".activation").text(`Activation: ${activation}`);
+    linkHovercard.select(".activations").text(`Activations: ${activations.join(",")}`);
     linkHovercard.select(".batchSize").text(`Batch size: ${batchSize}`);
     linkHovercard.select(".percTrainData").text(`Train Data: ${percTrainData}%`);
 }
@@ -467,10 +467,6 @@ export const makeGUI = (reset: () => void,
         doModelStep();
     })
 
-    d3.select("#activations").on("change", function () {
-        setActivationName((this as any).value);
-    });
-
     d3.select("#datasources").on("change", function () {
         changeDatasetUrl((this as any).value);
     })
@@ -537,7 +533,7 @@ export const showBookmarks = () => {
             location.reload();
         })
         .on("mouseenter", function (d) {
-            updateLinkHoverCard(d.networkShape, d.activation, d.batchSize, d.percTrainData, d3.mouse(this));
+            updateLinkHoverCard(d.networkShape, d.activations, d.batchSize, d.percTrainData, d3.mouse(this));
         })
         .on("mouseleave", function () {
             hideLinkHoverCard();
