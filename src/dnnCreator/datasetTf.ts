@@ -28,7 +28,9 @@ export type TrainAndTest = {
 export const loadDataSource = async (url: string): Promise<DataSource> => {
     const response = await fetch(url);
     const json = await response.json();
-    return (json as DataSource);
+    const dataSource = json as DataSource;
+    dataSource.url = url;
+    return dataSource;
 }
 
 export const splitTrainAndTest = (data: DataPoint[], testRatio: number): TrainAndTest => {

@@ -21,6 +21,7 @@ import { State } from "./stateTf";
 import { addBookmark, initBookmarks } from "./bookmarks";
 import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";
+import { createModelId, removeModel } from "./model";
 
 const state = State.deserializeState();
 
@@ -33,20 +34,18 @@ const addCurrentBookmark = () => {
     const activations = state.getModel().getActivations();
     const batchSize = state.batchSize;
     const percTrainData = state.percTrainData;
+    const modelId = createModelId(networkShape, activations, batchSize, state.datasetUrl);
 
-    addBookmark({ name, url, networkShape, activations, batchSize, percTrainData });
+    addBookmark({ name, url, networkShape, activations, batchSize, percTrainData, modelId });
+    state.getModel().saveModel();
 }
 
-const refresh = (dataSource: DataSource) => {
+const refresh = async (dataSource: DataSource) => {
     const dataset = new Dataset(dataSource, "label", state.percTrainData);
     showTrainAndTestNumbers(state.percTrainData, dataset.getTrainData().length, dataset.getTestData().length);
-    state.initModel(dataset);
+    await state.initModel(dataset);
 
-    const reset = () => {
-        location.reload();
-    }
-
-    makeGUI(reset, state.getPlayer().togglePlayPause, state.doModelStep, state.changeDatasetUrl, addCurrentBookmark, state.setBatchSize, state.changePercTrainData);
+    makeGUI(location.reload, state.getPlayer().togglePlayPause, state.doModelStep, state.changeDatasetUrl, addCurrentBookmark, state.setBatchSize, state.changePercTrainData, removeModel);
     setSelectComponentByValue("datasources", state.datasetUrl);
     initBatchSizeComponent(state.batchSize);
     initTrainAndTestNumbersComponent(state.percTrainData);
@@ -55,13 +54,12 @@ const refresh = (dataSource: DataSource) => {
 
 const start = async () => {
 
-    const datasetUrl = state.datasetUrl && state.datasetUrl.length > 0 ? state.datasetUrl : "./datasets/irisFlower.json";
-    const dataSource = await loadDataSource(datasetUrl);
+    const dataSource = await loadDataSource(state.datasetUrl);
     showDataSource(dataSource);
     state.setRefreshCallback(() => refresh(dataSource));
     initBookmarks(state.datasetUrl);
 
-    refresh(dataSource);
+    await refresh(dataSource);
 }
 
 start();

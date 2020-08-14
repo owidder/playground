@@ -19,6 +19,7 @@ export type Bookmark = {
     activations: string[];
     batchSize: number;
     percTrainData: number;
+    modelId: string;
 }
 
 const bookmarks: Bookmark[] = [];
@@ -33,7 +34,7 @@ export const initBookmarks = (_bookmarksId: string): void => {
     }
 }
 
-export const addBookmark = (bookmark: Bookmark): void => {
+export const addBookmark =  (bookmark: Bookmark): void => {
     const index = bookmarks.findIndex(b => b.url == bookmark.url);
     if(index < 0) {
         bookmarks.push(bookmark);
