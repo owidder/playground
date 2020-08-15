@@ -25,9 +25,11 @@ export type Bookmark = {
 const bookmarks: Bookmark[] = [];
 let bookmarksId: string;
 
+const bookmarksPath = (bookmarksId: string) => `dnn-bookmarks/${bookmarksId}`;
+
 export const initBookmarks = (_bookmarksId: string): void => {
     bookmarksId = _bookmarksId;
-    const bookmarksString = localStorage.getItem(_bookmarksId);
+    const bookmarksString = localStorage.getItem(bookmarksPath(_bookmarksId));
     if(bookmarksString) {
         const savedBookmarks = JSON.parse(bookmarksString);
         Array.prototype.push.apply(bookmarks, savedBookmarks);
@@ -42,7 +44,7 @@ export const addBookmark =  (bookmark: Bookmark): void => {
         bookmarks.splice(index, 1, bookmark);
     }
 
-    localStorage.setItem(bookmarksId, JSON.stringify(bookmarks));
+    localStorage.setItem(bookmarksPath(bookmarksId), JSON.stringify(bookmarks));
 }
 
 export const deleteBookmark = (url: string): void => {
