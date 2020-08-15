@@ -583,6 +583,7 @@ export const showBookmarks = (removeModel: (modelId: string) => void) => {
     divSelection
         .append("span")
         .attr("class", "material-icons delete-button")
+        .attr("title", "delete model")
         .text("delete_forever")
         .on("click", d => {
             deleteBookmark(d.url);
@@ -595,6 +596,9 @@ export const showBookmarks = (removeModel: (modelId: string) => void) => {
 
     updateSelection
         .text(d => d.name);
+
+    (divElement.selectAll("div.bookmark") as BookmarkSelection)
+        .style("background-color", d => d.url == location.href ? "lightgrey" : "white")
 
     dataSelection.exit().remove();
 }

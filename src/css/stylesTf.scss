@@ -4,6 +4,14 @@
     }
 }
 
+#version {
+    font-size: .5em;
+    display: flex;
+    justify-content: start;
+    width: 100%;
+    margin-left: 2em;
+}
+
 .features {
     &.column {
         width: 100%;
@@ -102,14 +110,17 @@ select {
 #bookmarks {
     margin-left: 1em;
     margin-right: 1em;
+    margin-top: 5em;
     font-size: xx-small;
     display: flex;
     flex-direction: column;
     width: 100%;
     z-index: 100000;
+    border: black;
 
     & a {
         color: black;
+        margin-left: 1em;
     }
 
     & .bookmark {
@@ -120,6 +131,9 @@ select {
         .delete-button {
             font-size: 1.75em;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
     }
 }
