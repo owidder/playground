@@ -101,10 +101,12 @@ select {
 
 #bookmarks {
     margin-left: 1em;
+    margin-right: 1em;
     font-size: xx-small;
     display: flex;
     flex-direction: column;
     width: 100%;
+    z-index: 100000;
 
     & a {
         color: black;
@@ -113,6 +115,7 @@ select {
     & .bookmark {
         display: flex;
         flex-direction: row;
+        justify-content: space-between;
 
         .delete-button {
             font-size: 1.75em;

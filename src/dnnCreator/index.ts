@@ -45,7 +45,7 @@ const refresh = async (dataSource: DataSource) => {
     showTrainAndTestNumbers(state.percTrainData, dataset.getTrainData().length, dataset.getTestData().length);
     await state.initModel(dataset);
 
-    makeGUI(location.reload, state.getPlayer().togglePlayPause, state.doModelStep, state.changeDatasetUrl, addCurrentBookmark, state.setBatchSize, state.changePercTrainData, removeModel);
+    makeGUI(state.getModel().download, state.getPlayer().togglePlayPause, state.doModelStep, state.changeDatasetUrl, addCurrentBookmark, state.setBatchSize, state.changePercTrainData, removeModel);
     setSelectComponentByValue("datasources", state.datasetUrl);
     initBatchSizeComponent(state.batchSize);
     initTrainAndTestNumbersComponent(state.percTrainData);

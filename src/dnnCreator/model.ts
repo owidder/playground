@@ -119,6 +119,10 @@ export class Model {
         this._sequential.summary();
     }
 
+    public download = async (): Promise<void> => {
+        await this._sequential.save(`downloads://${this.getModelId()}`);
+    } 
+
     private onEpochEnd = (epoch: number, logs: Logs): void => {
         this.currentTrainLoss = logs.loss;
         const testLossTensor = this._sequential.evaluate(this._dataset.getTestInputTensor(), this._dataset.getTestOutputTensor()) as Scalar;
