@@ -24,11 +24,33 @@ import { Logs } from "@tensorflow/tfjs-layers/dist/logs";
 
 import { TfNode, TfLink, NodeIterator } from "./networkTypes";
 import { range } from "./mlUtil";
-import { updateUI, stepStarted, stepEnded } from "./ui";
-import { Scalar } from "@tensorflow/tfjs";
+import { updateUI } from "./ui";
+import { Scalar, loadLayersModel, LayersModel } from "@tensorflow/tfjs";
+import { local } from "d3";
 
 export type TotalEpochsChangedCallback = (currentTotalEpoch) => void;
 export type EpochEndCallback = (trainLoss: number, testLoss: number) => void;
+
+export const createModelId = (networkShape: number[], activations: string[], batchSize: number, url: string): string => {
+    const sanitizedUrl = url.replace(/\W/g, "_");
+    return `${networkShape.join("-")}__${activations.join("-")}__${batchSize}__${sanitizedUrl}`;
+}
+
+export const loadModel = async (networkShape: number[], activations: string[], batchSize: number, url: string): Promise<LayersModel> => {
+    const modelId = createModelId(networkShape, activations, batchSize, url);
+    if(localStorage.getItem(`tensorflowjs_models/${modelId}/model_topology`)) {
+        return await loadLayersModel(`localstorage://${modelId}`);
+    }
+}
+
+export const removeModel = (modelId: string): void => {
+    const items = Object.keys(localStorage);
+    items.forEach(item => {
+        if(item.startsWith(`tensorflowjs_models/${modelId}`)) {
+            localStorage.removeItem(item);
+        }
+    })
+}
 
 export class Model {
 
@@ -49,6 +71,15 @@ export class Model {
     public getActivations = () => this.activations;
     public getBatchSize = () => this.batchSize;
 
+    public getModelId(): string {
+        return createModelId(this.getNetworkShape(), this.activations, this.batchSize, this._dataset.getDataSource().url);
+    }
+
+    public async saveModel() {
+        const saveResult = await this._sequential.save(`localstorage://${this.getModelId()}`);
+        console.log(saveResult);
+    }
+
     public registerTotalEpochsChangedCallback = (totalEpochsChangedCallback: TotalEpochsChangedCallback) => {
         this.totalEpchsChangedCallbacks.push(totalEpochsChangedCallback);
     }
@@ -57,24 +88,28 @@ export class Model {
         this.epochEndCallbacks.push(epochEndCallback);
     }
 
-    constructor(networkShape: number[], activations: string[], dataset: Dataset, batchSize: number) {
+    constructor(networkShape: number[], activations: string[], dataset: Dataset, batchSize: number, loadedModel?: Sequential) {
         this._dataset = dataset;
         this.activations = activations;
         this.batchSize = batchSize;
 
-        this._sequential = tf.sequential();
+        if (loadedModel) {
+            this._sequential = loadedModel;
+        } else {
+            this._sequential = tf.sequential();
 
-        networkShape.slice(1).forEach((numberOfNodesInLayer, layerIndex) => {
-            const config: DenseLayerArgs = {
-                activation: activations[layerIndex] as ActivationIdentifier,
-                units: numberOfNodesInLayer,
-                name: `${layerIndex}`
-            }
-            if (layerIndex == 0) {
-                config.inputShape = [networkShape[0]]
-            }
-            this._sequential.add(tf.layers.dense(config))
-        })
+            networkShape.slice(1).forEach((numberOfNodesInLayer, layerIndex) => {
+                const config: DenseLayerArgs = {
+                    activation: activations[layerIndex] as ActivationIdentifier,
+                    units: numberOfNodesInLayer,
+                    name: `${layerIndex}`
+                }
+                if (layerIndex == 0) {
+                    config.inputShape = [networkShape[0]]
+                }
+                this._sequential.add(tf.layers.dense(config))
+            })
+        }
 
         this._sequential.compile({
             loss: "categoricalCrossentropy",
@@ -83,6 +118,10 @@ export class Model {
 
         this._sequential.summary();
     }
+
+    public download = async (): Promise<void> => {
+        await this._sequential.save(`downloads://${this.getModelId()}`);
+    } 
 
     private onEpochEnd = (epoch: number, logs: Logs): void => {
         this.currentTrainLoss = logs.loss;

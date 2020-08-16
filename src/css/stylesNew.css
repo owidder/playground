@@ -379,22 +379,6 @@ header h1 .optional {
     }
 }
 
-#main-part h4 {
-    display       : -webkit-box;
-    display       : -moz-box;
-    display       : -ms-flexbox;
-    display       : -webkit-flex;
-    display       : flex;
-    align-items   : center;
-    font-weight   : 400;
-    font-size     : 16px;
-    text-transform: uppercase;
-    position      : relative;
-    padding-bottom: 8px;
-    margin        : 0;
-    line-height   : 1.4em;
-}
-
 #main-part p,
 #main-part .column .label,
 #main-part .column label {

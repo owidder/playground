@@ -16,7 +16,7 @@ import * as d3 from 'd3';
 import 'd3-selection-multi';
 import { Selection, ContainerElement } from "d3-selection/index";
 
-import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource, AddNewLayerCallback, RemoveLayerCallback, ChangeActivationCallback, activationFunctionNames, SwapLayersCallback } from "./networkTypes";
+import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource, AddNewLayerCallback, RemoveLayerCallback, ChangeActivationCallback, activationFunctionNames } from "./networkTypes";
 import { maxLayerSize, humanReadable } from "./mlUtil";
 import { AppendingLineChart } from "../linechartV5";
 import { getBookmarks, Bookmark, deleteBookmark } from "./bookmarks";
@@ -371,7 +371,7 @@ export function drawNetwork(network: TfNode[][],
     addNewLayerCallback: AddNewLayerCallback, 
     removeLayerCallback: RemoveLayerCallback,
     changeActivationCallback: ChangeActivationCallback,
-    swapLayersCallback: SwapLayersCallback,
+    swapLayersCallback: (layerIndex1: number, layerIndex2: number) => void,
     activations: string[]): void {
     let svg = d3.select("#svg");
     svg.select("g.core").remove();
@@ -492,7 +492,8 @@ export const makeGUI = (reset: () => void,
     changeDatasetUrl: (url: string) => void,
     addBookmark: () => void,
     changeBatchSize: (batchSize: number) => void,
-    changePercTrainData: (percTrainData: number) => void) => {
+    changePercTrainData: (percTrainData: number) => void,
+    removeModel: (modelId: string) => void) => {
 
     d3.select("#reset-button").on("click", () => {
         reset();
@@ -513,7 +514,7 @@ export const makeGUI = (reset: () => void,
 
     d3.select("#add-button").on("click", function () {
         addBookmark();
-        showBookmarks();
+        showBookmarks(removeModel);
     })
 
     d3.select("#goto-dataset").on("click", function () {
@@ -530,7 +531,7 @@ export const makeGUI = (reset: () => void,
     })
 
     setAddBookmarkDisabled(true);
-    showBookmarks();
+    showBookmarks(removeModel);
 }
 
 const lineChart = new AppendingLineChart(d3.select("#linechart"), ["#777", "black"]);
@@ -554,7 +555,7 @@ export const showDataSource = (dataSource: DataSource): void => {
 
 type BookmarkSelection = Selection<HTMLDivElement, Bookmark, HTMLDivElement, any>
 
-export const showBookmarks = () => {
+export const showBookmarks = (removeModel: (modelId: string) => void) => {
     const bookmarks = getBookmarks();
     const divElement: Selection<HTMLDivElement, any, HTMLElement, any> = d3.select("#bookmarks");
     const initSelection: BookmarkSelection = divElement.selectAll(".bookmark");
@@ -582,10 +583,12 @@ export const showBookmarks = () => {
     divSelection
         .append("span")
         .attr("class", "material-icons delete-button")
+        .attr("title", "delete model")
         .text("delete_forever")
         .on("click", d => {
             deleteBookmark(d.url);
-            showBookmarks();
+            removeModel(d.modelId);
+            showBookmarks(removeModel);
         })
 
     const updateSelection: BookmarkSelection = divElement.selectAll(".bookmark-anchor");
@@ -593,6 +596,9 @@ export const showBookmarks = () => {
 
     updateSelection
         .text(d => d.name);
+
+    (divElement.selectAll("div.bookmark") as BookmarkSelection)
+        .style("background-color", d => d.url == location.href ? "lightgrey" : "white")
 
     dataSelection.exit().remove();
 }

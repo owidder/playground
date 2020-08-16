@@ -13,10 +13,11 @@ limitations under the License.
 ==============================================================================*/
 
 import { Dataset } from "./datasetTf";
-import { Model } from "./model";
+import { Model, loadModel } from "./model";
 import { Player, OneStepCallback } from "./player";
 import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart } from "./ui";
 import { swapArrayElements } from "./mlUtil";
+import { LayersModel, Sequential } from "@tensorflow/tfjs";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -124,7 +125,7 @@ export class State {
 
     initPlayer() {
         const oneStepCallback: OneStepCallback = async () => {
-            await this.model.fitStep()
+            await this.model.fitStep(1)
         }
         this.player = new Player(oneStepCallback, stepStarted, stepEnded)
     }
@@ -134,7 +135,7 @@ export class State {
         this.refreshCallback();
     }
 
-    initModel(dataset?: Dataset): void {
+    async initModel(dataset?: Dataset): Promise<void> {
         this.dataset = dataset ? dataset : this.dataset;
         const inputShape = this.dataset.getInputShape();
         const outputShape = this.dataset.getOutputShape();
@@ -146,7 +147,8 @@ export class State {
         }
         this.numLayers = this.networkShape.length;
 
-        this.model = new Model(this.networkShape, this.activations, this.dataset, this.batchSize);
+        const loadedModel: LayersModel = await loadModel(this.networkShape, this.activations, this.batchSize, this.datasetUrl);
+        this.model = new Model(this.networkShape, this.activations, this.dataset, this.batchSize, loadedModel as Sequential);
 
         this.initPlayer();
 
@@ -170,7 +172,7 @@ export class State {
     doModelStep = (): void => {
         stepStarted();
         setTimeout(async () => {
-            await this.model.fitStep();
+            await this.model.fitStep(1);
             stepEnded();
         }, 100)
     }

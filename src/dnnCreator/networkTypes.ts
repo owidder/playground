@@ -59,6 +59,7 @@ export type DataSource = {
     description: string;
     originalSourceUrl: string;
     data: DataPoint[];
+    url?: string;
 }
 
 export const activationFunctionNames = {
