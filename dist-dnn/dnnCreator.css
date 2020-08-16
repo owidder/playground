@@ -11856,22 +11856,6 @@ header h1 .optional {
     }
 }
 
-#main-part h4 {
-    display       : -webkit-box;
-    display       : -moz-box;
-    display       : -ms-flexbox;
-    display       : -webkit-flex;
-    display       : flex;
-    align-items   : center;
-    font-weight   : 400;
-    font-size     : 16px;
-    text-transform: uppercase;
-    position      : relative;
-    padding-bottom: 8px;
-    margin        : 0;
-    line-height   : 1.4em;
-}
-
 #main-part p,
 #main-part .column .label,
 #main-part .column label {
@@ -12461,15 +12445,40 @@ footer .links a:hover {
 .ui-button.outdated {
   background-color: red; }
 
+#version {
+  font-size: .5em;
+  display: flex;
+  justify-content: start;
+  width: 100%;
+  margin-left: 2em; }
+
 .features.column {
   width: 100%;
   position: relative; }
 
+h4.num-layers-control {
+  position: absolute;
+  right: 3em; }
+
 #main-part {
   width: 100%; }
+  #main-part h4 {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    font-weight: 400;
+    font-size: 16px;
+    text-transform: uppercase;
+    position: absolute;
+    right: 0;
+    padding-bottom: 8px;
+    margin-right: 1em;
+    line-height: 1.4em; }
 
 .num-layers-control {
-  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -12481,6 +12490,9 @@ footer .links a:hover {
   .num-layers-control span {
     padding-left: .5em;
     padding-right: .5em; }
+
+#network {
+  width: 100%; }
 
 g.node circle {
   fill: #8d768d;
@@ -12508,18 +12520,26 @@ select.leftmargin {
 
 #bookmarks {
   margin-left: 1em;
+  margin-right: 1em;
+  margin-top: 5em;
   font-size: xx-small;
   display: flex;
   flex-direction: column;
-  width: 100%; }
+  width: 100%;
+  z-index: 100000; }
   #bookmarks a {
-    color: black; }
+    color: black;
+    margin-left: 1em; }
   #bookmarks .bookmark {
     display: flex;
-    flex-direction: row; }
+    flex-direction: row;
+    justify-content: space-between; }
     #bookmarks .bookmark .delete-button {
       font-size: 1.75em;
-      cursor: pointer; }
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; }
 
 #link-hovercard, #bookmark-hovercard {
   display: none;
