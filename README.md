@@ -14,6 +14,6 @@ It's based on the Playground project: https://playground.tensorflow.org/
 
 # The original code
 
-In the repo is also the origina Playground ported to D3 v5 and webpackified.
+In the repo is also the original Playground ported to D3 v5 and webpackified.
 * build it: npm run build-v5
 * serve it on localhost:5005: npm run serve-v5
