@@ -175,11 +175,11 @@ limitations under the License.
 
         <div class="l--body">
             <h2>Choose a dataset</h2>
-            <p>You can use one of the prepared datasets via the select box on the upper left. Currently just <a target="_blank" href="https://www.kaggle.com/rtatman/iris-dataset-json-version">Iris</a> and 
-            <a target="_blank" href="https://www.kaggle.com/uciml/pima-indians-diabetes-database">Diabetes</a>. More to come</p>
-            <p>Or you use your own dataset. Make it available via a public URL. Type the URL in the input field on the upper right and click on the right arrow next to it.</p>
-            <p>Dataset format:</p>
-            <p>
+            <ul>
+                <li>You can use one of the prepared datasets via the select box on the upper left. Currently just <a target="_blank" href="https://www.kaggle.com/rtatman/iris-dataset-json-version">Iris</a> and 
+                <a target="_blank" href="https://www.kaggle.com/uciml/pima-indians-diabetes-database">Diabetes</a>. More to come</li>
+                <li>Or you use your own dataset. Make it available via a public URL. Type the URL in the input field on the upper right and click on the right arrow next to it.</li>
+                <li>Dataset format:</li>
                 <code><pre>
                     [
                         {
@@ -195,7 +195,8 @@ limitations under the License.
                         }
                     ]
                 </pre></code>
-            </p>
+                <li>E.g. this is the Iris dataset in this format: <a target="_blank" href="https://github.com/owidder/playground/blob/master/datasets/irisFlower.json">https://github.com/owidder/playground/blob/master/datasets/irisFlower.json</a></li>
+                </ul>
         </div>
 
         <div class="l--body">
@@ -216,22 +217,26 @@ limitations under the License.
         <div class="l--body">
             <h2>Start the fitting</h2>
             <p>
-                <li>Press the small <i class="material-icons">skip_next</i> button to run 10 epochs (currently the number 10 is fixed - yet another alpha thingy)</li>
-                <li>Press the big <i class="material-icons">play_arrow</i> button to run chunks of 10 epochs until pause again</li>
-                <li>Train loss and test loss is shown next to activation select box</li>
+                <li>Press the small <i class="material-icons">skip_next</i> button to run 1 epoch</li>
+                <li>Press the big <i class="material-icons">play_arrow</i> button to run epochs until you press the <i class="material-icons">pause</i> button</li>
+                <li>Test loss and train loss is shown next to activation select box</li>
             </p>
         </div>
 
         <div class="l--body">
-            <h2>What if you actually like a configuration?</h2>
-            <p>Just press the <i class="material-icons">post_add</i> button to save the link in your local browser storage</p>
-            <p>The link is named: "train loss / test loss (number of epochs)" and shows up underneath the ratio slider</p>
-            <p>Be aware that just the configuraion is stored and not the trained model!!!</p>
+            <h2>What if you actually like your model?</h2>
+            <ul>
+                <li>Just press the <i class="material-icons">post_add</i> button to save the trained model in your local browser storage</li>
+                <li>The link to the model is named: "test loss / train loss (number of epochs)" and shows up underneath the ratio slider</li>
+                <li>By clicking on the link the model is loaded and you can train it further. Be aware that the epoch counter next to the play button only shows the number of epochs since the latest loading of the model</li>
+                <li>By hovering over one link you can see the configuration of the saved model</li>
+                <li>With the <i class="material-icons">get_app</i> you can download the current model</li>
+            </ul>
         </div>
 
         <div class="l--body">
             <h2>What's next?</h2>
-            <p>This is just a pre alpha. Lots to come</p>
+            <p>Lots to come (hopefully sooner than later)</p>
             <ul>
                 <li>Not only dense layers (e.g. convolutional layers)</li>
                 <li>Not only classification problems</li>
