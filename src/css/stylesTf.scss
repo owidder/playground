@@ -268,6 +268,10 @@ pre {
     font-weight: 300;
 
     & .control {
+        margin-top: 6px;
+        font-size : .3em;
+        margin-right: 1em;
+
         & .label {
             font-size: 1em;
         }
@@ -275,4 +279,21 @@ pre {
             font-size: 2em;
         }
     }
+
+    & .timeline-controls {
+        display     : flex;
+        align-items : center;
+        margin-right: 20px;
+    }
+
+    & .metrics {
+        position   : relative;
+        font-weight: 300;
+        font-size  : .7em;
+        min-width  : 8em;
+    }    
+}
+
+#tfjs-visor-container .visor {
+    z-index: 999999;
 }
