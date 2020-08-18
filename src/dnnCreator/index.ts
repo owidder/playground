@@ -22,6 +22,7 @@ import { addBookmark, initBookmarks } from "./bookmarks";
 import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";
 import { createModelId, removeModel } from "./model";
+import { toggleVisor, initVisor } from "./vis";
 
 const state = State.deserializeState();
 
@@ -45,7 +46,16 @@ const refresh = async (dataSource: DataSource) => {
     showTrainAndTestNumbers(state.percTrainData, dataset.getTrainData().length, dataset.getTestData().length);
     await state.initModel(dataset);
 
-    makeGUI(state.getModel().download, state.getPlayer().togglePlayPause, state.doModelStep, state.changeDatasetUrl, addCurrentBookmark, state.setBatchSize, state.changePercTrainData, removeModel);
+    makeGUI(state.getModel().download,
+        state.getPlayer().togglePlayPause,
+        state.doModelStep,
+        state.changeDatasetUrl,
+        addCurrentBookmark,
+        state.setBatchSize,
+        state.changePercTrainData,
+        removeModel,
+        toggleVisor,
+    );
     setSelectComponentByValue("datasources", state.datasetUrl);
     initBatchSizeComponent(state.batchSize);
     initTrainAndTestNumbersComponent(state.percTrainData);
@@ -60,6 +70,7 @@ const start = async () => {
     initBookmarks(state.datasetUrl);
 
     await refresh(dataSource);
+    initVisor();
 }
 
 start();

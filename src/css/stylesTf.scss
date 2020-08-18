@@ -261,3 +261,18 @@ pre {
 .activation-layers {
     top     : -150px;
 }
+
+#top-controls {
+    font-size  : 24px;
+    margin     : 0;
+    font-weight: 300;
+
+    & .control {
+        & .label {
+            font-size: 1em;
+        }
+        & .value {
+            font-size: 2em;
+        }
+    }
+}

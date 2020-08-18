@@ -287,12 +287,6 @@ header h1 .optional {
     font-weight  : 300;
 }
 
-#top-controls .control .value {
-    font-size  : 24px;
-    margin     : 0;
-    font-weight: 300;
-}
-
 #top-controls .control .select {
     position: relative;
 }

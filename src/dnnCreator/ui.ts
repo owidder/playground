@@ -30,23 +30,17 @@ const setNextStepDisabled = (disabled: boolean) => {
     (<HTMLInputElement>document.getElementById("next-step-tf-button")).disabled = disabled;
 }
 
-const setResetDisabled = (disabled: boolean) => {
-    (<HTMLInputElement>document.getElementById("reset-button")).disabled = disabled;
-}
-
 export const setAddBookmarkDisabled = (disabled: boolean) => {
     (<HTMLInputElement>document.getElementById("add-button")).disabled = disabled;
 }
 
 export const stepStarted = () => {
     setNextStepDisabled(true);
-    setResetDisabled(true);
     setAddBookmarkDisabled(true);
 }
 
 export const stepEnded = () => {
     setNextStepDisabled(false);
-    setResetDisabled(false);
     setAddBookmarkDisabled(false);
 }
 
@@ -180,8 +174,8 @@ const addRemoveLayerControl = (x: number, removeLayer: () => void): void => {
 
 const addActivationControl = (x: number, initial: string, changeActivation: (activation: string) => void): void => {
     const div = d3.select("#network").append("div")
-    .classed("plus-minus-layers", true)
-    .classed("activation-layers", true)
+        .classed("plus-minus-layers", true)
+        .classed("activation-layers", true)
         .style("left", `${x}px`);
 
     const selectComp = div
@@ -190,7 +184,7 @@ const addActivationControl = (x: number, initial: string, changeActivation: (act
         .append("div")
         .attr("class", "select")
         .append("select")
-        .on("change", function() {
+        .on("change", function () {
             const activation = d3.select(this).property("value");
             changeActivation(activation);
         })
@@ -276,7 +270,7 @@ function updateBookmarkHoverCard(networkShape: number[], activations: string[], 
     d3.select(".network-shape").append("ul")
         .selectAll("li").data(d3.range(networkShape.length))
         .enter().append("li")
-        .text((d: number) => d > 0 ? `${networkShape[d]} (${activations[d-1]})` : networkShape[d]);
+        .text((d: number) => d > 0 ? `${networkShape[d]} (${activations[d - 1]})` : networkShape[d]);
 }
 
 const hideBookmarkHoverCard = () => {
@@ -366,9 +360,9 @@ function drawLink(
     return line;
 }
 
-export function drawNetwork(network: TfNode[][], 
-    changeNumberOfNodesCallback: ChangeNumberOfNodesCallback, 
-    addNewLayerCallback: AddNewLayerCallback, 
+export function drawNetwork(network: TfNode[][],
+    changeNumberOfNodesCallback: ChangeNumberOfNodesCallback,
+    addNewLayerCallback: AddNewLayerCallback,
     removeLayerCallback: RemoveLayerCallback,
     changeActivationCallback: ChangeActivationCallback,
     swapLayersCallback: (layerIndex1: number, layerIndex2: number) => void,
@@ -414,14 +408,14 @@ export function drawNetwork(network: TfNode[][],
             if (layerIdx < numLayers - 1) {
                 addPlusMinusControl(layerScale(layerIdx), layerIdx, network, changeNumberOfNodesCallback);
                 addRemoveLayerControl(layerScale(layerIdx), () => removeLayerCallback(layerIdx));
-                if(layerIdx > 1) {
-                    addMoveLeftControl(layerScale(layerIdx), () => swapLayersCallback(layerIdx, layerIdx-1));
+                if (layerIdx > 1) {
+                    addMoveLeftControl(layerScale(layerIdx), () => swapLayersCallback(layerIdx, layerIdx - 1));
                 }
             }
-            if(layerIdx < numLayers - 2) {
-                addMoveRightControl(layerScale(layerIdx), () => swapLayersCallback(layerIdx, layerIdx+1));
+            if (layerIdx < numLayers - 2) {
+                addMoveRightControl(layerScale(layerIdx), () => swapLayersCallback(layerIdx, layerIdx + 1));
             }
-            addActivationControl(layerScale(layerIdx), activations[layerIdx-1], (activation) => changeActivationCallback(activation, layerIdx));
+            addActivationControl(layerScale(layerIdx), activations[layerIdx - 1], (activation) => changeActivationCallback(activation, layerIdx));
             addNewLayerControl((layerScale(layerIdx - 1) + layerScale(layerIdx)) / 2, () => addNewLayerCallback(layerIdx - 1));
         }
         for (let i = 0; i < numNodes; i++) {
@@ -486,18 +480,22 @@ export const initTrainAndTestNumbersComponent = (percTrainData: number): void =>
     (document.getElementById("trainTestRatio") as HTMLInputElement).value = percTrainData.toString();
 }
 
-export const makeGUI = (reset: () => void,
+export const makeGUI = (download: () => void,
     togglePlayPause: () => void,
     doModelStep: () => void,
     changeDatasetUrl: (url: string) => void,
     addBookmark: () => void,
     changeBatchSize: (batchSize: number) => void,
     changePercTrainData: (percTrainData: number) => void,
-    removeModel: (modelId: string) => void) => {
+    removeModel: (modelId: string) => void,
+    showGraph: () => void) => {
 
-    d3.select("#reset-button").on("click", () => {
-        reset();
-        setAddBookmarkDisabled(true);
+    d3.select("#download-button").on("click", () => {
+        download();
+    });
+
+    d3.select("#graph-button").on("click", () => {
+        showGraph();
     });
 
     d3.select("#play-pause-button").on("click", function () {
