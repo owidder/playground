@@ -259,15 +259,6 @@ header h1 .optional {
     display: inherit;
 }
 
-#top-controls .control .label,
-#top-controls .control label {
-    color        : #777;
-    font-size    : 13px;
-    display      : block;
-    margin-bottom: 6px;
-    font-weight  : 300;
-}
-
 #top-controls .control .select {
     position: relative;
 }

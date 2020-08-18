@@ -29,7 +29,7 @@ const state = State.deserializeState();
 const addCurrentBookmark = () => {
     const trainLoss = state.getModel().getCurrentTrainLoss();
     const testLoss = state.getModel().getCurrentTestLoss();
-    const name = `${humanReadable(testLoss)} / ${humanReadable(trainLoss)} (${state.getModel().getTotalEpochs()})`;
+    const name = `${humanReadable(testLoss)} / ${humanReadable(trainLoss)}`;
     const url = location.href;
     const networkShape = [...state.getModel().getNetworkShape()];
     const activations = [...state.getModel().getActivations()];
