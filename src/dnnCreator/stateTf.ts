@@ -18,6 +18,7 @@ import { Player, OneStepCallback } from "./player";
 import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart } from "./ui";
 import { swapArrayElements } from "./mlUtil";
 import { LayersModel, Sequential } from "@tensorflow/tfjs";
+import { show } from "@tensorflow/tfjs-vis";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -125,7 +126,7 @@ export class State {
 
     initPlayer() {
         const oneStepCallback: OneStepCallback = async () => {
-            await this.model.fitStep(1)
+            await this.model.fitStep(1, this.getVisCallbacks())
         }
         this.player = new Player(oneStepCallback, stepStarted, stepEnded)
     }
@@ -169,10 +170,29 @@ export class State {
         updateUI(true, this.model.getNetwork(), this.model.getTotalEpochs(), this.model.forEachNode);
     }
 
+
+    private visCallbacks: any;
+    getVisCallbacks = () => {
+        if(!this.visCallbacks) {
+            const metrics = ['loss', 'val_loss', 'acc', 'val_acc'];
+            const container = {
+              name: 'show.fitCallbacks',
+              tab: 'Training',
+              styles: {
+                height: '1000px'
+              }
+            };
+
+            this.visCallbacks = show.fitCallbacks(container, metrics);
+        }
+        return this.visCallbacks;
+    }
+
     doModelStep = (): void => {
         stepStarted();
         setTimeout(async () => {
-            await this.model.fitStep(1);
+            const callbacks = this.getVisCallbacks();
+            await this.model.fitStep(1, callbacks);
             stepEnded();
         }, 100)
     }
@@ -209,7 +229,7 @@ export class State {
 
     swapLayers = (layerIndex1: number, layerIndex2: number): void => {
         swapArrayElements(this.networkShape, layerIndex1, layerIndex2);
-        swapArrayElements(this.activations, layerIndex1-1, layerIndex2-1);
+        swapArrayElements(this.activations, layerIndex1 - 1, layerIndex2 - 1);
         this.refreshModel();
     }
 

@@ -137,19 +137,25 @@ export class Model {
         })
     }
 
-    public fitStep = async (epochs = 10): Promise<History> => {
+    public fitStep = async (epochs = 10, callbacks: any): Promise<History> => {
         const inputTensor = this._dataset.getTrainInputTensor();
         const outputTensor = this._dataset.getTrainOutputTensor();
 
+        const _onEpochEnd = (epoch: number, logs: Logs) => {
+            this.onEpochEnd(epoch, logs);
+            if(callbacks.onEpochEnd) {
+                callbacks.onEpochEnd(epoch, logs);
+            }
+        }
+
         const history = await this._sequential.fit(inputTensor, outputTensor, {
-            callbacks: { onEpochEnd: this.onEpochEnd }, epochs, batchSize: this.batchSize
+            callbacks: {...callbacks, onEpochEnd: _onEpochEnd, onBatchEnd: undefined}, epochs, batchSize: this.batchSize
         });
 
         this.updateNetwork();
         return history;
     }
 
-    // including input layer
     public numberOfLayers = (): number => {
         return this._sequential.getConfig().layers.length + 1
     }
