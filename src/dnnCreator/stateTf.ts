@@ -17,8 +17,8 @@ import { Model, loadModel } from "./model";
 import { Player, OneStepCallback } from "./player";
 import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart } from "./ui";
 import { swapArrayElements } from "./mlUtil";
-import { LayersModel, Sequential } from "@tensorflow/tfjs";
-import { show } from "@tensorflow/tfjs-vis";
+import { LayersModel, Sequential, Logs } from "@tensorflow/tfjs";
+import { show, visor } from "@tensorflow/tfjs-vis";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -183,7 +183,8 @@ export class State {
               }
             };
 
-            this.visCallbacks = show.fitCallbacks(container, metrics);
+            const {onEpochEnd} = show.fitCallbacks(container, metrics);
+            this.visCallbacks = {onEpochEnd};
         }
         return this.visCallbacks;
     }

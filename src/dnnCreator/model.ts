@@ -149,7 +149,7 @@ export class Model {
         }
 
         const history = await this._sequential.fit(inputTensor, outputTensor, {
-            callbacks: {...callbacks, onEpochEnd: _onEpochEnd, onBatchEnd: undefined}, epochs, batchSize: this.batchSize
+            callbacks: {...callbacks, onEpochEnd: _onEpochEnd}, epochs, batchSize: this.batchSize
         });
 
         this.updateNetwork();
