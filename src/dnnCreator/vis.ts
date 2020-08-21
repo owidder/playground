@@ -10,24 +10,6 @@ export const toggleVisor = () => {
     tfvis.visor().toggle();
 }
 
-let callbacks: any;
-export const graphCallbacks = (): any => {
-    if (!callbacks) {
-        const metrics = ['loss', 'acc'];
-        const container = {
-            name: 'show.fitCallbacks',
-            tab: 'Training',
-            styles: {
-                height: '1000px'
-            }
-        };
-
-        callbacks = tfvis.show.fitCallbacks(container, metrics);
-    }
-
-    return {onEpochEnd: callbacks.onEpochEnd};
-}
-
 const totalHistory: Historyish = {
     loss: [],
     acc: []

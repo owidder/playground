@@ -18,7 +18,7 @@ import { Player, OneStepCallback } from "./player";
 import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart } from "./ui";
 import { swapArrayElements } from "./mlUtil";
 import { LayersModel, Sequential, Logs } from "@tensorflow/tfjs";
-import { graphCallbacks, addToHistory } from "./vis";
+import { addToHistory } from "./vis";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -126,7 +126,7 @@ export class State {
 
     initPlayer() {
         const oneStepCallback: OneStepCallback = async () => {
-            await this.model.fitStep(1, graphCallbacks())
+            await this.model.fitStep(1)
         }
         this.player = new Player(oneStepCallback, stepStarted, stepEnded)
     }
@@ -175,7 +175,7 @@ export class State {
     doModelStep = (): void => {
         stepStarted();
         setTimeout(async () => {
-            await this.model.fitStep(1, graphCallbacks());
+            await this.model.fitStep(1);
             stepEnded();
         }, 100)
     }
