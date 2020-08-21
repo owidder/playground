@@ -26,7 +26,6 @@ import { TfNode, TfLink, NodeIterator } from "./networkTypes";
 import { range } from "./mlUtil";
 import { updateUI } from "./ui";
 import { Scalar, loadLayersModel, LayersModel } from "@tensorflow/tfjs";
-import { local } from "d3";
 
 export type TotalEpochsChangedCallback = (currentTotalEpoch) => void;
 export type EpochEndCallback = (trainLoss: number, testLoss: number) => void;
@@ -58,7 +57,7 @@ export class Model {
     private _dataset: Dataset;
     private _network: TfNode[][];
     private totalEpochs = 0;
-    private totalEpchsChangedCallbacks: TotalEpochsChangedCallback[] = [];
+    private totalEpochsChangedCallbacks: TotalEpochsChangedCallback[] = [];
     private epochEndCallbacks: EpochEndCallback[] = [];
     private currentTrainLoss: number;
     private currentTestLoss: number;
@@ -81,7 +80,7 @@ export class Model {
     }
 
     public registerTotalEpochsChangedCallback = (totalEpochsChangedCallback: TotalEpochsChangedCallback) => {
-        this.totalEpchsChangedCallbacks.push(totalEpochsChangedCallback);
+        this.totalEpochsChangedCallbacks.push(totalEpochsChangedCallback);
     }
 
     public registerEpochEndCallback = (epochEndCallback: EpochEndCallback) => {
@@ -132,7 +131,7 @@ export class Model {
         })
 
         this.totalEpochs++;
-        this.totalEpchsChangedCallbacks.forEach(tecc => {
+        this.totalEpochsChangedCallbacks.forEach(tecc => {
             tecc(this.totalEpochs)
         })
     }

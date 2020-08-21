@@ -18,7 +18,7 @@ import { Player, OneStepCallback } from "./player";
 import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart } from "./ui";
 import { swapArrayElements } from "./mlUtil";
 import { LayersModel, Sequential, Logs } from "@tensorflow/tfjs";
-import { show, visor } from "@tensorflow/tfjs-vis";
+import { graphCallbacks, addToHistory } from "./vis";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -126,7 +126,7 @@ export class State {
 
     initPlayer() {
         const oneStepCallback: OneStepCallback = async () => {
-            await this.model.fitStep(1, this.getVisCallbacks())
+            await this.model.fitStep(1, graphCallbacks())
         }
         this.player = new Player(oneStepCallback, stepStarted, stepEnded)
     }
@@ -155,6 +155,7 @@ export class State {
 
         this.model.registerTotalEpochsChangedCallback(totalEpochsChanged);
         this.model.registerEpochEndCallback(appendToLineChart);
+        this.model.registerEpochEndCallback(addToHistory);
 
         this.serialize();
 
@@ -171,29 +172,10 @@ export class State {
     }
 
 
-    private visCallbacks: any;
-    getVisCallbacks = () => {
-        if(!this.visCallbacks) {
-            const metrics = ['loss', 'val_loss', 'acc', 'val_acc'];
-            const container = {
-              name: 'show.fitCallbacks',
-              tab: 'Training',
-              styles: {
-                height: '1000px'
-              }
-            };
-
-            const {onEpochEnd} = show.fitCallbacks(container, metrics);
-            this.visCallbacks = {onEpochEnd};
-        }
-        return this.visCallbacks;
-    }
-
     doModelStep = (): void => {
         stepStarted();
         setTimeout(async () => {
-            const callbacks = this.getVisCallbacks();
-            await this.model.fitStep(1, callbacks);
+            await this.model.fitStep(1, graphCallbacks());
             stepEnded();
         }, 100)
     }
