@@ -1,7 +1,5 @@
 import * as tfvis from "@tensorflow/tfjs-vis";
 
-interface Historyish {[key: string]: number[]}
-
 export const initVisor = () => {
     tfvis.visor().toggle();
 }
@@ -10,19 +8,21 @@ export const toggleVisor = () => {
     tfvis.visor().toggle();
 }
 
-const totalHistory: Historyish = {
-    loss: [],
-    acc: []
+const totalHistory = {
+    train_loss: [],
+    test_loss: []
 };
 
-export const addToHistory = (loss: number, acc: number) => {
-    totalHistory.loss.push(loss);
-    totalHistory.acc.push(acc);
-    showHistory();
+export const addToHistory = (train_loss: number, test_loss: number) => {
+    totalHistory.train_loss.push(train_loss);
+    totalHistory.test_loss.push(test_loss);
+    if(tfvis.visor().isOpen()) {
+        showHistory();
+    }
 }
 
 export const showHistory = () => {
-    const metrics = ["loss", "acc"];
+    const metrics = ["train_loss", "test_loss"];
     const container = {
         name: 'show.history',
         tab: 'History',
