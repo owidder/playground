@@ -498,7 +498,7 @@ export const makeGUI = (download: () => void,
     addBookmark: () => void,
     changeBatchSize: (batchSize: number) => void,
     changePercTrainData: (percTrainData: number) => void,
-    removeModel: (modelId: string) => void,
+    removeBookmark: (modelId: string) => void,
     showGraph: () => void) => {
 
     d3.select("#download-button").on("click", () => {
@@ -523,7 +523,7 @@ export const makeGUI = (download: () => void,
 
     d3.select("#add-button").on("click", function () {
         addBookmark();
-        showBookmarks(removeModel);
+        showBookmarks(removeBookmark);
     })
 
     d3.select("#goto-dataset").on("click", function () {
@@ -540,7 +540,7 @@ export const makeGUI = (download: () => void,
     })
 
     setAddBookmarkDisabled(true);
-    showBookmarks(removeModel);
+    showBookmarks(removeBookmark);
 }
 
 const lineChart = new AppendingLineChart(d3.select("#linechart"), ["#777", "black"]);

@@ -1,4 +1,5 @@
 import * as tfvis from "@tensorflow/tfjs-vis";
+import { exp, mod } from "@tensorflow/tfjs";
 
 export const initVisor = () => {
     tfvis.visor().toggle();
@@ -33,6 +34,10 @@ export const loadHistory = (modelId: string): TotalHistory => {
     }
 
     return totalHistory;
+}
+
+export const deleteHistory = (modelId: string) => {
+    localStorage.removeItem(historyPath(modelId));
 }
 
 export const addToHistory = (train_loss: number, test_loss: number) => {

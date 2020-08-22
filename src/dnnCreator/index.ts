@@ -22,7 +22,7 @@ import { addBookmark, initBookmarks } from "./bookmarks";
 import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";
 import { createModelId, removeModel } from "./model";
-import { toggleVisor, initVisor, saveHistory, loadHistory, resetHistory } from "./vis";
+import { toggleVisor, initVisor, saveHistory, loadHistory, resetHistory, deleteHistory } from "./vis";
 
 const state = State.deserializeState();
 
@@ -42,6 +42,11 @@ const addCurrentBookmark = () => {
     saveHistory(state.getModel().getModelId());
 }
 
+const removeBookmark = (modelId: string): void => {
+    removeModel(modelId);
+    deleteHistory(modelId);
+}
+
 const refresh = async (dataSource: DataSource) => {
     const dataset = new Dataset(dataSource, "label", state.percTrainData);
     showTrainAndTestNumbers(state.percTrainData, dataset.getTrainData().length, dataset.getTestData().length);
@@ -54,7 +59,7 @@ const refresh = async (dataSource: DataSource) => {
         addCurrentBookmark,
         state.setBatchSize,
         state.changePercTrainData,
-        removeModel,
+        removeBookmark,
         toggleVisor,
     );
     setSelectComponentByValue("datasources", state.datasetUrl);
