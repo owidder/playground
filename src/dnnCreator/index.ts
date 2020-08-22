@@ -16,20 +16,20 @@ import "material-design-lite/material.css";
 import "../css/stylesNew.css";
 import "../css/stylesTf.scss";
 import { Dataset, loadDataSource } from "./datasetTf";
-import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent, showTrainAndTestNumbers, initTrainAndTestNumbersComponent } from "./ui";
+import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent, showTrainAndTestNumbers, initTrainAndTestNumbersComponent, setInitialEpochsCount, getTotalEpochsShownInUi } from "./ui";
 import { State } from "./stateTf";
 import { addBookmark, initBookmarks } from "./bookmarks";
 import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";
 import { createModelId, removeModel } from "./model";
-import { toggleVisor, initVisor } from "./vis";
+import { toggleVisor, initVisor, saveHistory, loadHistory, resetHistory } from "./vis";
 
 const state = State.deserializeState();
 
 const addCurrentBookmark = () => {
     const trainLoss = state.getModel().getCurrentTrainLoss();
     const testLoss = state.getModel().getCurrentTestLoss();
-    const name = `${humanReadable(testLoss)} / ${humanReadable(trainLoss)}`;
+    const name = `${humanReadable(testLoss)} / ${humanReadable(trainLoss)} [${getTotalEpochsShownInUi()}]`;
     const url = location.href;
     const networkShape = [...state.getModel().getNetworkShape()];
     const activations = [...state.getModel().getActivations()];
@@ -39,6 +39,7 @@ const addCurrentBookmark = () => {
 
     addBookmark({ name, url, networkShape, activations, batchSize, percTrainData, modelId });
     state.getModel().saveModel();
+    saveHistory(state.getModel().getModelId());
 }
 
 const refresh = async (dataSource: DataSource) => {
@@ -60,6 +61,10 @@ const refresh = async (dataSource: DataSource) => {
     initBatchSizeComponent(state.batchSize);
     initTrainAndTestNumbersComponent(state.percTrainData);
     showDatasetUrl(state.datasetUrl);
+
+    resetHistory();
+    const history = loadHistory(state.getModel().getModelId());
+    setInitialEpochsCount(history.test_loss.length);
 }
 
 const start = async () => {

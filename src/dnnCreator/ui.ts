@@ -20,6 +20,7 @@ import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, D
 import { maxLayerSize, humanReadable } from "./mlUtil";
 import { AppendingLineChart } from "../linechartV5";
 import { getBookmarks, Bookmark, deleteBookmark } from "./bookmarks";
+import { exp } from '@tensorflow/tfjs';
 
 const NODE_SIZE = 30;
 const NODE_GAP = 25;
@@ -88,7 +89,14 @@ function updateBiasesUI(nodeIterator: NodeIterator) {
     })
 }
 
-export const totalEpochsChanged = (totalEpochs: number): void => {
+let initialEpochsCount = 0;
+export const setInitialEpochsCount = (_init: number) => {
+    initialEpochsCount = _init;
+    totalEpochsChanged(0);
+}
+
+let totalEpochs = 0;
+export const totalEpochsChanged = (_totalEpochs: number): void => {
     function zeroPad(n: number): string {
         let pad = "000000";
         return (pad + n).slice(-pad.length);
@@ -98,8 +106,11 @@ export const totalEpochsChanged = (totalEpochs: number): void => {
         return s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
-    d3.select("#iter-number").text(addCommas(zeroPad(totalEpochs)));
+    totalEpochs = _totalEpochs;
+    d3.select("#iter-number").text(addCommas(zeroPad(_totalEpochs + initialEpochsCount)));
 }
+
+export const getTotalEpochsShownInUi = () => initialEpochsCount + totalEpochs;
 
 export const updateUI = (firstStep = false, network: TfNode[][], totalEpochs: number, nodeIterator: NodeIterator): void => {
     updateWeightsUI(network, d3.select("g.core"), totalEpochs);

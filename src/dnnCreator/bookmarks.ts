@@ -50,7 +50,7 @@ export const addBookmark =  (bookmark: Bookmark): void => {
 export const deleteBookmark = (url: string): void => {
     const index = bookmarks.findIndex(bookmark => bookmark.url == url);
     bookmarks.splice(index, 1);
-    localStorage.setItem(bookmarksId, JSON.stringify(bookmarks));
+    localStorage.setItem(bookmarksPath(bookmarksId), JSON.stringify(bookmarks));
 }
 
 export const getBookmarks = (): Bookmark[] => {
