@@ -31,6 +31,7 @@ export const loadHistory = (modelId: string): TotalHistory => {
     const historyString = localStorage.getItem(historyPath(modelId));
     if(historyString && historyString.length > 0) {
         totalHistory = JSON.parse(historyString) as TotalHistory;
+        showHistory();
     }
 
     return totalHistory;
