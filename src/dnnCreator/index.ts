@@ -18,11 +18,11 @@ import "../css/stylesTf.scss";
 import { Dataset, loadDataSource } from "./datasetTf";
 import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent, showTrainAndTestNumbers, initTrainAndTestNumbersComponent, setInitialEpochsCount, getTotalEpochsShownInUi, appendToLineChart, resetLineChart } from "./ui";
 import { State } from "./stateTf";
-import { addBookmark, initBookmarks } from "./bookmarks";
+import { addBookmark, initBookmarks, getBookmarks } from "./bookmarks";
 import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";
 import { createModelId, removeModel } from "./model";
-import { toggleVisor, initVisor, saveHistory, loadHistory, resetHistory, deleteHistory, TotalHistory } from "./vis";
+import { toggleVisor, initVisor, saveHistory, loadHistory, resetHistory, deleteHistory, TotalHistory, showSavedHistory } from "./vis";
 
 const state = State.deserializeState();
 
@@ -82,6 +82,11 @@ const refresh = async (dataSource: DataSource) => {
     refreshHistory();
 }
 
+const showAllSavedHistories = () => {
+    const bookmarks = getBookmarks();
+    bookmarks.forEach(bookmark => showSavedHistory(bookmark.modelId, bookmark.name));
+}
+
 const start = async () => {
 
     const dataSource = await loadDataSource(state.datasetUrl);
@@ -91,6 +96,8 @@ const start = async () => {
 
     await refresh(dataSource);
     initVisor();
+
+    showAllSavedHistories();
 }
 
 start();
