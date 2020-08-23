@@ -545,14 +545,19 @@ export const makeGUI = (download: () => void,
 
 const lineChart = new AppendingLineChart(d3.select("#linechart"), ["#777", "black"]);
 
+const showTrainLoss = (trainLoss?: number) => d3.select("#loss-train").text(trainLoss ?  humanReadable(trainLoss) : "");
+const showTestLoss = (testLoss?: number) => d3.select("#loss-test").text(testLoss ?  humanReadable(testLoss) : "");
+
 export const appendToLineChart = (trainLoss: number, testLoss: number) => {
     lineChart.addDataPoint([trainLoss, testLoss]);
-    d3.select("#loss-train").text(humanReadable(trainLoss));
-    d3.select("#loss-test").text(humanReadable(testLoss));
+    showTrainLoss(trainLoss);
+    showTestLoss(testLoss);
 }
 
 export const resetLineChart = () => {
     lineChart.reset();
+    showTrainLoss();
+    showTestLoss();
 }
 
 export const showDataSource = (dataSource: DataSource): void => {

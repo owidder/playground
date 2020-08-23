@@ -16,13 +16,13 @@ import "material-design-lite/material.css";
 import "../css/stylesNew.css";
 import "../css/stylesTf.scss";
 import { Dataset, loadDataSource } from "./datasetTf";
-import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent, showTrainAndTestNumbers, initTrainAndTestNumbersComponent, setInitialEpochsCount, getTotalEpochsShownInUi } from "./ui";
+import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent, showTrainAndTestNumbers, initTrainAndTestNumbersComponent, setInitialEpochsCount, getTotalEpochsShownInUi, appendToLineChart, resetLineChart } from "./ui";
 import { State } from "./stateTf";
 import { addBookmark, initBookmarks } from "./bookmarks";
 import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";
 import { createModelId, removeModel } from "./model";
-import { toggleVisor, initVisor, saveHistory, loadHistory, resetHistory, deleteHistory } from "./vis";
+import { toggleVisor, initVisor, saveHistory, loadHistory, resetHistory, deleteHistory, TotalHistory } from "./vis";
 
 const state = State.deserializeState();
 
@@ -47,6 +47,19 @@ const removeBookmark = (modelId: string): void => {
     deleteHistory(modelId);
 }
 
+const refreshHistory = () => {
+    resetHistory();
+    const history = loadHistory(state.getModel().getModelId());
+
+    const epochCount = history.test_loss.length;
+    setInitialEpochsCount(epochCount);
+
+    resetLineChart();
+    for(let i = 0; i < epochCount; i++) {
+        appendToLineChart(history.train_loss[i], history.test_loss[i]);
+    }
+}
+
 const refresh = async (dataSource: DataSource) => {
     const dataset = new Dataset(dataSource, "label", state.percTrainData);
     showTrainAndTestNumbers(state.percTrainData, dataset.getTrainData().length, dataset.getTestData().length);
@@ -66,10 +79,7 @@ const refresh = async (dataSource: DataSource) => {
     initBatchSizeComponent(state.batchSize);
     initTrainAndTestNumbersComponent(state.percTrainData);
     showDatasetUrl(state.datasetUrl);
-
-    resetHistory();
-    const history = loadHistory(state.getModel().getModelId());
-    setInitialEpochsCount(history.test_loss.length);
+    refreshHistory();
 }
 
 const start = async () => {
