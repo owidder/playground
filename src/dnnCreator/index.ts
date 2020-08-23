@@ -22,7 +22,7 @@ import { addBookmark, initBookmarks, getBookmarks } from "./bookmarks";
 import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";
 import { createModelId, removeModel } from "./model";
-import { toggleVisor, initVisor, saveHistory, loadHistory, resetHistory, deleteHistory, TotalHistory, showSavedHistory } from "./vis";
+import { toggleVisor, initVisor, saveHistory, loadHistory, resetHistory, deleteHistory, TotalHistory, showSavedHistory, switchToCurrentHistoryTab } from "./vis";
 
 const state = State.deserializeState();
 
@@ -49,7 +49,8 @@ const removeBookmark = (modelId: string): void => {
 
 const refreshHistory = () => {
     resetHistory();
-    const history = loadHistory(state.getModel().getModelId());
+    const modelId = state.getModel().getModelId();
+    const history = loadHistory(modelId);
 
     const epochCount = history.test_loss.length;
     setInitialEpochsCount(epochCount);
@@ -85,6 +86,7 @@ const refresh = async (dataSource: DataSource) => {
 const showAllSavedHistories = () => {
     const bookmarks = getBookmarks();
     bookmarks.forEach(bookmark => showSavedHistory(bookmark.modelId, bookmark.name));
+    switchToCurrentHistoryTab();
 }
 
 const start = async () => {

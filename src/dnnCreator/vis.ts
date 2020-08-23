@@ -14,12 +14,7 @@ export interface TotalHistory {
     test_loss: number[]
 }
 
-const EMPTY_HISTORY = {
-    train_loss: [],
-    test_loss: []
-};
-
-let totalHistory: TotalHistory = EMPTY_HISTORY;
+let totalHistory: TotalHistory;
 
 const historyPath = (modelId: string) => `dnnHistory/${modelId}`;
 
@@ -62,11 +57,20 @@ export const addToHistory = (train_loss: number, test_loss: number) => {
 }
 
 export const resetHistory = () => {
-    totalHistory = EMPTY_HISTORY;
+    totalHistory = {
+        test_loss: [],
+        train_loss: []
+    };
 }
 
+const CURRENT_HISTORY_TAB_NAME = "Current";
+
 const showCurrentHistory = () => {
-    showHistory(totalHistory, "Performance of current model", "Current");
+    showHistory(totalHistory, "Performance of current model", CURRENT_HISTORY_TAB_NAME);
+}
+
+export const switchToCurrentHistoryTab = () => {
+    tfvis.visor().setActiveTab(CURRENT_HISTORY_TAB_NAME);
 }
 
 export const showHistory = (history: TotalHistory, name: string, tab: string) => {
@@ -81,3 +85,5 @@ export const showHistory = (history: TotalHistory, name: string, tab: string) =>
 
     tfvis.show.history(container, {history: history as any}, metrics);
 }
+
+resetHistory();
