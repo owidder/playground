@@ -56,8 +56,8 @@ export const resetHistory = () => {
 export const showHistory = () => {
     const metrics = ["train_loss", "test_loss"];
     const container = {
-        name: 'show.history',
-        tab: 'History',
+        name: 'Performance of current model',
+        tab: 'Current',
         styles: {
             height: '1000px'
         }
