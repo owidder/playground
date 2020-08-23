@@ -22,7 +22,7 @@ import { addBookmark, initBookmarks, getBookmarks } from "./bookmarks";
 import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";
 import { createModelId, removeModel } from "./model";
-import { toggleVisor, initVisor, saveHistory, loadHistory, resetHistory, deleteHistory, TotalHistory, showSavedHistory, switchToCurrentHistoryTab } from "./vis";
+import { toggleVisor, initVisor, saveHistory, loadHistory, resetHistory, deleteHistory, TotalHistory, showSavedHistory, switchToCurrentHistoryTab, renderSavedModels } from "./vis";
 
 const state = State.deserializeState();
 
@@ -85,8 +85,7 @@ const refresh = async (dataSource: DataSource) => {
 
 const showAllSavedHistories = () => {
     const bookmarks = getBookmarks();
-    bookmarks.forEach(bookmark => showSavedHistory(bookmark.modelId, bookmark.name));
-    switchToCurrentHistoryTab();
+    renderSavedModels(bookmarks);
 }
 
 const start = async () => {

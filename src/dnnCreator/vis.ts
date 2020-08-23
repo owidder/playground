@@ -1,5 +1,6 @@
 import * as tfvis from "@tensorflow/tfjs-vis";
 import { exp, mod } from "@tensorflow/tfjs";
+import { Bookmark } from "./bookmarks";
 
 export const initVisor = () => {
     tfvis.visor().toggle();
@@ -44,6 +45,15 @@ export const showSavedHistory = (modelId: string, name: string): void => {
     }
 }
 
+export const renderSavedModels = (bookmarks: Bookmark[]) => {
+    bookmarks.forEach(bookmark => {
+        showSavedHistory(bookmark.modelId, bookmark.name);
+        showModelConfiguration(bookmark);
+    })
+
+    switchToCurrentHistoryTab();
+}
+
 export const deleteHistory = (modelId: string) => {
     localStorage.removeItem(historyPath(modelId));
 }
@@ -71,6 +81,17 @@ const showCurrentHistory = () => {
 
 export const switchToCurrentHistoryTab = () => {
     tfvis.visor().setActiveTab(CURRENT_HISTORY_TAB_NAME);
+}
+
+export const showModelConfiguration = (bookmark: Bookmark) => {
+    const headers = ["network shape", "activation functions", "batch size"];
+    const values = [
+        [bookmark.networkShape],
+        [bookmark.activations],
+        [bookmark.batchSize]
+    ];
+
+    tfvis.render.table({name: bookmark.name, tab: bookmark.name}, {headers, values});
 }
 
 export const showHistory = (history: TotalHistory, name: string, tab: string) => {
