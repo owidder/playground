@@ -1,6 +1,7 @@
 import * as tfvis from "@tensorflow/tfjs-vis";
-import { exp, mod } from "@tensorflow/tfjs";
 import { Bookmark } from "./bookmarks";
+import { createModel } from "./model";
+import { range } from "./mlUtil";
 
 export const initVisor = () => {
     tfvis.visor().toggle();
@@ -76,7 +77,7 @@ export const resetHistory = () => {
 const CURRENT_HISTORY_TAB_NAME = "Current";
 
 const showCurrentHistory = () => {
-    showHistory(totalHistory, "Performance of current model", CURRENT_HISTORY_TAB_NAME);
+    showHistory(totalHistory, "Current model", CURRENT_HISTORY_TAB_NAME);
 }
 
 export const switchToCurrentHistoryTab = () => {
@@ -86,9 +87,7 @@ export const switchToCurrentHistoryTab = () => {
 export const showModelConfiguration = (bookmark: Bookmark) => {
     const headers = ["network shape", "activation functions", "batch size"];
     const values = [
-        [bookmark.networkShape],
-        [bookmark.activations],
-        [bookmark.batchSize]
+        [bookmark.networkShape, bookmark.activations, bookmark.batchSize],
     ];
 
     tfvis.render.table({name: bookmark.name, tab: bookmark.name}, {headers, values});

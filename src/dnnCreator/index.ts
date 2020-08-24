@@ -40,6 +40,8 @@ const addCurrentBookmark = () => {
     addBookmark({ name, url, networkShape, activations, batchSize, percTrainData, modelId });
     state.getModel().saveModel();
     saveHistory(state.getModel().getModelId());
+
+    location.reload();
 }
 
 const removeBookmark = (modelId: string): void => {

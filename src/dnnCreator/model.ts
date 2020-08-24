@@ -51,6 +51,24 @@ export const removeModel = (modelId: string): void => {
     })
 }
 
+export const createModel = (networkShape: number[], activations: string[]) => {
+    const model  = tf.sequential();
+
+    networkShape.slice(1).forEach((numberOfNodesInLayer, layerIndex) => {
+        const config: DenseLayerArgs = {
+            activation: activations[layerIndex] as ActivationIdentifier,
+            units: numberOfNodesInLayer,
+            name: `${layerIndex}`
+        }
+        if (layerIndex == 0) {
+            config.inputShape = [networkShape[0]]
+        }
+        model.add(tf.layers.dense(config))
+    })
+
+    return model
+}
+
 export class Model {
 
     private _sequential: Sequential;
@@ -95,19 +113,7 @@ export class Model {
         if (loadedModel) {
             this._sequential = loadedModel;
         } else {
-            this._sequential = tf.sequential();
-
-            networkShape.slice(1).forEach((numberOfNodesInLayer, layerIndex) => {
-                const config: DenseLayerArgs = {
-                    activation: activations[layerIndex] as ActivationIdentifier,
-                    units: numberOfNodesInLayer,
-                    name: `${layerIndex}`
-                }
-                if (layerIndex == 0) {
-                    config.inputShape = [networkShape[0]]
-                }
-                this._sequential.add(tf.layers.dense(config))
-            })
+            this._sequential = createModel(networkShape, activations);
         }
 
         this._sequential.compile({
