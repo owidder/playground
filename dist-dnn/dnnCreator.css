@@ -11717,17 +11717,6 @@ header h1 .optional {
     justify-content        : space-between;
 }
 
-#top-controls .timeline-controls {
-    display     : -webkit-box;
-    display     : -moz-box;
-    display     : -ms-flexbox;
-    display     : -webkit-flex;
-    display     : flex;
-    align-items : center;
-    margin-right: 20px;
-    width       : 140px;
-}
-
 #play-pause-button .material-icons {
     color    : white;
     font-size: 36px;
@@ -11745,29 +11734,6 @@ header h1 .optional {
 
 #play-pause-button.playing .material-icons:nth-of-type(2) {
     display: inherit;
-}
-
-#top-controls .control {
-    flex-grow : 1;
-    max-width : 180px;
-    min-width : 110px;
-    margin-top: 6px;
-    font-size : .3em;
-}
-
-#top-controls .control .label,
-#top-controls .control label {
-    color        : #777;
-    font-size    : 13px;
-    display      : block;
-    margin-bottom: 6px;
-    font-weight  : 300;
-}
-
-#top-controls .control .value {
-    font-size  : 24px;
-    margin     : 0;
-    font-weight: 300;
 }
 
 #top-controls .control .select {
@@ -12236,14 +12202,6 @@ g.column rect {
     width: 275px;
 }
 
-.metrics {
-    position   : relative;
-    font-weight: 300;
-    font-size  : .7em;
-    height     : 60px;
-    min-width  : 8em;
-}
-
 #linechart {
     width : 75%;
     height: 55px;
@@ -12541,7 +12499,8 @@ select.leftmargin {
       flex-direction: column;
       justify-content: center; }
 
-#link-hovercard, #bookmark-hovercard {
+#link-hovercard,
+#bookmark-hovercard {
   display: none;
   position: absolute;
   padding: 5px;
@@ -12554,15 +12513,21 @@ select.leftmargin {
   width: 150px;
   top: -20px; }
 
-.firstline-top-controls, .activation-layers {
+.firstline-top-controls,
+.activation-layers {
   display: flex;
   flex-direction: row;
   justify-content: start; }
-  .firstline-top-controls .normal, .activation-layers .normal {
+  .firstline-top-controls .normal,
+  .activation-layers .normal {
     flex-grow: 1; }
-  .firstline-top-controls .large, .activation-layers .large {
+  .firstline-top-controls .large,
+  .activation-layers .large {
     width: 50em; }
-  .firstline-top-controls input, .firstline-top-controls select, .activation-layers input, .activation-layers select {
+  .firstline-top-controls input,
+  .firstline-top-controls select,
+  .activation-layers input,
+  .activation-layers select {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -12576,11 +12541,14 @@ select.leftmargin {
     border-bottom: solid 1px #ccc;
     color: #333;
     outline: none; }
-  .firstline-top-controls input, .activation-layers input {
+  .firstline-top-controls input,
+  .activation-layers input {
     margin-left: 2em; }
-  .firstline-top-controls .select, .activation-layers .select {
+  .firstline-top-controls .select,
+  .activation-layers .select {
     position: relative; }
-    .firstline-top-controls .select::after, .activation-layers .select::after {
+    .firstline-top-controls .select::after,
+    .activation-layers .select::after {
       class: "material-icons";
       content: "arrow_drop_down";
       color: #999;
@@ -12613,7 +12581,8 @@ select.leftmargin {
 .link-hovercard {
   font-size: xx-small; }
 
-.ui-train-test-ratio, .ui-batchSize {
+.ui-train-test-ratio,
+.ui-batchSize {
   font-size: .75em; }
 
 #goto-dataset {
@@ -12638,6 +12607,33 @@ pre {
 
 .activation-layers {
   top: -150px; }
+
+#top-controls {
+  margin: 0;
+  font-weight: 300; }
+  #top-controls .control {
+    margin-right: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; }
+    #top-controls .control .label {
+      font-size: 1em;
+      color: #777;
+      font-weight: 300;
+      font-size: .5em; }
+    #top-controls .control .value {
+      font-size: .7em; }
+  #top-controls .timeline-controls {
+    display: flex;
+    align-items: center;
+    margin-right: 20px; }
+  #top-controls .metrics {
+    position: relative;
+    font-weight: 300;
+    min-width: 8em; }
+
+#tfjs-visor-container .visor {
+  z-index: 999999; }
 
 
 /*# sourceMappingURL=dnnCreator.css.map*/
