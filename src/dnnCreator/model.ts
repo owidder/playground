@@ -26,7 +26,6 @@ import { TfNode, TfLink, NodeIterator } from "./networkTypes";
 import { range } from "./mlUtil";
 import { updateUI } from "./ui";
 import { Scalar, loadLayersModel, LayersModel } from "@tensorflow/tfjs";
-import { local } from "d3";
 
 export type TotalEpochsChangedCallback = (currentTotalEpoch) => void;
 export type EpochEndCallback = (trainLoss: number, testLoss: number) => void;
@@ -52,13 +51,31 @@ export const removeModel = (modelId: string): void => {
     })
 }
 
+export const createModel = (networkShape: number[], activations: string[]) => {
+    const model  = tf.sequential();
+
+    networkShape.slice(1).forEach((numberOfNodesInLayer, layerIndex) => {
+        const config: DenseLayerArgs = {
+            activation: activations[layerIndex] as ActivationIdentifier,
+            units: numberOfNodesInLayer,
+            name: `${layerIndex}`
+        }
+        if (layerIndex == 0) {
+            config.inputShape = [networkShape[0]]
+        }
+        model.add(tf.layers.dense(config))
+    })
+
+    return model
+}
+
 export class Model {
 
     private _sequential: Sequential;
     private _dataset: Dataset;
     private _network: TfNode[][];
     private totalEpochs = 0;
-    private totalEpchsChangedCallbacks: TotalEpochsChangedCallback[] = [];
+    private totalEpochsChangedCallbacks: TotalEpochsChangedCallback[] = [];
     private epochEndCallbacks: EpochEndCallback[] = [];
     private currentTrainLoss: number;
     private currentTestLoss: number;
@@ -81,7 +98,7 @@ export class Model {
     }
 
     public registerTotalEpochsChangedCallback = (totalEpochsChangedCallback: TotalEpochsChangedCallback) => {
-        this.totalEpchsChangedCallbacks.push(totalEpochsChangedCallback);
+        this.totalEpochsChangedCallbacks.push(totalEpochsChangedCallback);
     }
 
     public registerEpochEndCallback = (epochEndCallback: EpochEndCallback) => {
@@ -96,19 +113,7 @@ export class Model {
         if (loadedModel) {
             this._sequential = loadedModel;
         } else {
-            this._sequential = tf.sequential();
-
-            networkShape.slice(1).forEach((numberOfNodesInLayer, layerIndex) => {
-                const config: DenseLayerArgs = {
-                    activation: activations[layerIndex] as ActivationIdentifier,
-                    units: numberOfNodesInLayer,
-                    name: `${layerIndex}`
-                }
-                if (layerIndex == 0) {
-                    config.inputShape = [networkShape[0]]
-                }
-                this._sequential.add(tf.layers.dense(config))
-            })
+            this._sequential = createModel(networkShape, activations);
         }
 
         this._sequential.compile({
@@ -132,7 +137,7 @@ export class Model {
         })
 
         this.totalEpochs++;
-        this.totalEpchsChangedCallbacks.forEach(tecc => {
+        this.totalEpochsChangedCallbacks.forEach(tecc => {
             tecc(this.totalEpochs)
         })
     }
@@ -142,14 +147,13 @@ export class Model {
         const outputTensor = this._dataset.getTrainOutputTensor();
 
         const history = await this._sequential.fit(inputTensor, outputTensor, {
-            callbacks: { onEpochEnd: this.onEpochEnd }, epochs, batchSize: this.batchSize
+            callbacks: {onEpochEnd: this.onEpochEnd}, epochs, batchSize: this.batchSize
         });
 
         this.updateNetwork();
         return history;
     }
 
-    // including input layer
     public numberOfLayers = (): number => {
         return this._sequential.getConfig().layers.length + 1
     }

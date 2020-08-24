@@ -12,7 +12,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-import { exp } from "@tensorflow/tfjs";
+import { History } from "@tensorflow/tfjs-layers/dist/base_callbacks";
 
 export class TfLink {
 

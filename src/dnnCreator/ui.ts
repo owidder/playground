@@ -20,6 +20,7 @@ import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, D
 import { maxLayerSize, humanReadable } from "./mlUtil";
 import { AppendingLineChart } from "../linechartV5";
 import { getBookmarks, Bookmark, deleteBookmark } from "./bookmarks";
+import { exp } from '@tensorflow/tfjs';
 
 const NODE_SIZE = 30;
 const NODE_GAP = 25;
@@ -30,23 +31,17 @@ const setNextStepDisabled = (disabled: boolean) => {
     (<HTMLInputElement>document.getElementById("next-step-tf-button")).disabled = disabled;
 }
 
-const setResetDisabled = (disabled: boolean) => {
-    (<HTMLInputElement>document.getElementById("reset-button")).disabled = disabled;
-}
-
 export const setAddBookmarkDisabled = (disabled: boolean) => {
     (<HTMLInputElement>document.getElementById("add-button")).disabled = disabled;
 }
 
 export const stepStarted = () => {
     setNextStepDisabled(true);
-    setResetDisabled(true);
     setAddBookmarkDisabled(true);
 }
 
 export const stepEnded = () => {
     setNextStepDisabled(false);
-    setResetDisabled(false);
     setAddBookmarkDisabled(false);
 }
 
@@ -94,7 +89,14 @@ function updateBiasesUI(nodeIterator: NodeIterator) {
     })
 }
 
-export const totalEpochsChanged = (totalEpochs: number): void => {
+let initialEpochsCount = 0;
+export const setInitialEpochsCount = (_init: number) => {
+    initialEpochsCount = _init;
+    totalEpochsChanged(0);
+}
+
+let totalEpochs = 0;
+export const totalEpochsChanged = (_totalEpochs: number): void => {
     function zeroPad(n: number): string {
         let pad = "000000";
         return (pad + n).slice(-pad.length);
@@ -104,8 +106,11 @@ export const totalEpochsChanged = (totalEpochs: number): void => {
         return s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
-    d3.select("#iter-number").text(addCommas(zeroPad(totalEpochs)));
+    totalEpochs = _totalEpochs;
+    d3.select("#iter-number").text(addCommas(zeroPad(_totalEpochs + initialEpochsCount)));
 }
+
+export const getTotalEpochsShownInUi = () => initialEpochsCount + totalEpochs;
 
 export const updateUI = (firstStep = false, network: TfNode[][], totalEpochs: number, nodeIterator: NodeIterator): void => {
     updateWeightsUI(network, d3.select("g.core"), totalEpochs);
@@ -180,8 +185,8 @@ const addRemoveLayerControl = (x: number, removeLayer: () => void): void => {
 
 const addActivationControl = (x: number, initial: string, changeActivation: (activation: string) => void): void => {
     const div = d3.select("#network").append("div")
-    .classed("plus-minus-layers", true)
-    .classed("activation-layers", true)
+        .classed("plus-minus-layers", true)
+        .classed("activation-layers", true)
         .style("left", `${x}px`);
 
     const selectComp = div
@@ -190,7 +195,7 @@ const addActivationControl = (x: number, initial: string, changeActivation: (act
         .append("div")
         .attr("class", "select")
         .append("select")
-        .on("change", function() {
+        .on("change", function () {
             const activation = d3.select(this).property("value");
             changeActivation(activation);
         })
@@ -276,7 +281,7 @@ function updateBookmarkHoverCard(networkShape: number[], activations: string[], 
     d3.select(".network-shape").append("ul")
         .selectAll("li").data(d3.range(networkShape.length))
         .enter().append("li")
-        .text((d: number) => d > 0 ? `${networkShape[d]} (${activations[d-1]})` : networkShape[d]);
+        .text((d: number) => d > 0 ? `${networkShape[d]} (${activations[d - 1]})` : networkShape[d]);
 }
 
 const hideBookmarkHoverCard = () => {
@@ -366,9 +371,9 @@ function drawLink(
     return line;
 }
 
-export function drawNetwork(network: TfNode[][], 
-    changeNumberOfNodesCallback: ChangeNumberOfNodesCallback, 
-    addNewLayerCallback: AddNewLayerCallback, 
+export function drawNetwork(network: TfNode[][],
+    changeNumberOfNodesCallback: ChangeNumberOfNodesCallback,
+    addNewLayerCallback: AddNewLayerCallback,
     removeLayerCallback: RemoveLayerCallback,
     changeActivationCallback: ChangeActivationCallback,
     swapLayersCallback: (layerIndex1: number, layerIndex2: number) => void,
@@ -414,14 +419,14 @@ export function drawNetwork(network: TfNode[][],
             if (layerIdx < numLayers - 1) {
                 addPlusMinusControl(layerScale(layerIdx), layerIdx, network, changeNumberOfNodesCallback);
                 addRemoveLayerControl(layerScale(layerIdx), () => removeLayerCallback(layerIdx));
-                if(layerIdx > 1) {
-                    addMoveLeftControl(layerScale(layerIdx), () => swapLayersCallback(layerIdx, layerIdx-1));
+                if (layerIdx > 1) {
+                    addMoveLeftControl(layerScale(layerIdx), () => swapLayersCallback(layerIdx, layerIdx - 1));
                 }
             }
-            if(layerIdx < numLayers - 2) {
-                addMoveRightControl(layerScale(layerIdx), () => swapLayersCallback(layerIdx, layerIdx+1));
+            if (layerIdx < numLayers - 2) {
+                addMoveRightControl(layerScale(layerIdx), () => swapLayersCallback(layerIdx, layerIdx + 1));
             }
-            addActivationControl(layerScale(layerIdx), activations[layerIdx-1], (activation) => changeActivationCallback(activation, layerIdx));
+            addActivationControl(layerScale(layerIdx), activations[layerIdx - 1], (activation) => changeActivationCallback(activation, layerIdx));
             addNewLayerControl((layerScale(layerIdx - 1) + layerScale(layerIdx)) / 2, () => addNewLayerCallback(layerIdx - 1));
         }
         for (let i = 0; i < numNodes; i++) {
@@ -486,18 +491,22 @@ export const initTrainAndTestNumbersComponent = (percTrainData: number): void =>
     (document.getElementById("trainTestRatio") as HTMLInputElement).value = percTrainData.toString();
 }
 
-export const makeGUI = (reset: () => void,
+export const makeGUI = (download: () => void,
     togglePlayPause: () => void,
     doModelStep: () => void,
     changeDatasetUrl: (url: string) => void,
     addBookmark: () => void,
     changeBatchSize: (batchSize: number) => void,
     changePercTrainData: (percTrainData: number) => void,
-    removeModel: (modelId: string) => void) => {
+    removeBookmark: (modelId: string) => void,
+    showGraph: () => void) => {
 
-    d3.select("#reset-button").on("click", () => {
-        reset();
-        setAddBookmarkDisabled(true);
+    d3.select("#download-button").on("click", () => {
+        download();
+    });
+
+    d3.select("#graph-button").on("click", () => {
+        showGraph();
     });
 
     d3.select("#play-pause-button").on("click", function () {
@@ -514,7 +523,7 @@ export const makeGUI = (reset: () => void,
 
     d3.select("#add-button").on("click", function () {
         addBookmark();
-        showBookmarks(removeModel);
+        showBookmarks(removeBookmark);
     })
 
     d3.select("#goto-dataset").on("click", function () {
@@ -531,19 +540,24 @@ export const makeGUI = (reset: () => void,
     })
 
     setAddBookmarkDisabled(true);
-    showBookmarks(removeModel);
+    showBookmarks(removeBookmark);
 }
 
 const lineChart = new AppendingLineChart(d3.select("#linechart"), ["#777", "black"]);
 
+const showTrainLoss = (trainLoss?: number) => d3.select("#loss-train").text(trainLoss ?  humanReadable(trainLoss) : "");
+const showTestLoss = (testLoss?: number) => d3.select("#loss-test").text(testLoss ?  humanReadable(testLoss) : "");
+
 export const appendToLineChart = (trainLoss: number, testLoss: number) => {
     lineChart.addDataPoint([trainLoss, testLoss]);
-    d3.select("#loss-train").text(humanReadable(trainLoss));
-    d3.select("#loss-test").text(humanReadable(testLoss));
+    showTrainLoss(trainLoss);
+    showTestLoss(testLoss);
 }
 
 export const resetLineChart = () => {
     lineChart.reset();
+    showTrainLoss();
+    showTestLoss();
 }
 
 export const showDataSource = (dataSource: DataSource): void => {

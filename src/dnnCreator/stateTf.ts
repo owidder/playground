@@ -17,7 +17,8 @@ import { Model, loadModel } from "./model";
 import { Player, OneStepCallback } from "./player";
 import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart } from "./ui";
 import { swapArrayElements } from "./mlUtil";
-import { LayersModel, Sequential } from "@tensorflow/tfjs";
+import { LayersModel, Sequential, Logs } from "@tensorflow/tfjs";
+import { addToHistory } from "./vis";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -154,6 +155,7 @@ export class State {
 
         this.model.registerTotalEpochsChangedCallback(totalEpochsChanged);
         this.model.registerEpochEndCallback(appendToLineChart);
+        this.model.registerEpochEndCallback(addToHistory);
 
         this.serialize();
 
@@ -168,6 +170,7 @@ export class State {
             this.activations);
         updateUI(true, this.model.getNetwork(), this.model.getTotalEpochs(), this.model.forEachNode);
     }
+
 
     doModelStep = (): void => {
         stepStarted();
@@ -209,7 +212,7 @@ export class State {
 
     swapLayers = (layerIndex1: number, layerIndex2: number): void => {
         swapArrayElements(this.networkShape, layerIndex1, layerIndex2);
-        swapArrayElements(this.activations, layerIndex1-1, layerIndex2-1);
+        swapArrayElements(this.activations, layerIndex1 - 1, layerIndex2 - 1);
         this.refreshModel();
     }
 

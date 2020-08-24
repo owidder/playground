@@ -16,19 +16,20 @@ import "material-design-lite/material.css";
 import "../css/stylesNew.css";
 import "../css/stylesTf.scss";
 import { Dataset, loadDataSource } from "./datasetTf";
-import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent, showTrainAndTestNumbers, initTrainAndTestNumbersComponent } from "./ui";
+import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent, showTrainAndTestNumbers, initTrainAndTestNumbersComponent, setInitialEpochsCount, getTotalEpochsShownInUi, appendToLineChart, resetLineChart } from "./ui";
 import { State } from "./stateTf";
-import { addBookmark, initBookmarks } from "./bookmarks";
+import { addBookmark, initBookmarks, getBookmarks } from "./bookmarks";
 import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";
 import { createModelId, removeModel } from "./model";
+import { toggleVisor, initVisor, saveHistory, loadHistory, resetHistory, deleteHistory, TotalHistory, showSavedHistory, switchToCurrentHistoryTab, renderSavedModels } from "./vis";
 
 const state = State.deserializeState();
 
 const addCurrentBookmark = () => {
     const trainLoss = state.getModel().getCurrentTrainLoss();
     const testLoss = state.getModel().getCurrentTestLoss();
-    const name = `${humanReadable(testLoss)} / ${humanReadable(trainLoss)} (${state.getModel().getTotalEpochs()})`;
+    const name = `${humanReadable(testLoss)} / ${humanReadable(trainLoss)} [${getTotalEpochsShownInUi()}]`;
     const url = location.href;
     const networkShape = [...state.getModel().getNetworkShape()];
     const activations = [...state.getModel().getActivations()];
@@ -38,6 +39,28 @@ const addCurrentBookmark = () => {
 
     addBookmark({ name, url, networkShape, activations, batchSize, percTrainData, modelId });
     state.getModel().saveModel();
+    saveHistory(state.getModel().getModelId());
+
+    location.reload();
+}
+
+const removeBookmark = (modelId: string): void => {
+    removeModel(modelId);
+    deleteHistory(modelId);
+}
+
+const refreshHistory = () => {
+    resetHistory();
+    const modelId = state.getModel().getModelId();
+    const history = loadHistory(modelId);
+
+    const epochCount = history.test_loss.length;
+    setInitialEpochsCount(epochCount);
+
+    resetLineChart();
+    for(let i = 0; i < epochCount; i++) {
+        appendToLineChart(history.train_loss[i], history.test_loss[i]);
+    }
 }
 
 const refresh = async (dataSource: DataSource) => {
@@ -45,11 +68,26 @@ const refresh = async (dataSource: DataSource) => {
     showTrainAndTestNumbers(state.percTrainData, dataset.getTrainData().length, dataset.getTestData().length);
     await state.initModel(dataset);
 
-    makeGUI(state.getModel().download, state.getPlayer().togglePlayPause, state.doModelStep, state.changeDatasetUrl, addCurrentBookmark, state.setBatchSize, state.changePercTrainData, removeModel);
+    makeGUI(state.getModel().download,
+        state.getPlayer().togglePlayPause,
+        state.doModelStep,
+        state.changeDatasetUrl,
+        addCurrentBookmark,
+        state.setBatchSize,
+        state.changePercTrainData,
+        removeBookmark,
+        toggleVisor,
+    );
     setSelectComponentByValue("datasources", state.datasetUrl);
     initBatchSizeComponent(state.batchSize);
     initTrainAndTestNumbersComponent(state.percTrainData);
     showDatasetUrl(state.datasetUrl);
+    refreshHistory();
+}
+
+const showAllSavedHistories = () => {
+    const bookmarks = getBookmarks();
+    renderSavedModels(bookmarks);
 }
 
 const start = async () => {
@@ -60,6 +98,9 @@ const start = async () => {
     initBookmarks(state.datasetUrl);
 
     await refresh(dataSource);
+    initVisor();
+
+    showAllSavedHistories();
 }
 
 start();
