@@ -1,7 +1,6 @@
 import * as tfvis from "@tensorflow/tfjs-vis";
 import { Bookmark } from "./bookmarks";
-import { createModel } from "./model";
-import { range } from "./mlUtil";
+import { GetPredictionFunction } from "./model";
 
 export const initVisor = () => {
     tfvis.visor().toggle();
@@ -26,7 +25,7 @@ export const saveHistory = (modelId: string): void => {
 
 const historyFromLocalStorage = (modelId: string): TotalHistory | undefined => {
     const historyString = localStorage.getItem(historyPath(modelId));
-    if(historyString && historyString.length > 0) {
+    if (historyString && historyString.length > 0) {
         return JSON.parse(historyString) as TotalHistory;
     }
 }
@@ -41,7 +40,7 @@ export const loadHistory = (modelId: string): TotalHistory => {
 
 export const showSavedHistory = (modelId: string, name: string): void => {
     const history = historyFromLocalStorage(modelId);
-    if(history) {
+    if (history) {
         showHistory(history, name, name);
     }
 }
@@ -62,7 +61,7 @@ export const deleteHistory = (modelId: string) => {
 export const addToHistory = (train_loss: number, test_loss: number) => {
     totalHistory.train_loss.push(train_loss);
     totalHistory.test_loss.push(test_loss);
-    if(tfvis.visor().isOpen()) {
+    if (tfvis.visor().isOpen()) {
         showCurrentHistory();
     }
 }
@@ -77,7 +76,7 @@ export const resetHistory = () => {
 const CURRENT_HISTORY_TAB_NAME = "Current";
 
 const showCurrentHistory = () => {
-    showHistory(totalHistory, "Current model", CURRENT_HISTORY_TAB_NAME);
+    showHistory(totalHistory, "Loss", CURRENT_HISTORY_TAB_NAME);
 }
 
 export const switchToCurrentHistoryTab = () => {
@@ -90,7 +89,7 @@ export const showModelConfiguration = (bookmark: Bookmark) => {
         [bookmark.networkShape, bookmark.activations, bookmark.batchSize],
     ];
 
-    tfvis.render.table({name: bookmark.name, tab: bookmark.name}, {headers, values});
+    tfvis.render.table({ name: bookmark.name, tab: bookmark.name }, { headers, values });
 }
 
 export const showHistory = (history: TotalHistory, name: string, tab: string) => {
@@ -98,12 +97,20 @@ export const showHistory = (history: TotalHistory, name: string, tab: string) =>
     const container = {
         name,
         tab,
-        styles: {
-            height: '1000px'
-        }
     };
 
-    tfvis.show.history(container, {history: history as any}, metrics);
+    tfvis.show.history(container, { history: history as any }, metrics);
+}
+
+export const showConfusionMatrix = async (getPrediction: GetPredictionFunction, classNames: string[]) => {
+    if (tfvis.visor().isOpen()) {
+        const { expected, predicted } = getPrediction();
+        console.log(await predicted.data());
+        console.log(await expected.data());
+        const confusionMatrix = await tfvis.metrics.confusionMatrix(expected, predicted);
+        const container = { name: "Confusion", tab: CURRENT_HISTORY_TAB_NAME };
+        tfvis.render.confusionMatrix(container, { values: confusionMatrix, tickLabels: classNames });
+    }
 }
 
 resetHistory();
