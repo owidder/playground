@@ -25,7 +25,7 @@ import { Logs } from "@tensorflow/tfjs-layers/dist/logs";
 import { TfNode, TfLink, NodeIterator } from "./networkTypes";
 import { range } from "./mlUtil";
 import { updateUI } from "./ui";
-import { Scalar, loadLayersModel, LayersModel } from "@tensorflow/tfjs";
+import { Scalar, loadLayersModel, LayersModel, Tensor } from "@tensorflow/tfjs";
 
 export type TotalEpochsChangedCallback = (currentTotalEpoch) => void;
 export type EpochEndCallback = (trainLoss: number, testLoss: number) => void;
@@ -126,7 +126,15 @@ export class Model {
 
     public download = async (): Promise<void> => {
         await this._sequential.save(`downloads://${this.getModelId()}`);
-    } 
+    }
+
+    private doPrediction = () => {
+        const testData = this._dataset.getTestInputTensor();
+        const result = this._sequential.predict(testData) as Tensor;
+        const predictedOutput = result.argMax(-1);
+        const expectedOutput = this._dataset.getTestOutputTensor();
+        testData.print();
+    }
 
     private onEpochEnd = (epoch: number, logs: Logs): void => {
         this.currentTrainLoss = logs.loss;
@@ -140,6 +148,8 @@ export class Model {
         this.totalEpochsChangedCallbacks.forEach(tecc => {
             tecc(this.totalEpochs)
         })
+
+        this.doPrediction();
     }
 
     public fitStep = async (epochs = 10): Promise<History> => {
