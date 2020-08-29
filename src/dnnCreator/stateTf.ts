@@ -18,7 +18,7 @@ import { Player, OneStepCallback } from "./player";
 import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart } from "./ui";
 import { swapArrayElements } from "./mlUtil";
 import { LayersModel, Sequential, Logs } from "@tensorflow/tfjs";
-import { addToHistory, showConfusionMatrix } from "./vis";
+import { addToHistory, updateConfusionMatrix } from "./vis";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -156,7 +156,7 @@ export class State {
         this.model.registerTotalEpochsChangedCallback(totalEpochsChanged);
         this.model.registerEpochEndCallback(appendToLineChart);
         this.model.registerEpochEndCallback(addToHistory);
-        this.model.registerEpochEndCallback((_dummy1, _dummy2, getPrediction, classNames) => showConfusionMatrix(getPrediction, classNames));
+        this.model.registerEpochEndCallback((_dummy1, _dummy2, getPrediction, classNames) => updateConfusionMatrix(getPrediction, classNames));
 
         this.serialize();
 

@@ -102,7 +102,7 @@ export const showHistory = (history: TotalHistory, name: string, tab: string) =>
     tfvis.show.history(container, { history: history as any }, metrics);
 }
 
-export const showConfusionMatrix = async (getPrediction: GetPredictionFunction, classNames: string[]) => {
+export const updateConfusionMatrix = async (getPrediction: GetPredictionFunction, classNames: string[]) => {
     if (tfvis.visor().isOpen()) {
         const { expected, predicted } = getPrediction();
         console.log(await predicted.data());
