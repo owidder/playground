@@ -25,10 +25,11 @@ import { Logs } from "@tensorflow/tfjs-layers/dist/logs";
 import { TfNode, TfLink, NodeIterator } from "./networkTypes";
 import { range } from "./mlUtil";
 import { updateUI } from "./ui";
-import { Scalar, loadLayersModel, LayersModel, Tensor } from "@tensorflow/tfjs";
+import { Scalar, loadLayersModel, LayersModel, Tensor, Tensor1D } from "@tensorflow/tfjs";
 
 export type TotalEpochsChangedCallback = (currentTotalEpoch) => void;
-export type EpochEndCallback = (trainLoss: number, testLoss: number) => void;
+export type GetPredictionFunction = () => {expected: Tensor1D, predicted: Tensor1D};
+export type EpochEndCallback = (trainLoss: number, testLoss: number, getPrediction: GetPredictionFunction, classNames: string[]) => void;
 
 export const createModelId = (networkShape: number[], activations: string[], batchSize: number, url: string): string => {
     const sanitizedUrl = url.replace(/\W/g, "_");
@@ -128,12 +129,12 @@ export class Model {
         await this._sequential.save(`downloads://${this.getModelId()}`);
     }
 
-    private doPrediction = () => {
+    private getPrediction: GetPredictionFunction = () => {
         const testData = this._dataset.getTestInputTensor();
-        const result = this._sequential.predict(testData) as Tensor;
-        const predictedOutput = result.argMax(-1);
-        const expectedOutput = this._dataset.getTestOutputTensor();
-        testData.print();
+        const result = this._sequential.predict(testData) as Tensor1D;
+        const predicted = result.argMax(-1) as Tensor1D;
+        const expected = this._dataset.getTestOutputTensor().argMax(-1) as Tensor1D;
+        return {expected, predicted}
     }
 
     private onEpochEnd = (epoch: number, logs: Logs): void => {
@@ -141,15 +142,13 @@ export class Model {
         const testLossTensor = this._sequential.evaluate(this._dataset.getTestInputTensor(), this._dataset.getTestOutputTensor()) as Scalar;
         this.currentTestLoss = testLossTensor.dataSync()[0];
         this.epochEndCallbacks.forEach(eec => {
-            eec(this.currentTrainLoss, this.currentTestLoss);
+            eec(this.currentTrainLoss, this.currentTestLoss, this.getPrediction, this._dataset.getLabelValues());
         })
 
         this.totalEpochs++;
         this.totalEpochsChangedCallbacks.forEach(tecc => {
             tecc(this.totalEpochs)
         })
-
-        this.doPrediction();
     }
 
     public fitStep = async (epochs = 10): Promise<History> => {
