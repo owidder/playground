@@ -90,7 +90,7 @@ const refresh = async (dataSource: DataSource) => {
 
 const showAllSavedHistories = () => {
     const bookmarks = getBookmarks();
-    renderSavedModels(bookmarks);
+    renderSavedModels(bookmarks, state.getDataset().getLabelValues());
 }
 
 const start = async () => {

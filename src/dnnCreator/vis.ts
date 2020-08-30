@@ -75,14 +75,22 @@ export const loadConfusionMatrix = (modelId: string, classNames: string[]) => {
 export const showSavedHistory = (modelId: string, name: string): void => {
     const history = historyFromLocalStorage(modelId);
     if (history) {
-        showHistory(history, name, name);
+        showHistory(history, "Loss", name);
     }
 }
 
-export const renderSavedModels = (bookmarks: Bookmark[]) => {
+export const showSavedConfusionMatrix = (modelId: string, name: string, classNames: string[]) => {
+    const confusionMatrix = confusionMatrixFromLocalStorage(modelId);
+    if(confusionMatrix) {
+        showConfusionMatrix(confusionMatrix, classNames, name);
+    }
+}
+
+export const renderSavedModels = (bookmarks: Bookmark[], classNames: string[]) => {
     bookmarks.forEach(bookmark => {
-        showSavedHistory(bookmark.modelId, bookmark.name);
         showModelConfiguration(bookmark);
+        showSavedHistory(bookmark.modelId, bookmark.name);
+        showSavedConfusionMatrix(bookmark.modelId, bookmark.name, classNames);
     })
 
     switchToCurrentHistoryTab();
@@ -124,7 +132,7 @@ export const showModelConfiguration = (bookmark: Bookmark) => {
         [bookmark.networkShape, bookmark.activations, bookmark.batchSize],
     ];
 
-    tfvis.render.table({ name: bookmark.name, tab: bookmark.name }, { headers, values });
+    tfvis.render.table({ name: "Configuration", tab: bookmark.name }, { headers, values });
 }
 
 export const showHistory = (history: TotalHistory, name: string, tab: string) => {
