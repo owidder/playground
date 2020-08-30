@@ -29,7 +29,7 @@ import { Scalar, loadLayersModel, LayersModel, Tensor, Tensor1D } from "@tensorf
 
 export type TotalEpochsChangedCallback = (currentTotalEpoch) => void;
 export type GetPredictionFunction = () => {expected: Tensor1D, predicted: Tensor1D};
-export type EpochEndCallback = (trainLoss: number, testLoss: number, getPrediction: GetPredictionFunction, classNames: string[]) => void;
+export type EpochEndCallback = (trainLoss: number, testLoss: number, getPredictionFunction: GetPredictionFunction, classNames: string[]) => void;
 
 export const createModelId = (networkShape: number[], activations: string[], batchSize: number, url: string): string => {
     const sanitizedUrl = url.replace(/\W/g, "_");

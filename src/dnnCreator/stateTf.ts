@@ -156,7 +156,7 @@ export class State {
         this.model.registerTotalEpochsChangedCallback(totalEpochsChanged);
         this.model.registerEpochEndCallback(appendToLineChart);
         this.model.registerEpochEndCallback(addToHistory);
-        this.model.registerEpochEndCallback((_dummy1, _dummy2, getPrediction, classNames) => updateConfusionMatrix(getPrediction, classNames));
+        this.model.registerEpochEndCallback((_dummy1, _dummy2, getPredictionFunction, classNames) => updateConfusionMatrix(getPredictionFunction, classNames));
 
         this.serialize();
 
