@@ -15,7 +15,8 @@ module.exports = {
         [process.env.BUNDLE_NAME]: `./src/${process.env.INDEX_TS}`
     },
     output: {
-        path: path.resolve(__dirname, process.env.DIST_FOLDER)
+        path: path.resolve(__dirname, process.env.DIST_FOLDER),
+        filename: '[name].[hash].bundle.js'
     },
     devtool: 'source-map',
     module: {
@@ -64,7 +65,7 @@ module.exports = {
             template,
         }),
         new MiniCssExtractPlugin({
-            filename: `${process.env.BUNDLE_NAME}.css`,
+            filename: `${process.env.BUNDLE_NAME}.[hash].css`,
         }),
         new CopyWebpackPlugin({
             patterns: [
