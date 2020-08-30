@@ -29,7 +29,8 @@ const state = State.deserializeState();
 const addCurrentBookmark = () => {
     const trainLoss = state.getModel().getCurrentTrainLoss();
     const testLoss = state.getModel().getCurrentTestLoss();
-    const name = `${humanReadable(testLoss)} / ${humanReadable(trainLoss)} [${getTotalEpochsShownInUi()}]`;
+    const epochCount = getTotalEpochsShownInUi();
+    const name = `${humanReadable(testLoss)} / ${humanReadable(trainLoss)} [${epochCount}]`;
     const url = location.href;
     const networkShape = [...state.getModel().getNetworkShape()];
     const activations = [...state.getModel().getActivations()];
@@ -37,7 +38,7 @@ const addCurrentBookmark = () => {
     const percTrainData = state.percTrainData;
     const modelId = createModelId(networkShape, activations, batchSize, state.datasetUrl);
 
-    addBookmark({ name, url, networkShape, activations, batchSize, percTrainData, modelId });
+    addBookmark({ name, url, networkShape, activations, batchSize, percTrainData, modelId, epochCount });
     state.getModel().saveModel();
     saveVisData(state.getModel().getModelId());
 

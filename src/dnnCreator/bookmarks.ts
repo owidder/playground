@@ -20,6 +20,7 @@ export type Bookmark = {
     batchSize: number;
     percTrainData: number;
     modelId: string;
+    epochCount: number;
 }
 
 const bookmarks: Bookmark[] = [];
