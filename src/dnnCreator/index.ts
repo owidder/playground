@@ -22,7 +22,7 @@ import { addBookmark, initBookmarks, getBookmarks } from "./bookmarks";
 import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";
 import { createModelId, removeModel } from "./model";
-import { toggleVisor, initVisor, saveHistory, loadHistory, resetHistory, deleteHistory, TotalHistory, showSavedHistory, switchToCurrentHistoryTab, renderSavedModels } from "./vis";
+import { toggleVisor, initVisor, saveVisData, loadHistory, resetHistory, deleteVisData, renderSavedModels, loadConfusionMatrix } from "./vis";
 
 const state = State.deserializeState();
 
@@ -39,20 +39,23 @@ const addCurrentBookmark = () => {
 
     addBookmark({ name, url, networkShape, activations, batchSize, percTrainData, modelId });
     state.getModel().saveModel();
-    saveHistory(state.getModel().getModelId());
+    saveVisData(state.getModel().getModelId());
 
     location.reload();
 }
 
 const removeBookmark = (modelId: string): void => {
     removeModel(modelId);
-    deleteHistory(modelId);
+    deleteVisData(modelId);
 }
 
 const refreshHistory = () => {
     resetHistory();
     const modelId = state.getModel().getModelId();
     const history = loadHistory(modelId);
+
+    const classNames = state.getDataset().getLabelValues();
+    loadConfusionMatrix(modelId, classNames);
 
     const epochCount = history.test_loss.length;
     setInitialEpochsCount(epochCount);
