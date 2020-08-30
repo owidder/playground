@@ -150,7 +150,7 @@ export const updateConfusionMatrix = async (getPredictionFunction: GetPrediction
 }
 
 export const showConfusionMatrix = (confusionMatrix: ConfusionMatrix, classNames: string[], tab: string) => {
-    const container = { name: "Confusion", tab };
+    const container = { name: "Confusion Matrix", tab };
     tfvis.render.confusionMatrix(container, { values: confusionMatrix, tickLabels: classNames });
 }
 
