@@ -28,6 +28,7 @@
     "watch": "npm run prep && concurrently \"npm run watch-js\" \"npm run watch-css\" \"npm run watch-html\"",
     "serve": "npx serve dist/",
     "serve-v5": "npx serve -l 5005 dist-v5/",
+    "serve-dnn": "npx serve -l 5005 dist-dnn/",
     "serve-cnn-example": "npx serve -l 5010 cnn-example/",
     "serve-watch": "concurrently \"npx serve dist/\" \"npm run watch\"",
     "build-dnn": "npm run clean-tf && mkdirp ./dist-dnn && npm run prep-tf && cross-env NODE_ENV=development INDEX_TS=dnnCreator/index.ts DIST_FOLDER=dist-dnn BUNDLE_NAME=dnnCreator webpack",
