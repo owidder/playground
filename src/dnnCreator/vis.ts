@@ -127,9 +127,9 @@ export const switchToCurrentHistoryTab = () => {
 }
 
 export const showModelConfiguration = (bookmark: Bookmark) => {
-    const headers = ["network shape", "activation functions", "batch size"];
+    const headers = ["network shape", "activation functions", "batch size", "number of epochs"];
     const values = [
-        [bookmark.networkShape, bookmark.activations, bookmark.batchSize],
+        [bookmark.networkShape, bookmark.activations, bookmark.batchSize, bookmark.epochCount],
     ];
 
     tfvis.render.table({ name: "Configuration", tab: bookmark.name }, { headers, values });
