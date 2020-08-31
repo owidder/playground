@@ -22,7 +22,7 @@ import { addBookmark, initBookmarks, getBookmarks } from "./bookmarks";
 import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";
 import { createModelId, removeModel } from "./model";
-import { toggleVisor, initVisor, saveVisData, loadHistory, resetHistory, deleteVisData, renderSavedModels, loadConfusionMatrix } from "./vis";
+import { toggleVisor, initVisor, saveVisData, loadHistory, resetHistory, deleteVisData, renderSavedModels, loadConfusionMatrix, loadClassAccuracy } from "./vis";
 
 const state = State.deserializeState();
 
@@ -57,6 +57,7 @@ const refreshHistory = () => {
 
     const classNames = state.getDataset().getLabelValues();
     loadConfusionMatrix(modelId, classNames);
+    loadClassAccuracy(modelId, classNames);
 
     const epochCount = history.test_loss.length;
     setInitialEpochsCount(epochCount);

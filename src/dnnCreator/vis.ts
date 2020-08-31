@@ -17,16 +17,19 @@ interface TotalHistory {
 }
 
 export type ConfusionMatrix = number[][];
+export type ClassAccuracy = Array<{count: number, accuracy: number}>;
 
 let totalHistory: TotalHistory;
 const confusionData: {getPredictionFunction?: GetPredictionFunction, classNames?: string[]} = {};
 
 const historyPath = (modelId: string) => `dnnHistory/${modelId}`;
-const confusionMatrixPath = (modelId: string) => `dnnConfusionData/${modelId}`;
+const confusionMatrixPath = (modelId: string) => `dnnConfusionMatrix/${modelId}`;
+const classAccuracyPath = (modelId: string) => `dnnClassAccuracy/${modelId}`;
 
 export const saveVisData = (modelId: string) => {
     saveHistory(modelId);
     saveConfusionMatrix(modelId);
+    saveClassAccuracy(modelId);
 }
 
 const saveHistory = (modelId: string): void => {
@@ -34,13 +37,15 @@ const saveHistory = (modelId: string): void => {
 }
 
 const saveConfusionMatrix = async (modelId: string) => {
-    const confusionMatrix = await computeCurrentConfusionMatrix();
+    const {expected, predicted} = confusionData.getPredictionFunction();
+    const confusionMatrix = await tfvis.metrics.confusionMatrix(expected, predicted);
     localStorage.setItem(confusionMatrixPath(modelId), JSON.stringify(confusionMatrix));
 }
 
-const computeCurrentConfusionMatrix = async (): Promise<ConfusionMatrix> => {
+const saveClassAccuracy = async (modelId: string) => {
     const {expected, predicted} = confusionData.getPredictionFunction();
-    return tfvis.metrics.confusionMatrix(expected, predicted);
+    const classAccuracy = await tfvis.metrics.perClassAccuracy(expected, predicted);
+    localStorage.setItem(classAccuracyPath(modelId), JSON.stringify(classAccuracy));
 }
 
 const historyFromLocalStorage = (modelId: string): TotalHistory | undefined => {
@@ -54,6 +59,13 @@ const confusionMatrixFromLocalStorage = (modelId: string): ConfusionMatrix | und
      const confusionMatrixString = localStorage.getItem(confusionMatrixPath(modelId));
      if(confusionMatrixString && confusionMatrixString.length > 0) {
          return JSON.parse(confusionMatrixString);
+     }
+}
+
+const classAccuracyFromLocalStorage = (modelId: string): ClassAccuracy | undefined => {
+     const classAccuracyString = localStorage.getItem(classAccuracyPath(modelId));
+     if(classAccuracyString && classAccuracyString.length > 0) {
+         return JSON.parse(classAccuracyString);
      }
 }
 
@@ -72,6 +84,13 @@ export const loadConfusionMatrix = (modelId: string, classNames: string[]) => {
     }
 }
 
+export const loadClassAccuracy = (modelId: string, classNames: string[]) => {
+    const classAccuracy = classAccuracyFromLocalStorage(modelId);
+    if(classAccuracy) {
+        showClassAccuracy(classAccuracy, classNames, CURRENT_MODEL_TAB_NAME)
+    }
+}
+
 export const showSavedHistory = (modelId: string, name: string): void => {
     const history = historyFromLocalStorage(modelId);
     if (history) {
@@ -86,11 +105,19 @@ export const showSavedConfusionMatrix = (modelId: string, name: string, classNam
     }
 }
 
+export const showSavedClassAccuracy = (modelId: string, name: string, classNames: string[]) => {
+    const classAccuracy = classAccuracyFromLocalStorage(modelId);
+    if(classAccuracy) {
+        showClassAccuracy(classAccuracy, classNames, name);
+    }
+}
+
 export const renderSavedModels = (bookmarks: Bookmark[], classNames: string[]) => {
     bookmarks.forEach(bookmark => {
         showModelConfiguration(bookmark);
         showSavedHistory(bookmark.modelId, bookmark.name);
         showSavedConfusionMatrix(bookmark.modelId, bookmark.name, classNames);
+        showSavedClassAccuracy(bookmark.modelId, bookmark.name, classNames);
     })
 
     switchToCurrentHistoryTab();
@@ -150,16 +177,29 @@ export const updateConfusionMatrix = async (getPredictionFunction: GetPrediction
     confusionData.classNames = classNames;
     if (tfvis.visor().isOpen()) {
         const { expected, predicted } = getPredictionFunction();
-        console.log(await predicted.data());
-        console.log(await expected.data());
         const confusionMatrix = await tfvis.metrics.confusionMatrix(expected, predicted);
         showConfusionMatrix(confusionMatrix, classNames, CURRENT_MODEL_TAB_NAME);
+    }
+}
+
+export const updateClassAccuracy = async (getPredictionFunction: GetPredictionFunction, classNames: string[]) => {
+    confusionData.getPredictionFunction = getPredictionFunction;
+    confusionData.classNames = classNames;
+    if (tfvis.visor().isOpen()) {
+        const { expected, predicted } = getPredictionFunction();
+        const classAccuracy = await tfvis.metrics.perClassAccuracy(expected, predicted);
+        showClassAccuracy(classAccuracy, classNames, CURRENT_MODEL_TAB_NAME);
     }
 }
 
 export const showConfusionMatrix = (confusionMatrix: ConfusionMatrix, classNames: string[], tab: string) => {
     const container = { name: "Confusion Matrix", tab };
     tfvis.render.confusionMatrix(container, { values: confusionMatrix, tickLabels: classNames });
+}
+
+export const showClassAccuracy = (classAccuracy: ClassAccuracy, classNames: string[], tab: string) => {
+    const container = { name: "Class Accuracy", tab };
+    tfvis.show.perClassAccuracy(container, classAccuracy, classNames);
 }
 
 resetHistory();
