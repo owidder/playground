@@ -1,9 +1,9 @@
 const csvToJson = require("convert-csv-to-json");
 const fs = require("fs");
 
-const json = csvToJson.getJsonFromCsv("/Users/oliverwidder/dev/github/my-projects/playground/script/winequality-white.csv");
+const json = csvToJson.getJsonFromCsv("/Users/oliverwidder/dev/github/my-projects/playground/script/winequality-red.csv");
 const data = json.map(j => {
-    const label = string(j.quality);
+    const label = String(j.quality);
     delete j.quality;
     const nj = Object.keys(j).reduce((o, key) => {
         return {...o, [key]: Number(j[key])}
@@ -18,4 +18,4 @@ const dataSource = {
     data
 }
 
-fs.writeFileSync("/Users/oliverwidder/dev/github/my-projects/playground/script/wine-white.json", JSON.stringify(dataSource, null, 4));
+fs.writeFileSync("/Users/oliverwidder/dev/github/my-projects/playground/script/wine-red.json", JSON.stringify(dataSource, null, 4));
