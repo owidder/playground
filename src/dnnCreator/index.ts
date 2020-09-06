@@ -22,7 +22,7 @@ import { addBookmark, initBookmarks, getBookmarks } from "./bookmarks";
 import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";
 import { createModelId, removeModel } from "./model";
-import { toggleVisor, initVisor, saveVisData, loadHistory, resetHistory, deleteVisData, renderSavedModels, loadConfusionMatrix, loadClassAccuracy } from "./vis";
+import { toggleVisor, initVisor, saveVisData, loadHistory, resetHistory, deleteVisData, renderSavedModels, loadConfusionMatrix, loadClassAccuracy, showCurrentLayers } from "./vis";
 
 const state = State.deserializeState();
 
@@ -36,7 +36,7 @@ const addCurrentBookmark = () => {
     const activations = [...state.getModel().getActivations()];
     const batchSize = state.batchSize;
     const percTrainData = state.percTrainData;
-    const modelId = createModelId(networkShape, activations, batchSize, state.datasetUrl);
+    const modelId = createModelId(networkShape, activations, state.datasetUrl);
 
     addBookmark({ name, url, networkShape, activations, batchSize, percTrainData, modelId, epochCount });
     state.getModel().saveModel();
@@ -66,6 +66,8 @@ const refreshHistory = () => {
     for(let i = 0; i < epochCount; i++) {
         appendToLineChart(history.train_loss[i], history.test_loss[i]);
     }
+
+    showCurrentLayers(state.getModel().getLayers());
 }
 
 const refresh = async (dataSource: DataSource) => {

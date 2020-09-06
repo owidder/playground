@@ -54,6 +54,8 @@ export type SwapLayersCallback = (layerIndex1: number, layerIndex2: number) => v
 
 export type DataPoint = { [key: string]: number | string };
 
+export type TrainAndTestLength = {trainLength: number, testLength: number};
+
 export type DataSource = {
     name: string;
     description: string;

@@ -16,11 +16,10 @@ import * as d3 from 'd3';
 import 'd3-selection-multi';
 import { Selection, ContainerElement } from "d3-selection/index";
 
-import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource, AddNewLayerCallback, RemoveLayerCallback, ChangeActivationCallback, activationFunctionNames } from "./networkTypes";
+import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, DataSource, AddNewLayerCallback, RemoveLayerCallback, ChangeActivationCallback, activationFunctionNames, TrainAndTestLength } from "./networkTypes";
 import { maxLayerSize, humanReadable } from "./mlUtil";
 import { AppendingLineChart } from "../linechartV5";
 import { getBookmarks, Bookmark, deleteBookmark } from "./bookmarks";
-import { exp } from '@tensorflow/tfjs';
 
 const NODE_SIZE = 30;
 const NODE_GAP = 25;
@@ -497,7 +496,7 @@ export const makeGUI = (download: () => void,
     changeDatasetUrl: (url: string) => void,
     addBookmark: () => void,
     changeBatchSize: (batchSize: number) => void,
-    changePercTrainData: (percTrainData: number) => void,
+    changePercTrainData: (percTrainData: number) => TrainAndTestLength,
     removeBookmark: (modelId: string) => void,
     showGraph: () => void) => {
 
@@ -536,7 +535,9 @@ export const makeGUI = (download: () => void,
     })
 
     d3.select("#trainTestRatio").on("change", function () {
-        changePercTrainData(Number((this as any).value));
+        const percTrainData = Number((this as any).value);
+        const trainAndLestLength: TrainAndTestLength =  changePercTrainData(percTrainData);
+        showTrainAndTestNumbers(percTrainData, trainAndLestLength.trainLength, trainAndLestLength.testLength);
     })
 
     setAddBookmarkDisabled(true);

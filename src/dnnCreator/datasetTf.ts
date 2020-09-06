@@ -17,7 +17,7 @@ import { Tensor2D } from "@tensorflow/tfjs-core/dist/tensor";
 import * as tf from "@tensorflow/tfjs";
 
 import { oneHot } from "./mlUtil";
-import { DataPoint, DataSource } from "./networkTypes";
+import { DataPoint, DataSource, TrainAndTestLength } from "./networkTypes";
 import { assertValidityOfDataPoints, getDataFromDataPoint, createOneHotEncoding, createLabelValues } from "./mlUtil";
 
 export type TrainAndTest = {
@@ -72,22 +72,27 @@ export class Dataset {
         assertValidityOfDataPoints(dataSource.data, _labelName);
 
         this.dataSource = dataSource;
-        this.trainAndTest = splitTrainAndTest(dataSource.data, 1 - (percTrainData/100));
         this.labelName = _labelName;
-
-        this.labelValues = createLabelValues(dataSource.data, _labelName);
+        this.labelValues = createLabelValues(this.dataSource.data, this.labelName);
         this.outputShape = this.labelValues.length;
-
-        this.featureNames = Object.keys(dataSource.data[0]).filter(key => key !== _labelName).sort(); 
+        this.featureNames = Object.keys(this.dataSource.data[0]).filter(key => key !== this.labelName).sort(); 
         this.inputShape = this.featureNames.length;
+ 
+        this.percTrainDataChanged(percTrainData);
+    }
+
+    percTrainDataChanged = (percTrainData: number): TrainAndTestLength => {
+        this.trainAndTest = splitTrainAndTest(this.dataSource.data, 1 - (percTrainData/100));
 
         this.trainInputTensor = tf.tensor2d(this.trainAndTest.train.map(dataPoint => getDataFromDataPoint(dataPoint, this.featureNames)), [this.trainAndTest.train.length, this.inputShape]);
-        const outputTrain = this.trainAndTest.train.map(dataPoint => createOneHotEncoding(dataPoint, this.labelValues, _labelName));
+        const outputTrain = this.trainAndTest.train.map(dataPoint => createOneHotEncoding(dataPoint, this.labelValues, this.labelName));
         this.trainOutputTensor = tf.tensor2d(outputTrain, [this.trainAndTest.train.length, this.outputShape]);
 
         this.testInputTensor = tf.tensor2d(this.trainAndTest.test.map(dataPoint => getDataFromDataPoint(dataPoint, this.featureNames)), [this.trainAndTest.test.length, this.inputShape]);
-        const outputTest = this.trainAndTest.test.map(dataPoint => createOneHotEncoding(dataPoint, this.labelValues, _labelName));
+        const outputTest = this.trainAndTest.test.map(dataPoint => createOneHotEncoding(dataPoint, this.labelValues, this.labelName));
         this.testOutputTensor = tf.tensor2d(outputTest, [this.trainAndTest.test.length, this.outputShape]);
+
+        return {trainLength: this.trainAndTest.train.length, testLength: this.trainAndTest.test.length}
     }
 
     createOneHotEncoding = (dataPoint: DataPoint): (0 | 1)[] => {
