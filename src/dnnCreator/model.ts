@@ -28,8 +28,6 @@ import { updateUI } from "./ui";
 import { Scalar, loadLayersModel, LayersModel, Tensor, Tensor1D, layers } from "@tensorflow/tfjs";
 import { Layer } from "@tensorflow/tfjs-layers/dist/engine/topology";
 
-import * as storage from "./storage";
-
 export type TotalEpochsChangedCallback = (currentTotalEpoch) => void;
 export type GetPredictionFunction = () => { expected: Tensor1D, predicted: Tensor1D };
 export type EpochEndCallback = (trainLoss: number, testLoss: number, getPredictionFunction: GetPredictionFunction, classNames: string[]) => void;
@@ -44,6 +42,12 @@ export const loadModel = async (networkShape: number[], activations: string[], b
     if (localStorage.getItem(`tensorflowjs_models/${modelId}/model_topology`)) {
         return await loadLayersModel(`localstorage://${modelId}`);
     }
+}
+
+export const getLayersFromSavedModel = async (networkShape: number[], activations: string[], batchSize: number, url: string): Promise<Layer[]> => {
+    const loadedSequentialModel = await loadModel(networkShape, activations, batchSize, url) as Sequential;
+    const layersCount = loadedSequentialModel.getConfig().layers.length;
+    return range(0, layersCount).map(layerIndex => loadedSequentialModel.getLayer(undefined, layerIndex));
 }
 
 export const removeModel = (modelId: string): void => {

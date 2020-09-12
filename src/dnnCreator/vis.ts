@@ -116,12 +116,14 @@ export const showSavedClassAccuracy = (modelId: string, name: string, classNames
     }
 }
 
-export const renderSavedModels = (bookmarks: Bookmark[], classNames: string[]) => {
-    bookmarks.forEach(bookmark => {
+export const renderSavedModels = (bookmarks: Bookmark[], classNames: string[], layersFromBookmarkFunction: (bookmark: Bookmark) => Promise<any[]>) => {
+    bookmarks.forEach(async bookmark => {
         showModelConfiguration(bookmark);
         showSavedHistory(bookmark.modelId, bookmark.name);
         showSavedConfusionMatrix(bookmark.modelId, bookmark.name, classNames);
         showSavedClassAccuracy(bookmark.modelId, bookmark.name, classNames);
+        const layers = await layersFromBookmarkFunction(bookmark);
+        showLayers(layers, bookmark.name);
     })
 
     switchToCurrentHistoryTab();

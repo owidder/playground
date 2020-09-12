@@ -23,6 +23,7 @@ export type Bookmark = {
     percTrainData: number;
     modelId: string;
     epochCount: number;
+    datasetUrl: string;
 }
 
 const bookmarks: Bookmark[] = [];
