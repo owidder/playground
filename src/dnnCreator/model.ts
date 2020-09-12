@@ -25,35 +25,42 @@ import { Logs } from "@tensorflow/tfjs-layers/dist/logs";
 import { TfNode, TfLink, NodeIterator } from "./networkTypes";
 import { range } from "./mlUtil";
 import { updateUI } from "./ui";
-import { Scalar, loadLayersModel, LayersModel, Tensor, Tensor1D } from "@tensorflow/tfjs";
+import { Scalar, loadLayersModel, LayersModel, Tensor, Tensor1D, layers } from "@tensorflow/tfjs";
+import { Layer } from "@tensorflow/tfjs-layers/dist/engine/topology";
 
 export type TotalEpochsChangedCallback = (currentTotalEpoch) => void;
-export type GetPredictionFunction = () => {expected: Tensor1D, predicted: Tensor1D};
+export type GetPredictionFunction = () => { expected: Tensor1D, predicted: Tensor1D };
 export type EpochEndCallback = (trainLoss: number, testLoss: number, getPredictionFunction: GetPredictionFunction, classNames: string[]) => void;
 
-export const createModelId = (networkShape: number[], activations: string[], batchSize: number, url: string): string => {
+export const createModelId = (networkShape: number[], activations: string[], url: string): string => {
     const sanitizedUrl = url.replace(/\W/g, "_");
-    return `${networkShape.join("-")}__${activations.join("-")}__${batchSize}__${sanitizedUrl}`;
+    return `${networkShape.join("-")}__${activations.join("-")}__${sanitizedUrl}`;
 }
 
 export const loadModel = async (networkShape: number[], activations: string[], batchSize: number, url: string): Promise<LayersModel> => {
-    const modelId = createModelId(networkShape, activations, batchSize, url);
-    if(localStorage.getItem(`tensorflowjs_models/${modelId}/model_topology`)) {
+    const modelId = createModelId(networkShape, activations, url);
+    if (localStorage.getItem(`tensorflowjs_models/${modelId}/model_topology`)) {
         return await loadLayersModel(`localstorage://${modelId}`);
     }
+}
+
+export const getLayersFromSavedModel = async (networkShape: number[], activations: string[], batchSize: number, url: string): Promise<Layer[]> => {
+    const loadedSequentialModel = await loadModel(networkShape, activations, batchSize, url) as Sequential;
+    const layersCount = loadedSequentialModel.getConfig().layers.length;
+    return range(0, layersCount).map(layerIndex => loadedSequentialModel.getLayer(undefined, layerIndex));
 }
 
 export const removeModel = (modelId: string): void => {
     const items = Object.keys(localStorage);
     items.forEach(item => {
-        if(item.startsWith(`tensorflowjs_models/${modelId}`)) {
+        if (item.startsWith(`tensorflowjs_models/${modelId}`)) {
             localStorage.removeItem(item);
         }
     })
 }
 
 export const createModel = (networkShape: number[], activations: string[]) => {
-    const model  = tf.sequential();
+    const model = tf.sequential();
 
     networkShape.slice(1).forEach((numberOfNodesInLayer, layerIndex) => {
         const config: DenseLayerArgs = {
@@ -90,7 +97,7 @@ export class Model {
     public getBatchSize = () => this.batchSize;
 
     public getModelId(): string {
-        return createModelId(this.getNetworkShape(), this.activations, this.batchSize, this._dataset.getDataSource().url);
+        return createModelId(this.getNetworkShape(), this.activations, this._dataset.getDataSource().url);
     }
 
     public async saveModel() {
@@ -134,7 +141,7 @@ export class Model {
         const result = this._sequential.predict(testData) as Tensor1D;
         const predicted = result.argMax(-1) as Tensor1D;
         const expected = this._dataset.getTestOutputTensor().argMax(-1) as Tensor1D;
-        return {expected, predicted}
+        return { expected, predicted }
     }
 
     private onEpochEnd = (epoch: number, logs: Logs): void => {
@@ -156,7 +163,7 @@ export class Model {
         const outputTensor = this._dataset.getTrainOutputTensor();
 
         const history = await this._sequential.fit(inputTensor, outputTensor, {
-            callbacks: {onEpochEnd: this.onEpochEnd}, epochs, batchSize: this.batchSize
+            callbacks: { onEpochEnd: this.onEpochEnd }, epochs, batchSize: this.batchSize
         });
 
         this.updateNetwork();
@@ -177,6 +184,10 @@ export class Model {
 
     public maxLayerSize = (): number => {
         return Math.max(...range(0, this.numberOfLayers()).map(this.layerSize))
+    }
+
+    public getLayers = (): Layer[] => {
+        return range(0, this.numberOfLayers() - 1).map(layerIndex => this._sequential.getLayer(undefined, layerIndex));
     }
 
     public static nodeId = (layerIndex: number, nodeIndex: number) => `${layerIndex}-${nodeIndex}`;

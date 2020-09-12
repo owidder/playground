@@ -52,7 +52,6 @@ h4.num-layers-control {
     flex-direction : row;
     justify-content: center;
     top            : -100px;
-    z-index        : 10000;
     color          : darkgray;
     font-weight    : bolder;
 
@@ -299,8 +298,4 @@ pre {
         font-weight: 300;
         min-width  : 8em;
     }
-}
-
-#tfjs-visor-container .visor {
-    z-index: 999999;
 }

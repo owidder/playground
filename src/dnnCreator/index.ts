@@ -18,11 +18,11 @@ import "../css/stylesTf.scss";
 import { Dataset, loadDataSource } from "./datasetTf";
 import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent, showTrainAndTestNumbers, initTrainAndTestNumbersComponent, setInitialEpochsCount, getTotalEpochsShownInUi, appendToLineChart, resetLineChart } from "./ui";
 import { State } from "./stateTf";
-import { addBookmark, initBookmarks, getBookmarks } from "./bookmarks";
+import { addBookmark, initBookmarks, getBookmarks, Bookmark } from "./bookmarks";
 import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";
-import { createModelId, removeModel } from "./model";
-import { toggleVisor, initVisor, saveVisData, loadHistory, resetHistory, deleteVisData, renderSavedModels, loadConfusionMatrix, loadClassAccuracy } from "./vis";
+import { createModelId, removeModel, loadModel, getLayersFromSavedModel } from "./model";
+import { toggleVisor, initVisor, saveVisData, loadHistory, resetHistory, deleteVisData, renderSavedModels, loadConfusionMatrix, loadClassAccuracy, showCurrentLayers } from "./vis";
 
 const state = State.deserializeState();
 
@@ -36,9 +36,10 @@ const addCurrentBookmark = () => {
     const activations = [...state.getModel().getActivations()];
     const batchSize = state.batchSize;
     const percTrainData = state.percTrainData;
-    const modelId = createModelId(networkShape, activations, batchSize, state.datasetUrl);
+    const modelId = createModelId(networkShape, activations, state.datasetUrl);
+    const datasetUrl = state.getDataset().getDataSource().url;
 
-    addBookmark({ name, url, networkShape, activations, batchSize, percTrainData, modelId, epochCount });
+    addBookmark({ name, url, networkShape, activations, batchSize, percTrainData, modelId, epochCount, datasetUrl });
     state.getModel().saveModel();
     saveVisData(state.getModel().getModelId());
 
@@ -66,6 +67,8 @@ const refreshHistory = () => {
     for(let i = 0; i < epochCount; i++) {
         appendToLineChart(history.train_loss[i], history.test_loss[i]);
     }
+
+    showCurrentLayers(state.getModel().getLayers());
 }
 
 const refresh = async (dataSource: DataSource) => {
@@ -90,9 +93,13 @@ const refresh = async (dataSource: DataSource) => {
     refreshHistory();
 }
 
+const getLayersFromBookmark = async (bookmark: Bookmark): Promise<any[]> => {
+    return getLayersFromSavedModel(bookmark.networkShape, bookmark.activations, bookmark.batchSize, bookmark.datasetUrl);
+} 
+
 const showAllSavedHistories = () => {
     const bookmarks = getBookmarks();
-    renderSavedModels(bookmarks, state.getDataset().getLabelValues());
+    renderSavedModels(bookmarks, state.getDataset().getLabelValues(), getLayersFromBookmark);
 }
 
 const start = async () => {

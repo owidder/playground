@@ -18,7 +18,8 @@ import { Player, OneStepCallback } from "./player";
 import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart } from "./ui";
 import { swapArrayElements } from "./mlUtil";
 import { LayersModel, Sequential, Logs } from "@tensorflow/tfjs";
-import { addToHistory, updateConfusionMatrix, updateClassAccuracy } from "./vis";
+import { addToHistory, updateConfusionMatrix, updateClassAccuracy, showCurrentLayers } from "./vis";
+import { TrainAndTestLength } from "./networkTypes";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -119,9 +120,10 @@ export class State {
         location.reload();
     }
 
-    changePercTrainData = (percTrainData: number): void => {
+    changePercTrainData = (percTrainData: number): TrainAndTestLength => {
         this.percTrainData = percTrainData;
-        this.refreshModel();
+        this.serialize();
+        return this.dataset.percTrainDataChanged(percTrainData);
     }
 
     initPlayer() {
@@ -158,6 +160,7 @@ export class State {
         this.model.registerEpochEndCallback(addToHistory);
         this.model.registerEpochEndCallback((_dummy1, _dummy2, getPredictionFunction, classNames) => updateConfusionMatrix(getPredictionFunction, classNames));
         this.model.registerEpochEndCallback((_dummy1, _dummy2, getPredictionFunction, classNames) => updateClassAccuracy(getPredictionFunction, classNames));
+        this.model.registerEpochEndCallback(() => showCurrentLayers(this.model.getLayers()));
 
         this.serialize();
 
@@ -184,7 +187,7 @@ export class State {
 
     setBatchSize = (batchSize: number) => {
         this.batchSize = batchSize;
-        this.refreshModel();
+        this.serialize();
     }
 
     addLayerAfterLayerWithIndex = (layerIndex: number): void => {
