@@ -25,7 +25,7 @@ limitations under the License.
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500|Material+Icons" rel="stylesheet"
         type="text/css">
     <script src="lib.js"></script>
-<link rel="icon" href="favicon.png"><link href="dnnCreator.0103837e7844624482c4.css" rel="stylesheet"></head>
+<link rel="icon" href="favicon.png"><link href="dnnCreator.c88eaf880527bd69581d.css" rel="stylesheet"></head>
 
 <body>
     <!-- GitHub link -->
@@ -40,7 +40,7 @@ limitations under the License.
     <!-- Header -->
     <header>
         <div id="version">
-            2.4.0
+            2.5.0
         </div>
         <div class="l--page line1" id="datasource-name">DNN Creator (no data loaded)</div>
         <div class="line2" id="datasource-description"></div>
@@ -55,6 +55,8 @@ limitations under the License.
                     <select id="datasources" class="leftmargin">
                         <option value="./datasets/irisFlower.json">Iris</option>
                         <option value="./datasets/diabetes.json">Diabetes</option>
+                        <option value="./datasets/wine-red.json">Wine Quality (red)</option>
+                        <option value="./datasets/wine-white.json">Wine Quality (white)</option>
                     </select>
                 </div>
             </div>
@@ -235,7 +237,7 @@ limitations under the License.
                 <li>The link to the model is named: "test loss / train loss" and shows up underneath the ratio slider</li>
                 <li>By clicking on the link the model is loaded and you can train it further. Be aware that the epoch counter next to the play button only shows the number of epochs since the latest loading of the model</li>
                 <li>By hovering over one link you can see the configuration of the saved model</li>
-                <li><b>New in V2: </b>By clicking <i class="material-icons">assessment</i> you can see train loss, test loss, confusion matrix and accuracy of the current model and all saved models</li>
+                <li><b>New in V2: </b>By clicking <i class="material-icons">assessment</i> you can see train loss, test loss, confusion matrix, class accuracy and layer details of the current model and all saved models</li>
                 <li>With the <i class="material-icons">get_app</i> you can download the current model</li>
             </ul>
         </div>
@@ -260,6 +262,6 @@ limitations under the License.
         </div>
     </article>
 
-<script src="dnnCreator.0103837e7844624482c4.bundle.js"></script></body>
+<script src="dnnCreator.c88eaf880527bd69581d.bundle.js"></script></body>
 
 </html>
