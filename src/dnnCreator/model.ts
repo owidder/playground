@@ -66,10 +66,8 @@ export const createModel = (networkShape: number[], activations: string[]) => {
         const config: DenseLayerArgs = {
             activation: activations[layerIndex] as ActivationIdentifier,
             units: numberOfNodesInLayer,
-            name: `${layerIndex}`
-        }
-        if (layerIndex == 0) {
-            config.inputShape = [networkShape[0]]
+            name: `${layerIndex}`,
+            inputShape: layerIndex == 0 ? [networkShape[0]] : undefined
         }
         model.add(tf.layers.dense(config))
     })
