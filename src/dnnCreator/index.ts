@@ -35,11 +35,12 @@ const addCurrentBookmark = () => {
     const networkShape = [...state.getModel().getNetworkShape()];
     const activations = [...state.getModel().getActivations()];
     const batchSize = state.batchSize;
+    const shuffleseed = state.shuffleseed;
     const percTrainData = state.percTrainData;
-    const modelId = createModelId(networkShape, activations, state.datasetUrl);
+    const modelId = createModelId(networkShape, activations, state.datasetUrl, batchSize, percTrainData, shuffleseed);
     const datasetUrl = state.getDataset().getDataSource().url;
 
-    addBookmark({ name, url, networkShape, activations, batchSize, percTrainData, modelId, epochCount, datasetUrl });
+    addBookmark({ name, url, networkShape, activations, batchSize, percTrainData, modelId, epochCount, datasetUrl, shuffleseed });
     state.getModel().saveModel();
     saveVisData(state.getModel().getModelId());
 
@@ -72,7 +73,7 @@ const refreshHistory = () => {
 }
 
 const refresh = async (dataSource: DataSource) => {
-    const dataset = new Dataset(dataSource, "label", state.percTrainData);
+    const dataset = new Dataset(dataSource, "label", state.percTrainData, state.shuffleseed);
     showTrainAndTestNumbers(state.percTrainData, dataset.getTrainData().length, dataset.getTestData().length);
     await state.initModel(dataset);
 
@@ -85,6 +86,7 @@ const refresh = async (dataSource: DataSource) => {
         state.changePercTrainData,
         removeBookmark,
         toggleVisor,
+        state.shuffle,
     );
     setSelectComponentByValue("datasources", state.datasetUrl);
     initBatchSizeComponent(state.batchSize);
@@ -94,7 +96,7 @@ const refresh = async (dataSource: DataSource) => {
 }
 
 const getLayersFromBookmark = async (bookmark: Bookmark): Promise<any[]> => {
-    return getLayersFromSavedModel(bookmark.networkShape, bookmark.activations, bookmark.batchSize, bookmark.datasetUrl);
+    return getLayersFromSavedModel(bookmark.networkShape, bookmark.activations, bookmark.batchSize, bookmark.datasetUrl, bookmark.percTrainData, bookmark.shuffleseed);
 } 
 
 const showAllSavedHistories = () => {

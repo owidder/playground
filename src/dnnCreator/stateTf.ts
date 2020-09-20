@@ -103,6 +103,7 @@ export class State {
         { name: "batchSize", type: Type.NUMBER },
         { name: "percTrainData", type: Type.NUMBER },
         { name: "activations", type: Type.ARRAY_STRING },
+        { name: "shuffleseed", type: Type.NUMBER },
     ];
 
     [key: string]: any;
@@ -111,6 +112,7 @@ export class State {
     batchSize = 10;
     percTrainData = 80;
     activations = ["softmax"];
+    shuffleseed = 0;
 
     seed: string;
 
@@ -120,10 +122,16 @@ export class State {
         location.reload();
     }
 
-    changePercTrainData = (percTrainData: number): TrainAndTestLength => {
+    changePercTrainData = (percTrainData: number) => {
         this.percTrainData = percTrainData;
         this.serialize();
-        return this.dataset.percTrainDataChanged(percTrainData);
+        this.refreshModel();
+    }
+
+    shuffle = () => {
+        this.shuffleseed = (new Date()).getTime();
+        this.serialize();
+        this.refreshModel();
     }
 
     initPlayer() {
@@ -150,8 +158,8 @@ export class State {
         }
         this.numLayers = this.networkShape.length;
 
-        const loadedModel: LayersModel = await loadModel(this.networkShape, this.activations, this.batchSize, this.datasetUrl);
-        this.model = new Model(this.networkShape, this.activations, this.dataset, this.batchSize, loadedModel as Sequential);
+        const loadedModel: LayersModel = await loadModel(this.networkShape, this.activations, this.batchSize, this.datasetUrl, this.percTrainData, this.shuffleseed);
+        this.model = new Model(this.networkShape, this.activations, this.dataset, this.batchSize, this.percTrainData, this.shuffleseed, loadedModel as Sequential);
 
         this.initPlayer();
 
@@ -188,6 +196,7 @@ export class State {
     setBatchSize = (batchSize: number) => {
         this.batchSize = batchSize;
         this.serialize();
+        this.refreshModel();
     }
 
     addLayerAfterLayerWithIndex = (layerIndex: number): void => {

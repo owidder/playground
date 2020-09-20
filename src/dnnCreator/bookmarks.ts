@@ -24,6 +24,7 @@ export type Bookmark = {
     modelId: string;
     epochCount: number;
     datasetUrl: string;
+    shuffleseed: number;
 }
 
 const bookmarks: Bookmark[] = [];

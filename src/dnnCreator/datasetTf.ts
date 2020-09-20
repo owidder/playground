@@ -20,9 +20,21 @@ import { oneHot } from "./mlUtil";
 import { DataPoint, DataSource, TrainAndTestLength } from "./networkTypes";
 import { assertValidityOfDataPoints, getDataFromDataPoint, createOneHotEncoding, createLabelValues } from "./mlUtil";
 
+const rand = require("random-seed").create();
+
 export type TrainAndTest = {
     train: DataPoint[];
     test: DataPoint[];
+}
+
+/* kudos to: https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array */
+const shuffle = (a: any[], seed: number) => {
+    rand.seed(seed);
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = rand(i+1);
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
 }
 
 export const loadDataSource = async (url: string): Promise<DataSource> => {
@@ -33,9 +45,12 @@ export const loadDataSource = async (url: string): Promise<DataSource> => {
     return dataSource;
 }
 
-export const splitTrainAndTest = (data: DataPoint[], testRatio: number): TrainAndTest => {
+export const splitTrainAndTest = (data: DataPoint[], testRatio: number, seed: number): TrainAndTest => {
     const testSize = Math.floor(data.length * testRatio);
     const trainSize = data.length - testSize;
+    if(seed > 0) {
+        shuffle(data, seed);
+    }
     const train = data.slice(0, trainSize);
     const test = data.slice(trainSize);
     return { train, test }
@@ -68,7 +83,7 @@ export class Dataset {
     public getTestInputTensor = () => this.testInputTensor;
     public getTestOutputTensor = () => this.testOutputTensor;
 
-    constructor(dataSource: DataSource, _labelName: string, percTrainData: number) {
+    constructor(dataSource: DataSource, _labelName: string, percTrainData: number, seed: number) {
         assertValidityOfDataPoints(dataSource.data, _labelName);
 
         this.dataSource = dataSource;
@@ -78,11 +93,11 @@ export class Dataset {
         this.featureNames = Object.keys(this.dataSource.data[0]).filter(key => key !== this.labelName).sort(); 
         this.inputShape = this.featureNames.length;
  
-        this.percTrainDataChanged(percTrainData);
+        this.percTrainDataChanged(percTrainData, seed);
     }
 
-    percTrainDataChanged = (percTrainData: number): TrainAndTestLength => {
-        this.trainAndTest = splitTrainAndTest(this.dataSource.data, 1 - (percTrainData/100));
+    percTrainDataChanged = (percTrainData: number, seed: number): TrainAndTestLength => {
+        this.trainAndTest = splitTrainAndTest(this.dataSource.data, 1 - (percTrainData/100), seed);
 
         this.trainInputTensor = tf.tensor2d(this.trainAndTest.train.map(dataPoint => getDataFromDataPoint(dataPoint, this.featureNames)), [this.trainAndTest.train.length, this.inputShape]);
         const outputTrain = this.trainAndTest.train.map(dataPoint => createOneHotEncoding(dataPoint, this.labelValues, this.labelName));

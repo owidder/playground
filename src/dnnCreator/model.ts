@@ -32,20 +32,20 @@ export type TotalEpochsChangedCallback = (currentTotalEpoch) => void;
 export type GetPredictionFunction = () => { expected: Tensor1D, predicted: Tensor1D };
 export type EpochEndCallback = (trainLoss: number, testLoss: number, getPredictionFunction: GetPredictionFunction, classNames: string[]) => void;
 
-export const createModelId = (networkShape: number[], activations: string[], url: string): string => {
+export const createModelId = (networkShape: number[], activations: string[], url: string, batchSize: number, percTrainData: number, shuffleseed: number): string => {
     const sanitizedUrl = url.replace(/\W/g, "_");
-    return `${networkShape.join("-")}__${activations.join("-")}__${sanitizedUrl}`;
+    return `${networkShape.join("-")}__${activations.join("-")}__${sanitizedUrl}__${batchSize}__${percTrainData}__${shuffleseed}`;
 }
 
-export const loadModel = async (networkShape: number[], activations: string[], batchSize: number, url: string): Promise<LayersModel> => {
-    const modelId = createModelId(networkShape, activations, url);
+export const loadModel = async (networkShape: number[], activations: string[], batchSize: number, url: string, percTrainData: number, shuffleseed: number): Promise<LayersModel> => {
+    const modelId = createModelId(networkShape, activations, url, batchSize, percTrainData, shuffleseed);
     if (localStorage.getItem(`tensorflowjs_models/${modelId}/model_topology`)) {
         return await loadLayersModel(`localstorage://${modelId}`);
     }
 }
 
-export const getLayersFromSavedModel = async (networkShape: number[], activations: string[], batchSize: number, url: string): Promise<Layer[]> => {
-    const loadedSequentialModel = await loadModel(networkShape, activations, batchSize, url) as Sequential;
+export const getLayersFromSavedModel = async (networkShape: number[], activations: string[], batchSize: number, url: string, percTrainData: number, shuffleseed: number): Promise<Layer[]> => {
+    const loadedSequentialModel = await loadModel(networkShape, activations, batchSize, url, percTrainData, shuffleseed) as Sequential;
     const layersCount = loadedSequentialModel.getConfig().layers.length;
     return range(0, layersCount).map(layerIndex => loadedSequentialModel.getLayer(undefined, layerIndex));
 }
@@ -66,10 +66,8 @@ export const createModel = (networkShape: number[], activations: string[]) => {
         const config: DenseLayerArgs = {
             activation: activations[layerIndex] as ActivationIdentifier,
             units: numberOfNodesInLayer,
-            name: `${layerIndex}`
-        }
-        if (layerIndex == 0) {
-            config.inputShape = [networkShape[0]]
+            name: `${layerIndex}`,
+            inputShape: layerIndex == 0 ? [networkShape[0]] : undefined
         }
         model.add(tf.layers.dense(config))
     })
@@ -89,6 +87,8 @@ export class Model {
     private currentTestLoss: number;
     private activations: string[];
     private batchSize: number;
+    private percTrainData: number;
+    private shuffleseed: number;
 
     public getCurrentTrainLoss = () => this.currentTrainLoss;
     public getCurrentTestLoss = () => this.currentTestLoss;
@@ -97,7 +97,7 @@ export class Model {
     public getBatchSize = () => this.batchSize;
 
     public getModelId(): string {
-        return createModelId(this.getNetworkShape(), this.activations, this._dataset.getDataSource().url);
+        return createModelId(this.getNetworkShape(), this.activations, this._dataset.getDataSource().url, this.batchSize, this.percTrainData, this.shuffleseed);
     }
 
     public async saveModel() {
@@ -113,10 +113,12 @@ export class Model {
         this.epochEndCallbacks.push(epochEndCallback);
     }
 
-    constructor(networkShape: number[], activations: string[], dataset: Dataset, batchSize: number, loadedModel?: Sequential) {
+    constructor(networkShape: number[], activations: string[], dataset: Dataset, batchSize: number, percTrainData: number, shuffleseed: number, loadedModel?: Sequential) {
         this._dataset = dataset;
         this.activations = activations;
         this.batchSize = batchSize;
+        this.percTrainData = percTrainData;
+        this.shuffleseed = shuffleseed;
 
         if (loadedModel) {
             this._sequential = loadedModel;
