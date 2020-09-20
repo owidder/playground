@@ -496,7 +496,7 @@ export const makeGUI = (download: () => void,
     changeDatasetUrl: (url: string) => void,
     addBookmark: () => void,
     changeBatchSize: (batchSize: number) => void,
-    changePercTrainData: (percTrainData: number) => TrainAndTestLength,
+    changePercTrainData: (percTrainData: number) => void,
     removeBookmark: (modelId: string) => void,
     showGraph: () => void) => {
 
@@ -536,8 +536,7 @@ export const makeGUI = (download: () => void,
 
     d3.select("#trainTestRatio").on("change", function () {
         const percTrainData = Number((this as any).value);
-        const trainAndLestLength: TrainAndTestLength =  changePercTrainData(percTrainData);
-        showTrainAndTestNumbers(percTrainData, trainAndLestLength.trainLength, trainAndLestLength.testLength);
+        changePercTrainData(percTrainData);
     })
 
     setAddBookmarkDisabled(true);
