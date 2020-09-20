@@ -128,6 +128,12 @@ export class State {
         this.refreshModel();
     }
 
+    shuffle = () => {
+        this.shuffleseed = (new Date()).getTime();
+        this.serialize();
+        this.refreshModel();
+    }
+
     initPlayer() {
         const oneStepCallback: OneStepCallback = async () => {
             await this.model.fitStep(1)

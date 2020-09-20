@@ -498,7 +498,8 @@ export const makeGUI = (download: () => void,
     changeBatchSize: (batchSize: number) => void,
     changePercTrainData: (percTrainData: number) => void,
     removeBookmark: (modelId: string) => void,
-    showGraph: () => void) => {
+    showGraph: () => void,
+    shuffle: () => void) => {
 
     d3.select("#download-button").on("click", () => {
         download();
@@ -523,6 +524,10 @@ export const makeGUI = (download: () => void,
     d3.select("#add-button").on("click", function () {
         addBookmark();
         showBookmarks(removeBookmark);
+    })
+
+    d3.select("#shuffle-button").on("click", function () {
+        shuffle();
     })
 
     d3.select("#goto-dataset").on("click", function () {

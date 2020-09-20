@@ -86,6 +86,7 @@ const refresh = async (dataSource: DataSource) => {
         state.changePercTrainData,
         removeBookmark,
         toggleVisor,
+        state.shuffle,
     );
     setSelectComponentByValue("datasources", state.datasetUrl);
     initBatchSizeComponent(state.batchSize);
