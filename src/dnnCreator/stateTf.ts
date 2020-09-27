@@ -15,11 +15,11 @@ limitations under the License.
 import { Dataset } from "./datasetTf";
 import { Model, loadModel } from "./model";
 import { Player, OneStepCallback } from "./player";
-import { totalEpochsChanged, showNumberOfLayers, drawNetwork, updateUI, stepStarted, stepEnded, appendToLineChart } from "./ui";
+import { totalEpochsChanged, showNumberOfLayers, updateUI, stepStarted, stepEnded, appendToLineChart } from "./ui";
 import { swapArrayElements } from "./mlUtil";
-import { LayersModel, Sequential, Logs } from "@tensorflow/tfjs";
+import { LayersModel, Sequential } from "@tensorflow/tfjs";
 import { addToHistory, updateConfusionMatrix, updateClassAccuracy, showCurrentLayers } from "./vis";
-import { TrainAndTestLength } from "./networkTypes";
+import { DrawNetworkCallbach, UpdateUiCallback } from "./networkTypes";
 
 /** Suffix added to the state when storing if a control is hidden or not. */
 const HIDE_STATE_SUFFIX = "_hide";
@@ -146,7 +146,7 @@ export class State {
         this.refreshCallback();
     }
 
-    async initModel(dataset?: Dataset): Promise<void> {
+    async initModel(dataset?: Dataset, drawNetworkCallback?: DrawNetworkCallbach, updateUiCallback?: UpdateUiCallback): Promise<void> {
         this.dataset = dataset ? dataset : this.dataset;
         const inputShape = this.dataset.getInputShape();
         const outputShape = this.dataset.getOutputShape();
@@ -174,14 +174,18 @@ export class State {
 
         showNumberOfLayers(this.networkShape.length);
 
-        drawNetwork(this.model.getNetwork(),
-            this.changeNumberOfNodes,
-            (index) => this.addLayerAfterLayerWithIndex(index),
-            (index) => this.removeLayerWithIndex(index),
-            (activation, index) => this.changeActivationAtIndex(activation, index - 1),
-            (index1, index2) => this.swapLayers(index1, index2),
-            this.activations);
-        updateUI(true, this.model.getNetwork(), this.model.getTotalEpochs(), this.model.forEachNode);
+        if (drawNetworkCallback) {
+            drawNetworkCallback(this.model.getNetwork(),
+                this.changeNumberOfNodes,
+                (index) => this.addLayerAfterLayerWithIndex(index),
+                (index) => this.removeLayerWithIndex(index),
+                (activation, index) => this.changeActivationAtIndex(activation, index - 1),
+                (index1, index2) => this.swapLayers(index1, index2),
+                this.activations);
+        }
+        if(updateUiCallback) {
+            updateUiCallback(true, this.model.getNetwork(), this.model.getTotalEpochs(), this.model.forEachNode);
+        }
     }
 
 

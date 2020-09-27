@@ -16,12 +16,12 @@ import "material-design-lite/material.css";
 import "../css/stylesNew.css";
 import "../css/stylesTf.scss";
 import { Dataset, loadDataSource } from "./datasetTf";
-import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent, showTrainAndTestNumbers, initTrainAndTestNumbersComponent, setInitialEpochsCount, getTotalEpochsShownInUi, appendToLineChart, resetLineChart } from "./ui";
+import { makeGUI, showDataSource, setSelectComponentByValue, showDatasetUrl, initBatchSizeComponent, showTrainAndTestNumbers, initTrainAndTestNumbersComponent, setInitialEpochsCount, getTotalEpochsShownInUi, appendToLineChart, resetLineChart, drawNetwork, updateUI } from "./ui";
 import { State } from "./stateTf";
 import { addBookmark, initBookmarks, getBookmarks, Bookmark } from "./bookmarks";
 import { humanReadable } from "./mlUtil";
 import { DataSource } from "./networkTypes";
-import { createModelId, removeModel, loadModel, getLayersFromSavedModel } from "./model";
+import { createModelId, removeModel, getLayersFromSavedModel } from "./model";
 import { toggleVisor, initVisor, saveVisData, loadHistory, resetHistory, deleteVisData, renderSavedModels, loadConfusionMatrix, loadClassAccuracy, showCurrentLayers } from "./vis";
 
 const state = State.deserializeState();
@@ -75,7 +75,7 @@ const refreshHistory = () => {
 const refresh = async (dataSource: DataSource) => {
     const dataset = new Dataset(dataSource, "label", state.percTrainData, state.shuffleseed);
     showTrainAndTestNumbers(state.percTrainData, dataset.getTrainData().length, dataset.getTestData().length);
-    await state.initModel(dataset);
+    await state.initModel(dataset, drawNetwork, updateUI);
 
     makeGUI(state.getModel().download,
         state.getPlayer().togglePlayPause,

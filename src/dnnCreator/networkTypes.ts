@@ -51,6 +51,14 @@ export type AddNewLayerCallback = (insertAfterLayerWithIndex: number) => void;
 export type RemoveLayerCallback = (layerIndex: number) => void;
 export type ChangeActivationCallback = (activation: string, layerIndex: number) => void;
 export type SwapLayersCallback = (layerIndex1: number, layerIndex2: number) => void;
+export type DrawNetworkCallbach = (network: TfNode[][],
+    changeNumberOfNodesCallback: ChangeNumberOfNodesCallback,
+    addNewLayerCallback: AddNewLayerCallback,
+    removeLayerCallback: RemoveLayerCallback,
+    changeActivationCallback: ChangeActivationCallback,
+    swapLayersCallback: (layerIndex1: number, layerIndex2: number) => void,
+    activations: string[]) => void;
+export type UpdateUiCallback = (firstStep: boolean, network: TfNode[][], totalEpochs: number, nodeIterator: NodeIterator) => void
 
 export type DataPoint = { [key: string]: number | string };
 
