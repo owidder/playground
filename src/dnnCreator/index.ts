@@ -65,7 +65,7 @@ const refreshHistory = () => {
     setInitialEpochsCount(epochCount);
 
     resetLineChart();
-    for(let i = 0; i < epochCount; i++) {
+    for (let i = 0; i < epochCount; i++) {
         appendToLineChart(history.train_loss[i], history.test_loss[i]);
     }
 
@@ -77,17 +77,18 @@ const refresh = async (dataSource: DataSource) => {
     showTrainAndTestNumbers(state.percTrainData, dataset.getTrainData().length, dataset.getTestData().length);
     await state.initModel(dataset, drawNetwork, updateUI);
 
-    makeGUI(state.getModel().download,
-        state.getPlayer().togglePlayPause,
-        state.doModelStep,
-        state.changeDatasetUrl,
-        addCurrentBookmark,
-        state.setBatchSize,
-        state.changePercTrainData,
+    makeGUI({
+        download: state.getModel().download,
+        togglePlayPause: state.getPlayer().togglePlayPause,
+        doModelStep: state.doModelStep,
+        changeDatasetUrl: state.changeDatasetUrl,
+        addBookmark: addCurrentBookmark,
+        changeBatchSize: state.setBatchSize,
+        changePercTrainData: state.changePercTrainData,
         removeBookmark,
-        toggleVisor,
-        state.shuffle,
-    );
+        showGraph: toggleVisor,
+        shuffle: state.shuffle,
+    });
     setSelectComponentByValue("datasources", state.datasetUrl);
     initBatchSizeComponent(state.batchSize);
     initTrainAndTestNumbersComponent(state.percTrainData);
@@ -97,7 +98,7 @@ const refresh = async (dataSource: DataSource) => {
 
 const getLayersFromBookmark = async (bookmark: Bookmark): Promise<any[]> => {
     return getLayersFromSavedModel(bookmark.networkShape, bookmark.activations, bookmark.batchSize, bookmark.datasetUrl, bookmark.percTrainData, bookmark.shuffleseed);
-} 
+}
 
 const showAllSavedHistories = () => {
     const bookmarks = getBookmarks();

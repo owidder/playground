@@ -1,0 +1,8 @@
+.section {
+    & .container {
+        & .full-length {
+            width: 100%;
+        }
+    }
+}
+

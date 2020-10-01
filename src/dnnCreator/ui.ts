@@ -490,19 +490,33 @@ export const initTrainAndTestNumbersComponent = (percTrainData: number): void =>
     (document.getElementById("trainTestRatio") as HTMLInputElement).value = percTrainData.toString();
 }
 
-export const makeGUI = (download: () => void,
-    togglePlayPause: () => void,
-    doModelStep: () => void,
-    changeDatasetUrl: (url: string) => void,
-    addBookmark: () => void,
-    changeBatchSize: (batchSize: number) => void,
-    changePercTrainData: (percTrainData: number) => void,
-    removeBookmark: (modelId: string) => void,
-    showGraph: () => void,
-    shuffle: () => void) => {
+interface MakeGuiConfig {
+    download?: () => void,
+    togglePlayPause?: () => void,
+    doModelStep?: () => void,
+    changeDatasetUrl?: (url: string) => void,
+    addBookmark?: () => void,
+    changeBatchSize?: (batchSize: number) => void,
+    changePercTrainData?: (percTrainData: number) => void,
+    removeBookmark?: (modelId: string) => void,
+    showGraph?: () => void,
+    shuffle?: () => void    
+}
+
+export const makeGUI = ({
+    download,
+    togglePlayPause,
+    doModelStep,
+    changeDatasetUrl,
+    addBookmark,
+    changeBatchSize,
+    changePercTrainData,
+    removeBookmark,
+    showGraph,
+    shuffle}: MakeGuiConfig) => {
 
     d3.select("#download-button").on("click", () => {
-        download();
+        download(); 
     });
 
     d3.select("#graph-button").on("click", () => {

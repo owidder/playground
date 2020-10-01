@@ -27,7 +27,7 @@ limitations under the License.
 </head>
 
 <body>
-    <section class="hero is-primary">
+    <section class="hero is-light">
         <div class="hero-body">
             <div class="container">
                 <h1 id="datasource-name" class="title">
@@ -41,9 +41,30 @@ limitations under the License.
         </div>
     </section>
 
-    <div id="linechart"></div>
-
-    <div id="network-table"></div>
+    <div class="columns">
+        <div class="column is-4-tablet is-3-desktop is-2-widescreen">
+            <div class="section">
+                <div class="select">
+                    <select id="datasources" class="leftmargin">
+                        <option value="./datasets/irisFlower.json">Iris</option>
+                        <option value="./datasets/diabetes.json">Diabetes</option>
+                        <option value="./datasets/wine-red.json">Wine Quality (red)</option>
+                        <option value="./datasets/wine-white.json">Wine Quality (white)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="section">
+                <div class="container">
+                    <span class="full-length" id="add-button"></span>
+                    <span class="full-length" id="download-button"></span>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div id="linechart"></div>
+            <div id="network-table"></div>
+        </div>
+    </div>
 
 </body>
 

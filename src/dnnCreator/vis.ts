@@ -7,7 +7,7 @@ export const initVisor = () => {
     tfvis.visor().toggle();
 }
 
-export const toggleVisor = () => {
+export const toggleVisor = (): void => {
     tfvis.visor().toggle();
 }
 
