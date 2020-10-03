@@ -3,6 +3,12 @@ import Buefy from 'buefy';
 import NetworkTable from "./components/NetworkTable.vue"
 import AddButton from "./components/AddButton.vue";
 import DownloadButton from "./components/DownloadButton.vue";
+import ChartButton from "./components/ChartButton.vue";
+import StartTrainingButton from "./components/StartTrainingButton.vue";
+import TrainOneStepButton from "./components/TrainOneStepButton.vue";
+import ShuffleDataButton from "./components/ShuffleDataButton.vue";
+import BatchSizeSlider from "./components/BatchSizeSlider.vue";
+import PercentTrainDataSlider from "./components/PercentTrainDataSlider.vue"
 
 import { Dataset, loadDataSource } from "./datasetTf";
 import { State } from "./stateTf";
@@ -32,10 +38,10 @@ export const drawAddButton = () => {
     })
 }
 
-export const drawComponent = (selector: string, content: any) => {
+export const drawComponent = (selector: string, content: any, props = {}) => {
     new Vue({
         el: selector,
-        render: h => h(content)
+        render: h => h(content, {props})
     })
 }
 
@@ -56,6 +62,12 @@ const refresh = async (dataSource: DataSource) => {
     drawNetworkTable();
     drawAddButton();
     drawComponent("#download-button", DownloadButton);
+    drawComponent("#chart-button", ChartButton);
+    drawComponent("#start-training-button", StartTrainingButton);
+    drawComponent("#train-one-step-button", TrainOneStepButton);
+    drawComponent("#shuffle-data-button", ShuffleDataButton);
+    drawComponent("#batch-size-slider", BatchSizeSlider);
+    drawComponent("#percent-train-data-slider", PercentTrainDataSlider, {totalDataCount: 200})
 }
 
 const start = async () => {

@@ -44,6 +44,20 @@ limitations under the License.
     <div class="columns">
         <div class="column is-4-tablet is-3-desktop is-2-widescreen">
             <div class="section">
+                <div class="container">
+                    <span id="add-button"></span>
+                    <span id="download-button"></span>
+                    <span id="chart-button"></span>
+                    <span id="start-training-button"></span>
+                    <span id="train-one-step-button"></span>
+                    <span id="shuffle-data-button"></span>
+                    <span id="batch-size-slider"></span>
+                    <span class="notfirst"><span id="percent-train-data-slider"></span></span>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="section">
                 <div class="select">
                     <select id="datasources" class="leftmargin">
                         <option value="./datasets/irisFlower.json">Iris</option>
@@ -53,14 +67,6 @@ limitations under the License.
                     </select>
                 </div>
             </div>
-            <div class="section">
-                <div class="container">
-                    <span class="full-length" id="add-button"></span>
-                    <span class="full-length" id="download-button"></span>
-                </div>
-            </div>
-        </div>
-        <div class="column">
             <div id="linechart"></div>
             <div id="network-table"></div>
         </div>
