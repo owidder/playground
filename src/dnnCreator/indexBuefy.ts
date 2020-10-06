@@ -24,9 +24,9 @@ import "../css/stylesBuefy.scss"
 
 Vue.use(Buefy);
 
-export const drawComponent = (selector: string, content: any, props = {}) => {
+export const drawComponent = (selector: string, content: any, props = {}): any | undefined => {
     if (document.querySelector(selector)) {
-        new Vue({
+        return new Vue({
             el: selector,
             render: h => h(content, { props })
         })
@@ -56,7 +56,8 @@ const refresh = async (dataSource: DataSource) => {
     drawComponent("#percent-train-data-slider-container", PercentTrainDataSlider, {
         trainDataCount: dataset.getTrainData().length,
         testDataCount: dataset.getTestData().length,
-        changeCallback: state.changePercTrainData
+        changeCallback: state.changePercTrainData,
+        initialPercentTrainData: state.percTrainData
     })
 
     makeGUI({ changeDatasetUrl: state.changeDatasetUrl })

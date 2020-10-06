@@ -29,14 +29,22 @@ export default {
       percentTrainData: 70,
     };
   },
-  props: ["trainDataCount", "testDataCount", "changeCallback"],
+  props: [
+    "trainDataCount",
+    "testDataCount",
+    "changeCallback",
+    "initialPercentTrainData",
+  ],
+  beforeMount() {
+    this.percentTrainData = this.initialPercentTrainData;
+  },
   methods: {
     getPercentTrainDataLabel() {
       return `Train data: ${this.percentTrainData} %`;
     },
     valueChanged(percTrainData) {
-        this.changeCallback(percTrainData);
-    }
+      this.changeCallback(percTrainData);
+    },
   },
 };
 </script>
