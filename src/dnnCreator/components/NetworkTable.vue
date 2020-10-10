@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="network-table">
     <b-table
       :data="data"
       :columns="columns"

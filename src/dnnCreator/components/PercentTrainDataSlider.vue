@@ -1,5 +1,5 @@
 <template>
-  <div class="sliders">
+  <div id="percent-train-data-slider" class="sliders">
     <b-field :label="getPercentTrainDataLabel()">
       <b-slider
         id="percent-train-data-slider"
@@ -10,8 +10,7 @@
         :min="10"
         :max="90"
         :custom-formatter="(val) => val + '%'"
-        lazy
-        @change="valueChanged"
+        @change="changeCallback"
       >
         <template v-for="val in [20, 40, 60, 80]">
           <b-slider-tick :value="val" :key="val">{{ val }}</b-slider-tick>
@@ -26,7 +25,7 @@
 export default {
   data() {
     return {
-      percentTrainData: 70,
+      percentTrainData: this.initialPercentTrainData,
     };
   },
   props: [
@@ -35,15 +34,9 @@ export default {
     "changeCallback",
     "initialPercentTrainData",
   ],
-  beforeMount() {
-    this.percentTrainData = this.initialPercentTrainData;
-  },
   methods: {
     getPercentTrainDataLabel() {
       return `Train data: ${this.percentTrainData} %`;
-    },
-    valueChanged(percTrainData) {
-      this.changeCallback(percTrainData);
     },
   },
 };

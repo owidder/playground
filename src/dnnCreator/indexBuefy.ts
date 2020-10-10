@@ -45,15 +45,15 @@ const refresh = async (dataSource: DataSource) => {
     //initTrainAndTestNumbersComponent(state.percTrainData);
     //showDatasetUrl(state.datasetUrl);
     //refreshHistory();
-    drawComponent("#network-table-container", NetworkTable);
-    drawComponent("#add-button-container", AddButton)
-    drawComponent("#download-button-container", DownloadButton);
-    drawComponent("#chart-button-container", ChartButton);
-    drawComponent("#start-training-button-container", StartTrainingButton);
-    drawComponent("#train-one-step-button-container", TrainOneStepButton);
-    drawComponent("#shuffle-data-button-container", ShuffleDataButton);
-    drawComponent("#batch-size-slider-container", BatchSizeSlider);
-    drawComponent("#percent-train-data-slider-container", PercentTrainDataSlider, {
+    drawComponent("#network-table", NetworkTable);
+    drawComponent("#add-button", AddButton)
+    drawComponent("#download-button", DownloadButton);
+    drawComponent("#chart-button", ChartButton);
+    drawComponent("#start-training-button", StartTrainingButton);
+    drawComponent("#train-one-step-button", TrainOneStepButton);
+    drawComponent("#shuffle-data-button", ShuffleDataButton);
+    drawComponent("#batch-size-slider", BatchSizeSlider, { changeCallback: state.setBatchSize, initialBatchSize: state.batchSize });
+    const percentTrainDataSlider = drawComponent("#percent-train-data-slider", PercentTrainDataSlider, {
         trainDataCount: dataset.getTrainData().length,
         testDataCount: dataset.getTestData().length,
         changeCallback: state.changePercTrainData,
