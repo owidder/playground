@@ -59,7 +59,9 @@ const refresh = async (dataSource: DataSource) => {
         addBookmarkCallback, 
         downloadCallback: state.getModel().download, 
         showChartsCallback: toggleVisor,
-        startStopTrainingCallback: () => {console.log("start/stop training")},
+        startStopTrainingCallback: () => console.log("start/stop training"),
+        trainOneStepCallback: () => console.log("train one step"),
+        shuffleDataCallback: () => console.log("shuffle data"),
     });
 
     drawComponent("#network-table", NetworkTable);
@@ -67,8 +69,8 @@ const refresh = async (dataSource: DataSource) => {
     //drawComponent("#download-button", DownloadButton);
     //drawComponent("#chart-button", ChartButton);
     //drawComponent("#start-training-button", StartTrainingButton);
-    drawComponent("#train-one-step-button", TrainOneStepButton);
-    drawComponent("#shuffle-data-button", ShuffleDataButton);
+    //drawComponent("#train-one-step-button", TrainOneStepButton);
+    //drawComponent("#shuffle-data-button", ShuffleDataButton);
     drawComponent("#batch-size-slider", BatchSizeSlider, { changeCallback: state.setBatchSize, initialBatchSize: state.batchSize });
     const percentTrainDataSlider = drawComponent("#percent-train-data-slider", PercentTrainDataSlider, {
         trainDataCount: dataset.getTrainData().length,

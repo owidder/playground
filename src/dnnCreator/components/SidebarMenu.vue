@@ -35,6 +35,18 @@
                 :label="trainingButtonText"
                 @click="startStopButtonClicked"
               ></b-menu-item>
+              <b-menu-item
+                id="train-one-step"
+                icon="shoe-sneaker"
+                label="Train one step"
+                @click="buttonClicked(trainOneStepCallback, 'train-one-step')"
+              ></b-menu-item>
+              <b-menu-item
+                id="shuffle-data"
+                icon="shuffle-variant"
+                label="Shuffle data"
+                @click="buttonClicked(shuffleDataCallback, 'shuffle-data')"
+              ></b-menu-item>
             </b-menu-list>
           </b-menu>
         </div>
@@ -73,6 +85,8 @@ export default {
     "downloadCallback",
     "showChartsCallback",
     "startStopTrainingCallback",
+    "trainOneStepCallback",
+    "shuffleDataCallback",
   ],
   methods: {
     buttonClicked(callback, id) {
