@@ -500,7 +500,7 @@ interface MakeGuiConfig {
     changePercTrainData?: (percTrainData: number) => void,
     removeBookmark?: (modelId: string) => void,
     showGraph?: () => void,
-    shuffle?: () => void    
+    shuffle?: () => void
 }
 
 export const makeGUI = ({
@@ -513,50 +513,68 @@ export const makeGUI = ({
     changePercTrainData,
     removeBookmark,
     showGraph,
-    shuffle}: MakeGuiConfig) => {
+    shuffle }: MakeGuiConfig) => {
 
-    d3.select("#download-button").on("click", () => {
-        download(); 
-    });
+    if (download) {
+        d3.select("#download-button").on("click", () => {
+            download();
+        });
+    }
 
-    d3.select("#graph-button").on("click", () => {
-        showGraph();
-    });
+    if (showGraph) {
+        d3.select("#graph-button").on("click", () => {
+            showGraph();
+        });
+    }
 
-    d3.select("#play-pause-button").on("click", function () {
-        togglePlayPause();
-    });
+    if (togglePlayPause) {
+        d3.select("#play-pause-button").on("click", function () {
+            togglePlayPause();
+        });
+    }
 
-    d3.select("#next-step-tf-button").on("click", () => {
-        doModelStep();
-    })
+    if (doModelStep) {
+        d3.select("#next-step-tf-button").on("click", () => {
+            doModelStep();
+        })
+    }
 
     d3.select("#datasources").on("change", function () {
         changeDatasetUrl((this as any).value);
     })
 
-    d3.select("#add-button").on("click", function () {
-        addBookmark();
-        showBookmarks(removeBookmark);
-    })
+    if (addBookmark) {
+        d3.select("#add-button").on("click", function () {
+            addBookmark();
+            showBookmarks(removeBookmark);
+        })
+    }
 
-    d3.select("#shuffle-button").on("click", function () {
-        shuffle();
-    })
+    if (shuffle) {
+        d3.select("#shuffle-button").on("click", function () {
+            shuffle();
+        })
+    }
 
-    d3.select("#goto-dataset").on("click", function () {
-        changeDatasetUrl((document.getElementById("input-dataset-url") as HTMLInputElement).value)
-    })
+    if (changeDatasetUrl) {
+        d3.select("#goto-dataset").on("click", function () {
+            changeDatasetUrl((document.getElementById("input-dataset-url") as HTMLInputElement).value)
+        })
+    }
 
-    d3.select("#batchSize").on("change", function () {
-        changeBatchSize(Number((this as any).value));
-        showBatchSize((this as any).value);
-    })
+    if (changeBatchSize) {
+        d3.select("#batchSize").on("change", function () {
+            changeBatchSize(Number((this as any).value));
+            showBatchSize((this as any).value);
+        })
+    }
 
-    d3.select("#trainTestRatio").on("change", function () {
-        const percTrainData = Number((this as any).value);
-        changePercTrainData(percTrainData);
-    })
+    if (changePercTrainData) {
+        d3.select("#trainTestRatio").on("change", function () {
+            const percTrainData = Number((this as any).value);
+            changePercTrainData(percTrainData);
+        })
+    }
 
     setAddBookmarkDisabled(true);
     showBookmarks(removeBookmark);
@@ -564,8 +582,8 @@ export const makeGUI = ({
 
 const lineChart = new AppendingLineChart(d3.select("#linechart"), ["#777", "black"]);
 
-const showTrainLoss = (trainLoss?: number) => d3.select("#loss-train").text(trainLoss ?  humanReadable(trainLoss) : "");
-const showTestLoss = (testLoss?: number) => d3.select("#loss-test").text(testLoss ?  humanReadable(testLoss) : "");
+const showTrainLoss = (trainLoss?: number) => d3.select("#loss-train").text(trainLoss ? humanReadable(trainLoss) : "");
+const showTestLoss = (testLoss?: number) => d3.select("#loss-test").text(testLoss ? humanReadable(testLoss) : "");
 
 export const appendToLineChart = (trainLoss: number, testLoss: number) => {
     lineChart.addDataPoint([trainLoss, testLoss]);

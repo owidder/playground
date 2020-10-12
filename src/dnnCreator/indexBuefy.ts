@@ -9,12 +9,15 @@ import TrainOneStepButton from "./components/TrainOneStepButton.vue";
 import ShuffleDataButton from "./components/ShuffleDataButton.vue";
 import BatchSizeSlider from "./components/BatchSizeSlider.vue";
 import PercentTrainDataSlider from "./components/PercentTrainDataSlider.vue"
+import DefaultButton from "./components/DefaultButton.vue"
+import SidebarMenu from "./components/SidebarMenu.vue"
 
 import { Dataset, loadDataSource } from "./datasetTf";
 import { State } from "./stateTf";
 import { DataSource } from "./networkTypes";
 import { addBookmark, initBookmarks, getBookmarks, Bookmark } from "./bookmarks";
 import { showDataSource, makeGUI, setSelectComponentByValue } from "./ui";
+import { toggleVisor } from "./vis";
 
 import "buefy/dist/buefy.css"
 import "bulma/css/bulma.css"
@@ -35,6 +38,10 @@ export const drawComponent = (selector: string, content: any, props = {}): any |
 
 const state = State.deserializeState();
 
+const addBookmarkCallback = () => {
+    console.log("addBookmark")
+}
+
 const refresh = async (dataSource: DataSource) => {
     const dataset = new Dataset(dataSource, "label", state.percTrainData, state.shuffleseed);
     //showTrainAndTestNumbers(state.percTrainData, dataset.getTrainData().length, dataset.getTestData().length);
@@ -45,11 +52,21 @@ const refresh = async (dataSource: DataSource) => {
     //initTrainAndTestNumbersComponent(state.percTrainData);
     //showDatasetUrl(state.datasetUrl);
     //refreshHistory();
+
+    Vue.component("default-button", DefaultButton);
+
+    drawComponent("#sidebar-menu", SidebarMenu, { 
+        addBookmarkCallback, 
+        downloadCallback: state.getModel().download, 
+        showChartsCallback: toggleVisor,
+        startStopTrainingCallback: () => {console.log("start/stop training")},
+    });
+
     drawComponent("#network-table", NetworkTable);
-    drawComponent("#add-button", AddButton)
-    drawComponent("#download-button", DownloadButton);
-    drawComponent("#chart-button", ChartButton);
-    drawComponent("#start-training-button", StartTrainingButton);
+    //drawComponent("#add-button", AddButton)
+    //drawComponent("#download-button", DownloadButton);
+    //drawComponent("#chart-button", ChartButton);
+    //drawComponent("#start-training-button", StartTrainingButton);
     drawComponent("#train-one-step-button", TrainOneStepButton);
     drawComponent("#shuffle-data-button", ShuffleDataButton);
     drawComponent("#batch-size-slider", BatchSizeSlider, { changeCallback: state.setBatchSize, initialBatchSize: state.batchSize });
