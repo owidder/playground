@@ -11,7 +11,7 @@ import { toggleVisor } from "./vis";
 import SidebarMenuQuasar from "./components/SidebarMenuQuasar.vue";
 import Bar from "./components/Bar.vue";
 import DnnMenu from "./components/DnnMenu.vue";
-import Layout from "./components/Layout.vue";
+import App from "./components/App.vue";
 
 //require("./themes/app.ios.styl");
 require("quasar/dist/quasar.css");
@@ -39,18 +39,8 @@ const refresh = async (dataSource: DataSource) => {
 
     //setSelectComponentByValue("datasources", state.datasetUrl);
 
-    // drawComponent("#title-bar", Bar);
-    // drawComponent("#sidebar-menu", SidebarMenuQuasar, {
-    //     addBookmarkCallback,
-    //     downloadCallback: state.getModel().download,
-    //     showChartsCallback: toggleVisor,
-    //     startStopTrainingCallback: () => console.log("start/stop training"),
-    //     trainOneStepCallback: () => console.log("train one step"),
-    //     shuffleDataCallback: () => console.log("shuffle data"),
-    // });
-
     Vue.component("dnn-menu", DnnMenu)
-    drawComponent("#layout", Layout, {
+    drawComponent("#layout", App, {
         addBookmarkCallback: () => console.log("addBookmarkCallback"),
         downloadCallback: () => console.log("downloadCallback"),
         showChartsCallback: () => console.log("showChartsCallback"),
