@@ -1,12 +1,6 @@
 import Vue from 'vue';
 import Buefy from 'buefy';
 import NetworkTable from "./components/NetworkTable.vue"
-import AddButton from "./components/AddButton.vue";
-import DownloadButton from "./components/DownloadButton.vue";
-import ChartButton from "./components/ChartButton.vue";
-import StartTrainingButton from "./components/StartTrainingButton.vue";
-import TrainOneStepButton from "./components/TrainOneStepButton.vue";
-import ShuffleDataButton from "./components/ShuffleDataButton.vue";
 import BatchSizeSlider from "./components/BatchSizeSlider.vue";
 import PercentTrainDataSlider from "./components/PercentTrainDataSlider.vue"
 import DefaultButton from "./components/DefaultButton.vue"
@@ -54,6 +48,7 @@ const refresh = async (dataSource: DataSource) => {
     //refreshHistory();
 
     Vue.component("default-button", DefaultButton);
+    Vue.component("batch-size-slider", BatchSizeSlider);
 
     drawComponent("#sidebar-menu", SidebarMenu, { 
         addBookmarkCallback, 

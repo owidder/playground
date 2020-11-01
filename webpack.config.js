@@ -60,6 +60,10 @@ const common = {
                         use: [{ loader: MiniCssExtractPlugin.loader }, "css-loader", "sass-loader"]
                     },
                     {
+                        test: /\.styl$/,
+                        use: [{ loader: MiniCssExtractPlugin.loader }, "css-loader", "stylus-loader"]
+                    },
+                    {
                         test: /\.css$/,
                         use: [{ loader: MiniCssExtractPlugin.loader }, "css-loader"]
                     },
@@ -127,4 +131,25 @@ const buefied = {
     ]
 }
 
-module.exports = [standard, buefied]
+const quasared = {
+    entry: {
+        dnnCreatorQuasar: './src/dnnCreator/indexQuasar.ts'
+    },
+    ...common,
+    plugins: [
+        ...common.plugins,
+        new HtmlWebpackPlugin({
+            filename: "indexQuasar.html",
+            favicon: "./favicon.png",
+            inject: true,
+            templateParameters: { version: VERSION },
+            template: "index-template-quasar.ejs",
+            chunks: ['dnnCreatorQuasar'],
+        }),
+        new MiniCssExtractPlugin({
+            filename: `dnnCreatorQuasar.[hash].css`,
+        }),
+    ]
+}
+
+module.exports = [standard, buefied, quasared]

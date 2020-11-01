@@ -31,7 +31,10 @@ const setNextStepDisabled = (disabled: boolean) => {
 }
 
 export const setAddBookmarkDisabled = (disabled: boolean) => {
-    (<HTMLInputElement>document.getElementById("add-button")).disabled = disabled;
+    const addButton = <HTMLInputElement>document.getElementById("add-button");
+    if (addButton) {
+        addButton.disabled = disabled;
+    }
 }
 
 export const stepStarted = () => {
@@ -580,21 +583,26 @@ export const makeGUI = ({
     showBookmarks(removeBookmark);
 }
 
-const lineChart = new AppendingLineChart(d3.select("#linechart"), ["#777", "black"]);
+const lineChartContainer = d3.select("#linechart");
+const lineChart = !lineChartContainer.empty() ? new AppendingLineChart(lineChartContainer, ["#777", "black"]) : undefined;
 
 const showTrainLoss = (trainLoss?: number) => d3.select("#loss-train").text(trainLoss ? humanReadable(trainLoss) : "");
 const showTestLoss = (testLoss?: number) => d3.select("#loss-test").text(testLoss ? humanReadable(testLoss) : "");
 
 export const appendToLineChart = (trainLoss: number, testLoss: number) => {
-    lineChart.addDataPoint([trainLoss, testLoss]);
-    showTrainLoss(trainLoss);
-    showTestLoss(testLoss);
+    if (lineChart) {
+        lineChart.addDataPoint([trainLoss, testLoss]);
+        showTrainLoss(trainLoss);
+        showTestLoss(testLoss);
+    }
 }
 
 export const resetLineChart = () => {
-    lineChart.reset();
-    showTrainLoss();
-    showTestLoss();
+    if (lineChart) {
+        lineChart.reset();
+        showTrainLoss();
+        showTestLoss();
+    }
 }
 
 export const showDataSource = (dataSource: DataSource): void => {
