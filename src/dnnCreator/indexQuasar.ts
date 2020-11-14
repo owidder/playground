@@ -11,6 +11,7 @@ import { toggleVisor } from "./vis";
 import SidebarMenuQuasar from "./components/SidebarMenuQuasar.vue";
 import Bar from "./components/Bar.vue";
 import DnnMenu from "./components/DnnMenu.vue";
+import BatchSizeSlider from "./components/BatchSizeSliderQ.vue";
 import App from "./components/App.vue";
 
 //require("./themes/app.ios.styl");
@@ -37,16 +38,17 @@ const refresh = async (dataSource: DataSource) => {
     const dataset = new Dataset(dataSource, "label", state.percTrainData, state.shuffleseed);
     await state.initModel(dataset);
 
-    //setSelectComponentByValue("datasources", state.datasetUrl);
+    Vue.component("dnn-menu", DnnMenu);
+    Vue.component("batch-size-slider", BatchSizeSlider);
 
-    Vue.component("dnn-menu", DnnMenu)
     drawComponent("#layout", App, {
         addBookmarkCallback: () => console.log("addBookmarkCallback"),
         downloadCallback: () => console.log("downloadCallback"),
         showChartsCallback: () => console.log("showChartsCallback"),
         startStopTrainingCallback: (onOff: boolean) => console.log(`startStopTrainingCallback: ${onOff}`),
         trainOneStepCallback: () => console.log("trainOneStepCallback"),
-        shuffleDataClickedCallback: () => console.log("shuffleDataClickedCallback")
+        shuffleDataClickedCallback: () => console.log("shuffleDataClickedCallback"),
+        batchSizeChangedCallback: (value: number) => console.log(value)
     })
 
     makeGUI({ changeDatasetUrl: state.changeDatasetUrl })

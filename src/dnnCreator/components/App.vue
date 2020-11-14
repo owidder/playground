@@ -35,6 +35,9 @@
             @train-one-step-clicked="trainOneStepCallback()"
             @shuffle-data-clicked="shuffleDataClickedCallback()"
           ></dnn-menu>
+
+          <batch-size-slider @batch-size-changed="batchSizeChangedCallback"></batch-size-slider>
+
         </q-drawer>
 
         <q-page-container>
@@ -52,11 +55,22 @@ export default {
       drawerLeft: true,
     };
   },
-  props: ["addBookmarkCallback", "downloadCallback", "showChartsCallback", "startStopTrainingCallback", "trainOneStepCallback", "shuffleDataClickedCallback"],
+  props: [
+    "addBookmarkCallback",
+    "downloadCallback",
+    "showChartsCallback",
+    "startStopTrainingCallback",
+    "trainOneStepCallback",
+    "shuffleDataClickedCallback",
+    "batchSizeChangedCallback"
+  ],
   methods: {
-      startStopTrainingButtonClicked: function(onOff) {
-          this.$props.startStopTrainingCallback(onOff)
-      }
-  }
+    startStopTrainingButtonClicked: function (onOff) {
+      this.$props.startStopTrainingCallback(onOff);
+    },
+    batchSizeChanged: function(value) {
+        this.$props.batchSizeChangedCallback(value)
+    }
+  },
 };
 </script>
