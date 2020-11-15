@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md">
-    <q-badge> Batch size: {{ basicModel }}</q-badge>
-    <q-slider v-model="basicModel" markers :min="1" :max="30" @change="batchSizeChanged" />
+    <q-badge> Batch size: {{ batchSize }}</q-badge>
+    <q-slider v-model="batchSize" markers :min="1" :max="30" @change="batchSizeChanged" />
   </div>
 </template>
 
@@ -9,12 +9,12 @@
 export default {
     data() {
         return {
-            basicModel: 0
+            batchSize: Number(this.$props.initialValue)
         }
     },
+    props: ["initialValue"],
     methods: {
         batchSizeChanged: function(value) {
-            console.log(value);
             this.$emit('batch-size-changed', value)
         }
     }

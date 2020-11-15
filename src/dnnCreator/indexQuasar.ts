@@ -12,6 +12,7 @@ import SidebarMenuQuasar from "./components/SidebarMenuQuasar.vue";
 import Bar from "./components/Bar.vue";
 import DnnMenu from "./components/DnnMenu.vue";
 import BatchSizeSlider from "./components/BatchSizeSliderQ.vue";
+import PercentTrainDataSlider from "./components/PercentTrainDataSliderQ.vue";
 import App from "./components/App.vue";
 
 //require("./themes/app.ios.styl");
@@ -40,6 +41,7 @@ const refresh = async (dataSource: DataSource) => {
 
     Vue.component("dnn-menu", DnnMenu);
     Vue.component("batch-size-slider", BatchSizeSlider);
+    Vue.component("percent-train-data-slider", PercentTrainDataSlider);
 
     drawComponent("#layout", App, {
         addBookmarkCallback: () => console.log("addBookmarkCallback"),
@@ -48,7 +50,10 @@ const refresh = async (dataSource: DataSource) => {
         startStopTrainingCallback: (onOff: boolean) => console.log(`startStopTrainingCallback: ${onOff}`),
         trainOneStepCallback: () => console.log("trainOneStepCallback"),
         shuffleDataClickedCallback: () => console.log("shuffleDataClickedCallback"),
-        batchSizeChangedCallback: (value: number) => console.log(value)
+        batchSizeChangedCallback: state.setBatchSize,
+        percentTrainDataChangedCallback: state.changePercTrainData,
+        initialBatchSizeValue: state.batchSize,
+        initialPercentTrainDataValue: state.percTrainData
     })
 
     makeGUI({ changeDatasetUrl: state.changeDatasetUrl })

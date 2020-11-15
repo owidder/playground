@@ -36,7 +36,8 @@
             @shuffle-data-clicked="shuffleDataClickedCallback()"
           ></dnn-menu>
 
-          <batch-size-slider @batch-size-changed="batchSizeChangedCallback"></batch-size-slider>
+          <batch-size-slider @batch-size-changed="batchSizeChangedCallback" :initial-value="initialBatchSizeValue"></batch-size-slider>
+          <percent-train-data-slider @percent-train-data-changed="percentTrainDataChangedCallback" :initial-value="initialPercentTrainDataValue"></percent-train-data-slider>
 
         </q-drawer>
 
@@ -62,7 +63,10 @@ export default {
     "startStopTrainingCallback",
     "trainOneStepCallback",
     "shuffleDataClickedCallback",
-    "batchSizeChangedCallback"
+    "batchSizeChangedCallback",
+    "percentTrainDataChangedCallback",
+    "initialBatchSizeValue",
+    "initialPercentTrainDataValue"
   ],
   methods: {
     startStopTrainingButtonClicked: function (onOff) {
@@ -70,6 +74,9 @@ export default {
     },
     batchSizeChanged: function(value) {
         this.$props.batchSizeChangedCallback(value)
+    },
+    percentTrainDataChanged: function(value) {
+         this.$props.percentTrainDataChanged(value)
     }
   },
 };
