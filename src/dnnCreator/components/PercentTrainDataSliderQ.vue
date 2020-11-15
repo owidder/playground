@@ -1,22 +1,41 @@
 <template>
   <div class="q-pa-md">
-    <q-badge> Train data: {{ percentTrainData }} %</q-badge>
-    <q-slider v-model="percentTrainData" markers :min="1" :max="99" @change="percentTrainDataChanged" />
+    <q-badge>
+      Train data: {{ trainDataCount }} ({{ percentTrainData }} %)</q-badge
+    >
+    <q-badge>
+      Test data: {{ testDataCount }}</q-badge
+    >
+    <q-slider
+      v-model="percentTrainData"
+      markers
+      :min="1"
+      :max="99"
+      @change="percentTrainDataChanged"
+    />
   </div>
 </template>
 
 <script>
 export default {
-    data() {
-        return {
-            percentTrainData: Number(this.$props.initialValue)
-        }
+  data() {
+    return {
+      percentTrainData: Number(this.$props.initialValue),
+    };
+  },
+  computed: {
+    trainDataCount: function () {
+      return this.$props.totalDataCount * (this.percentTrainData / 100);
     },
-    props: ["initialValue"],
-    methods: {
-        percentTrainDataChanged: function(value) {
-            this.$emit("percent-train-data-changed", value)
-        }
+    testDataCount: function() {
+        return this.$props.totalDataCount * (1 - this.percentTrainData / 100)
     }
-}
+  },
+  props: ["initialValue", "totalDataCount"],
+  methods: {
+    percentTrainDataChanged: function (value) {
+      this.$emit("percent-train-data-changed", value);
+    },
+  },
+};
 </script>

@@ -53,7 +53,8 @@ const refresh = async (dataSource: DataSource) => {
         batchSizeChangedCallback: state.setBatchSize,
         percentTrainDataChangedCallback: state.changePercTrainData,
         initialBatchSizeValue: state.batchSize,
-        initialPercentTrainDataValue: state.percTrainData
+        initialPercentTrainDataValue: state.percTrainData,
+        totalDataCount: dataSource.data.length
     })
 
     makeGUI({ changeDatasetUrl: state.changeDatasetUrl })

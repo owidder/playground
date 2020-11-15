@@ -37,7 +37,7 @@
           ></dnn-menu>
 
           <batch-size-slider @batch-size-changed="batchSizeChangedCallback" :initial-value="initialBatchSizeValue"></batch-size-slider>
-          <percent-train-data-slider @percent-train-data-changed="percentTrainDataChangedCallback" :initial-value="initialPercentTrainDataValue"></percent-train-data-slider>
+          <percent-train-data-slider @percent-train-data-changed="percentTrainDataChangedCallback" :initial-value="initialPercentTrainDataValue" :total-data-count="totalDataCount"></percent-train-data-slider>
 
         </q-drawer>
 
@@ -66,7 +66,8 @@ export default {
     "batchSizeChangedCallback",
     "percentTrainDataChangedCallback",
     "initialBatchSizeValue",
-    "initialPercentTrainDataValue"
+    "initialPercentTrainDataValue",
+    "totalDataCount"
   ],
   methods: {
     startStopTrainingButtonClicked: function (onOff) {
