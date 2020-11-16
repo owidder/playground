@@ -4,7 +4,7 @@
       Train data: {{ trainDataCount }} ({{ percentTrainData }} %)</q-badge
     >
     <q-badge>
-      Test data: {{ testDataCount }}</q-badge
+      Test data: {{ testDataCount }} ({{ percentTestData }} %)</q-badge
     >
     <q-slider
       v-model="percentTrainData"
@@ -25,10 +25,13 @@ export default {
   },
   computed: {
     trainDataCount: function () {
-      return this.$props.totalDataCount * (this.percentTrainData / 100);
+      return Math.round(this.$props.totalDataCount * (this.percentTrainData / 100));
     },
     testDataCount: function() {
-        return this.$props.totalDataCount * (1 - this.percentTrainData / 100)
+        return this.$props.totalDataCount - this.trainDataCount
+    },
+    percentTestData: function() {
+        return Math.round((this.testDataCount / this.$props.totalDataCount) * 100)
     }
   },
   props: ["initialValue", "totalDataCount"],
