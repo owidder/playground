@@ -75,7 +75,16 @@ const refreshHistory = () => {
 const refresh = async (dataSource: DataSource) => {
     const dataset = new Dataset(dataSource, "label", state.percTrainData, state.shuffleseed);
     showTrainAndTestNumbers(state.percTrainData, dataset.getTrainData().length, dataset.getTestData().length);
-    await state.initModel(dataset, drawNetwork, updateUI);
+    await state.initModel(dataset);
+    drawNetwork(state.getModel().getNetwork(),
+        state.changeNumberOfNodes,
+        (index) => state.addLayerAfterLayerWithIndex(index),
+        (index) => state.removeLayerWithIndex(index),
+        (activation, index) => state.changeActivationAtIndex(activation, index - 1),
+        (index1, index2) => state.swapLayers(index1, index2),
+        state.activations);
+
+    updateUI(true, state.getModel().getNetwork(), state.getModel().getTotalEpochs(), state.getModel().forEachNode);
 
     makeGUI({
         download: state.getModel().download,

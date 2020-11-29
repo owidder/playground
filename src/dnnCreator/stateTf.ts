@@ -146,7 +146,7 @@ export class State {
         this.refreshCallback();
     }
 
-    async initModel(dataset?: Dataset, drawNetworkCallback?: DrawNetworkCallbach, updateUiCallback?: UpdateUiCallback): Promise<void> {
+    async initModel(dataset?: Dataset): Promise<void> {
         this.dataset = dataset ? dataset : this.dataset;
         const inputShape = this.dataset.getInputShape();
         const outputShape = this.dataset.getOutputShape();
@@ -173,19 +173,6 @@ export class State {
         this.serialize();
 
         showNumberOfLayers(this.networkShape.length);
-
-        if (drawNetworkCallback) {
-            drawNetworkCallback(this.model.getNetwork(),
-                this.changeNumberOfNodes,
-                (index) => this.addLayerAfterLayerWithIndex(index),
-                (index) => this.removeLayerWithIndex(index),
-                (activation, index) => this.changeActivationAtIndex(activation, index - 1),
-                (index1, index2) => this.swapLayers(index1, index2),
-                this.activations);
-        }
-        if(updateUiCallback) {
-            updateUiCallback(true, this.model.getNetwork(), this.model.getTotalEpochs(), this.model.forEachNode);
-        }
     }
 
 
