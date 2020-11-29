@@ -1,0 +1,78 @@
+g.node {
+    & circle {
+        fill        : rgb(141, 118, 141);
+        stroke      : black;
+        stroke-width: 2px;
+    }
+
+    & text {
+        font-size  : xx-small;
+        font-weight: lighter;
+    }
+}
+
+#network {
+    & svg {
+        & .active .main-label {
+            fill: #333
+        }
+
+        & #markerArrow {
+            fill          : black;
+            stroke        : black;
+            stroke-opacity: 0.2;
+        }
+    }
+
+    & .node {
+        cursor: default;
+
+        & rect {
+            fill        : white;
+            stroke-width: 0;
+        }
+
+        &.inactive {
+            opacity: 0.5;
+        }
+
+        &.hovered {
+            opacity: 1.0;
+        }
+    }
+
+    & .core {
+        & .link {
+            stroke-dasharray   : 9 1;
+            stroke-dashoffset  : 1;
+            fill               : none;
+            /*-webkit-animation: 0.5s linear 0s infinite flowing;*/
+        }
+
+        /** Invisible thick links used for showing weight values on mouse hover. */
+        & .link-hover {
+            stroke-width: 8;
+            stroke      : black;
+            fill        : none;
+            opacity     : 0;
+        }
+    }
+}
+
+#hovercard {
+    display      : none;
+    position     : absolute;
+    padding      : 5px;
+    border       : 1px solid #aaa;
+    z-index      : 1000;
+    background   : #fff;
+    cursor       : default;
+    border-radius: 5px;
+    left         : 240px;
+    width        : 150px;
+    top          : -20px;
+
+    & input {
+        width: 60px;
+    }
+}
