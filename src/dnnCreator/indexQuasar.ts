@@ -5,7 +5,7 @@ import { Dataset, loadDataSource } from "./datasetTf";
 import { State } from "./stateTf";
 import { DataSource } from "./networkTypes";
 import { addBookmark, initBookmarks, getBookmarks, Bookmark } from "./bookmarks";
-import { showDataSource, makeGUI, setSelectComponentByValue } from "./ui";
+import { showDataSource, makeGUI, setSelectComponentByValue, drawNetwork, updateUI } from "./ui";
 import { toggleVisor } from "./vis";
 
 import SidebarMenuQuasar from "./components/SidebarMenuQuasar.vue";
@@ -37,11 +37,12 @@ const addBookmarkCallback = () => {
 
 const refresh = async (dataSource: DataSource) => {
     const dataset = new Dataset(dataSource, "label", state.percTrainData, state.shuffleseed);
-    await state.initModel(dataset);
 
     Vue.component("dnn-menu", DnnMenu);
     Vue.component("batch-size-slider", BatchSizeSlider);
     Vue.component("percent-train-data-slider", PercentTrainDataSlider);
+
+    await state.initModel(dataset);
 
     drawComponent("#layout", App, {
         addBookmarkCallback: () => console.log("addBookmarkCallback"),
@@ -58,6 +59,16 @@ const refresh = async (dataSource: DataSource) => {
     })
 
     makeGUI({ changeDatasetUrl: state.changeDatasetUrl })
+
+    drawNetwork(state.getModel().getNetwork(),
+        state.changeNumberOfNodes,
+        (index) => state.addLayerAfterLayerWithIndex(index),
+        (index) => state.removeLayerWithIndex(index),
+        (activation, index) => state.changeActivationAtIndex(activation, index - 1),
+        (index1, index2) => state.swapLayers(index1, index2),
+        state.activations);
+
+    updateUI(true, state.getModel().getNetwork(), state.getModel().getTotalEpochs(), state.getModel().forEachNode);
 }
 
 const start = async () => {

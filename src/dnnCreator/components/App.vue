@@ -36,13 +36,44 @@
             @shuffle-data-clicked="shuffleDataClickedCallback()"
           ></dnn-menu>
 
-          <batch-size-slider @batch-size-changed="batchSizeChangedCallback" :initial-value="initialBatchSizeValue"></batch-size-slider>
-          <percent-train-data-slider @percent-train-data-changed="percentTrainDataChangedCallback" :initial-value="initialPercentTrainDataValue" :total-data-count="totalDataCount"></percent-train-data-slider>
-
+          <batch-size-slider
+            @batch-size-changed="batchSizeChangedCallback"
+            :initial-value="initialBatchSizeValue"
+          ></batch-size-slider>
+          <percent-train-data-slider
+            @percent-train-data-changed="percentTrainDataChangedCallback"
+            :initial-value="initialPercentTrainDataValue"
+            :total-data-count="totalDataCount"
+          ></percent-train-data-slider>
         </q-drawer>
 
         <q-page-container>
-          <q-page style="padding-top: 60px" class="q-pa-md"></q-page>
+          <q-page style="padding-top: 60px" class="q-pa-md">
+            <div id="network">
+              <svg id="svg" width="510" height="450">
+                <defs>
+                  <marker
+                    id="markerArrow"
+                    markerWidth="7"
+                    markerHeight="13"
+                    refX="1"
+                    refY="6"
+                    orient="auto"
+                    markerUnits="userSpaceOnUse"
+                  >
+                    <path d="M2,11 L7,6 L2,2" />
+                  </marker>
+                </defs>
+              </svg>
+              <!-- Hover card -->
+              <div id="hovercard">
+                <div>
+                  <span class="type">Weight/Bias</span> is
+                  <span class="value">0.2</span>.
+                </div>
+              </div>
+            </div>
+          </q-page>
         </q-page-container>
       </q-layout>
     </div>
@@ -67,18 +98,18 @@ export default {
     "percentTrainDataChangedCallback",
     "initialBatchSizeValue",
     "initialPercentTrainDataValue",
-    "totalDataCount"
+    "totalDataCount",
   ],
   methods: {
     startStopTrainingButtonClicked: function (onOff) {
       this.$props.startStopTrainingCallback(onOff);
     },
-    batchSizeChanged: function(value) {
-        this.$props.batchSizeChangedCallback(value)
+    batchSizeChanged: function (value) {
+      this.$props.batchSizeChangedCallback(value);
     },
-    percentTrainDataChanged: function(value) {
-         this.$props.percentTrainDataChanged(value)
-    }
+    percentTrainDataChanged: function (value) {
+      this.$props.percentTrainDataChanged(value);
+    },
   },
 };
 </script>

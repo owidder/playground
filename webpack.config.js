@@ -131,7 +131,7 @@ const buefied = {
     ]
 }
 
-const quasared = {
+const  quasared = {
     entry: {
         dnnCreatorQuasar: './src/dnnCreator/indexQuasar.ts'
     },

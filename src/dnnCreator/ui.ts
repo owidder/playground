@@ -380,7 +380,7 @@ export function drawNetwork(network: TfNode[][],
     changeActivationCallback: ChangeActivationCallback,
     swapLayersCallback: (layerIndex1: number, layerIndex2: number) => void,
     activations: string[]): void {
-    let svg = d3.select("#svg");
+    const svg = d3.select("#svg");
     svg.select("g.core").remove();
     d3.select("#network").selectAll("div.canvas").remove();
     d3.select("#network").selectAll("div.plus-minus-neurons").remove();
