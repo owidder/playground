@@ -4,7 +4,7 @@
       <q-layout
         view="hHh lpr lff"
         container
-        style="height: 2000px"
+        style="height: 95vh"
         class="shadow-2 rounded-borders"
       >
         <q-header reveal class="bg-black">
@@ -48,8 +48,9 @@
         </q-drawer>
 
         <q-page-container>
-          <q-page style="padding-top: 60px" class="q-pa-md">
-            <div id="network">
+          <q-page style="padding-top: 60px" :style-fn="myTweak" class="q-pa-md">
+            <div id="network" class="column">
+              <div class="move-and-remove"></div>
               <svg id="svg" width="510" height="450">
                 <defs>
                   <marker
@@ -109,6 +110,14 @@ export default {
     },
     percentTrainDataChanged: function (value) {
       this.$props.percentTrainDataChanged(value);
+    },
+    myTweak(offset) {
+      // "offset" is a Number (pixels) that refers to the total
+      // height of header + footer that occupies on screen,
+      // based on the QLayout "view" prop configuration
+
+      // this is actually what the default style-fn does in Quasar
+      return {};
     },
   },
 };

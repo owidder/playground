@@ -85,7 +85,8 @@ const common = {
     devServer: {
         contentBase: path.join(__dirname, process.env.DIST_FOLDER),
         compress: true,
-        port: 9000
+        port: 9000,
+        index: "indexQuasar.html"
     }
 }
 

@@ -20,6 +20,7 @@ import { TfNode, TfLink, NodeIterator, ChangeNumberOfNodesCallback, HoverType, D
 import { maxLayerSize, humanReadable } from "./mlUtil";
 import { AppendingLineChart } from "../linechartV5";
 import { getBookmarks, Bookmark, deleteBookmark } from "./bookmarks";
+import {getClasses} from "./theme";
 
 const NODE_SIZE = 30;
 const NODE_GAP = 25;
@@ -125,6 +126,7 @@ export const updateUI = (firstStep = false, network: TfNode[][], totalEpochs: nu
 function addPlusMinusControl(x: number, layerIdx: number, network: TfNode[][], changeNumberOfNodesCallback: ChangeNumberOfNodesCallback) {
     let div = d3.select("#network").append("div")
         .classed("plus-minus-neurons", true)
+        .classed("plus-minus-layers", true)
         .style("left", `${x - 10}px`);
 
     let firstRow = div.append("div").attr("class", `ui-numNodes${layerIdx}`);
@@ -169,8 +171,16 @@ const addNewLayerControl = (x: number, addNewLayer: () => void): void => {
         .text("library_add");
 }
 
+const getDivContainerSelectorInNetwork = (divContainerClass: string): string => {
+    const selectorWithDiv = `#network .${divContainerClass}`;
+    return document.querySelector(selectorWithDiv) ? selectorWithDiv : "#network";
+}
+
+const CLASS_NAME_MOVE_AND_REMOVE = "move-and-remove";
+
 const addRemoveLayerControl = (x: number, removeLayer: () => void): void => {
-    const div = d3.select("#network").append("div")
+    const selector = getDivContainerSelectorInNetwork(CLASS_NAME_MOVE_AND_REMOVE);
+    const div = d3.select(selector).append("div")
         .classed("plus-minus-layers", true)
         .classed("remove-layer-control", true)
         .style("left", `${x - 10}px`);
@@ -213,13 +223,14 @@ const addActivationControl = (x: number, initial: string, changeActivation: (act
 }
 
 const addMoveLeftControl = (x: number, moveLeft: () => void): void => {
-    const div = d3.select("#network").append("div")
+    const selector = getDivContainerSelectorInNetwork(CLASS_NAME_MOVE_AND_REMOVE);
+    const div = d3.select(selector).append("div")
         .classed("plus-minus-layers", true)
         .classed("remove-layer-control", true)
         .style("left", `${x - 50}px`);
 
     div.append("button")
-        .attr("class", "mdl-button mdl-js-button mdl-button--icon")
+        .attr("class", getClasses("leftRightButton"))
         .on("click", () => {
             moveLeft();
         })
@@ -229,13 +240,14 @@ const addMoveLeftControl = (x: number, moveLeft: () => void): void => {
 }
 
 const addMoveRightControl = (x: number, moveRight: () => void): void => {
-    const div = d3.select("#network").append("div")
+    const selector = getDivContainerSelectorInNetwork(CLASS_NAME_MOVE_AND_REMOVE);
+    const div = d3.select(selector).append("div")
         .classed("plus-minus-layers", true)
         .classed("remove-layer-control", true)
         .style("left", `${x + 32}px`);
 
     div.append("button")
-        .attr("class", "mdl-button mdl-js-button mdl-button--icon")
+        .attr("class", getClasses("leftRightButton"))
         .on("click", () => {
             moveRight();
         })
@@ -388,7 +400,7 @@ export function drawNetwork(network: TfNode[][],
 
     let numLayers = network.length;
     const width = numLayers <= 10 ? window.innerWidth : window.innerWidth * numLayers / 10;
-    const height = maxLayerSize(network) * (NODE_SIZE + 25);
+    const height = maxLayerSize(network) * (NODE_SIZE + 30);
 
     const columnFeatures = d3.select(".column.features");
     columnFeatures.style("height", `${height + 100}px`);

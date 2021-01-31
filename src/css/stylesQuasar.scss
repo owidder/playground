@@ -12,6 +12,7 @@ g.node {
 }
 
 #network {
+    height: 100%;
     & svg {
         & .active .main-label {
             fill: #333
@@ -75,4 +76,37 @@ g.node {
     & input {
         width: 60px;
     }
+}
+
+.plus-minus-layers {
+    position   : absolute;
+    text-align : center;
+    // line-height: 28px;
+    // width      : 65px;
+    // height     : 44px;
+    // font-size  : 12px;
+    z-index    : 100;
+
+    &.add-layer-control {
+        bottom: 60px;
+    }
+}
+
+.activation-layers {
+    top: 15px;
+}
+
+#network {
+    & svg {
+        position: relative;
+        top: 5em;
+    }
+}
+
+.q-page-container, .q-layout, .scroll, .q-page {
+    min-height: 95vh;
+}
+
+.plus-minus-neurons {
+    bottom: 100px;
 }

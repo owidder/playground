@@ -18,6 +18,7 @@ import App from "./components/App.vue";
 //require("./themes/app.ios.styl");
 require("quasar/dist/quasar.css");
 import "../css/stylesQuasar.scss";
+import "material-design-lite/material.css";
 
 Vue.use(Quasar);
 
