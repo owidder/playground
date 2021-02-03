@@ -88,7 +88,15 @@ g.node {
     z-index    : 100;
 
     &.add-layer-control {
-        bottom: 60px;
+        top: 100px;
+    }
+
+    &.remove-layer-control {
+        top: 50px;
+    }
+    
+    &.plus-minus-neurons {
+        top: 80px;
     }
 }
 
@@ -105,8 +113,4 @@ g.node {
 
 .q-page-container, .q-layout, .scroll, .q-page {
     min-height: 95vh;
-}
-
-.plus-minus-neurons {
-    bottom: 100px;
 }
