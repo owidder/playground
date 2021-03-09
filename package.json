@@ -31,7 +31,7 @@
     "serve-dnn": "npx serve -l 5005 dist-dnn/",
     "serve-cnn-example": "npx serve -l 5010 cnn-example/",
     "serve-watch": "concurrently \"npx serve dist/\" \"npm run watch\"",
-    "build-dnn": "npm run clean-tf && mkdirp ./dist-dnn && npm run prep-tf && cross-env NODE_ENV=development INDEX_TS=dnnCreator/index.ts DIST_FOLDER=dist-dnn BUNDLE_NAME=dnnCreator webpack",
+    "buld-dnn": "npm run clean-tf && mkdirp ./dist-dnn && npm run prep-tf && cross-env NODE_ENV=development INDEX_TS=dnnCreator/index.ts DIST_FOLDER=dist-dnn BUNDLE_NAME=dnnCreator webpack",
     "build-dnn:watch": "npm run clean && mkdirp ./dist && npm run prep && cross-env NODE_ENV=development INDEX_TS=dnnCreator/index.ts DIST_FOLDER=dist-dnn BUNDLE_NAME=dnnCreator webpack --watch",
     "start-dnn": "cross-env NODE_ENV=development INDEX_TS=dnnCreator/index.ts DIST_FOLDER=dist-dnn BUNDLE_NAME=dnnCreator webpack-dev-server --open"
   },
@@ -39,7 +39,6 @@
     "@types/d3": "^5.7.2",
     "@types/d3-selection-multi": "^1.0.7",
     "@types/d3-v3": "npm:@types/d3@^3.5.34",
-    "awesome-typescript-loader": "^5.2.1",
     "concat": "^1.0.3",
     "concurrently": "5.2.0",
     "convert-csv-to-json": "0.0.15",

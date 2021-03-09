@@ -48,11 +48,7 @@ const common = {
                         test: /\.ts$/,
                         include: absPath("src"),
                         use: [{
-                            loader: 'awesome-typescript-loader',
-                            options: {
-                                onlyCompileBundledFiles: true,
-                                configFile: 'tsconfigTf.json'
-                            }
+                            loader: 'ts-loader',
                         }],
                     },
                     {
